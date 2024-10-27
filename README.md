@@ -1,10 +1,7 @@
-<div style="text-align:center">
-<img src="icon.png" width="256" height="256">
+<p align="center"><img src="icon.png" width="256" height="256" alt="Easy Auto Clicker Logo"></p>
+<p align="center">Icon via Flaticon.com</p>
 
-###### Icon via Flaticon.com
-
-# Easy Auto Clicker
-</div>
+<h1 align="center">Easy Auto Clicker</h1>
 
 ---
 
