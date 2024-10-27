@@ -3,8 +3,6 @@
 
 <h1 align="center">Easy Auto Clicker</h1>
 
----
-
 ### Easy Auto Clicker is an application for starting clicking processes via a simple GUI. The latest release for each platform can be found [here](https://github.com/CaymanFreeman/EasyAutoClicker/releases). Each setting described below can be changed to affect the way each click process runs. 
 
 ### Click Length
