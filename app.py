@@ -15,7 +15,10 @@ from start_stop_frame import StartStopFrame
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        customtkinter.set_appearance_mode("dark")
+
         self.title("Easy Auto Clicker")
+        self.iconbitmap(r"icon.ico")
         self.resizable(width=False, height=False)
 
         self.grid_columnconfigure(0, weight=1)
@@ -48,6 +51,5 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     if sys.platform.startswith('win'):
         multiprocessing.freeze_support()
-    customtkinter.set_appearance_mode("dark")
     app = App()
     app.mainloop()
