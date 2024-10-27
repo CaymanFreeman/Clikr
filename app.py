@@ -1,3 +1,6 @@
+import multiprocessing
+import sys
+
 import customtkinter
 
 from click_length_frame import ClickLengthFrame
@@ -13,7 +16,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         self.title("Easy Auto Clicker")
-        self.resizable(width=True, height=False)
+        self.resizable(width=False, height=False)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -40,9 +43,11 @@ class App(customtkinter.CTk):
         hotkey_frame.grid(row=4, column=0, padx=FRAME_PADDING, pady=FRAME_PADDING, sticky="ew")
 
         self.update()
-        self.minsize(440, self.winfo_height() - FRAME_PADDING * len(self.keys()))
 
 
 if __name__ == "__main__":
+    if sys.platform.startswith('win'):
+        multiprocessing.freeze_support()
+    customtkinter.set_appearance_mode("dark")
     app = App()
     app.mainloop()
