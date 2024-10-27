@@ -10,7 +10,7 @@ The click length determines how long to hold the click. For example, if the clic
 ### Click Interval
 
 ##### Default: 100 Milliseconds
-The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. **Note:** Click interval accuracy begins to diminish with smaller intervals (~100ms in testing).
+The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. **Note:** Click interval accuracy begins to diminish with smaller intervals (~22ms in testing).
 
 ### Mouse Button
 
