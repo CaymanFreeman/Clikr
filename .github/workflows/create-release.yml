@@ -22,13 +22,8 @@ jobs:
     with:
       version: ${{ inputs.version }}
 
-  build-linux:
-    uses: ./.github/workflows/build-linux.yml
-    with:
-      version: ${{ inputs.version }}
-
   create-release:
-    needs: [build-windows, build-linux]
+    needs: build-windows
     runs-on: ubuntu-latest
     
     steps:
@@ -39,12 +34,6 @@ jobs:
         with:
           name: windows-installer
           path: installer
-
-      - name: Download Linux Flatpak
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-flatpak
-          path: flatpak
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -62,12 +51,10 @@ jobs:
             ##
             
             ### Build Environments
-            #### EasyAutoClicker-Setup-x64.exe: Windows ${{ needs.build-windows.outputs.os_name }} (${{ needs.build-windows.outputs.os_version }})
-            #### EasyAutoClicker.flatpak: ${{ needs.build-linux.outputs.os_name }} Linux (${{ needs.build-linux.outputs.os_version }})
+            **EasyAutoClicker-Setup-x64.exe:** Windows ${{ needs.build-windows.outputs.os_name }} (${{ needs.build-windows.outputs.os_version }})
           prerelease: ${{ inputs.prerelease }}
           draft: true
           files: |
             installer/EasyAutoClicker-Setup-x64.exe
-            flatpak/EasyAutoClicker.flatpak
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
