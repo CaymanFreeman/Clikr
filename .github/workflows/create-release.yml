@@ -1,0 +1,73 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Enter Version:'
+        required: true
+        type: string
+      prerelease:
+        description: 'Pre-release'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      version: ${{ inputs.version }}
+
+  build-linux:
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      version: ${{ inputs.version }}
+
+  create-release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Windows installer
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-installer
+          path: installer
+
+      - name: Download Linux Flatpak
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-flatpak
+          path: flatpak
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ inputs.version }}
+          tag_name: v${{ inputs.version }}
+          body: |
+            ${{ inputs.description }}
+            
+            ### Changes
+
+            - Fixed lorem
+            - Changed ipsum
+            
+            ##
+            
+            ### Build Environments
+            #### EasyAutoClicker-Setup-x64.exe: Windows ${{ needs.build-windows.outputs.os_name }} (${{ needs.build-windows.outputs.os_version }})
+            #### EasyAutoClicker.flatpak: ${{ needs.build-linux.outputs.os_name }} Linux (${{ needs.build-linux.outputs.os_version }})
+          prerelease: ${{ inputs.prerelease }}
+          draft: true
+          files: |
+            installer/EasyAutoClicker-Setup-x64.exe
+            flatpak/EasyAutoClicker.flatpak
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

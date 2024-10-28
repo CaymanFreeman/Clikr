@@ -1,0 +1,92 @@
+name: Build for Windows
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      os_version: ${{ steps.windows-version.outputs.os_version }}
+      os_name: ${{ steps.windows-version.outputs.os_name }}
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Create Requirements.txt
+        run: |
+          @"
+          customtkinter
+          keyboard
+          mouse
+          pyautogui
+          "@ | Set-Content requirements.txt
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Get customtkinter Path
+        id: get-customtkinter-path
+        run: |
+          $ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
+          echo "CTK_PATH=$ctk_path" >> $env:GITHUB_ENV
+
+      - name: Get Windows Version
+        id: windows-version
+        run: |
+          $windowsVersion = (Get-WmiObject Win32_OperatingSystem).Version
+          $windowsName = if ([Environment]::OSVersion.Version.Major -eq 10) {
+              if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
+          } else { "10" }
+          echo "os_version=$windowsVersion" >> $env:GITHUB_OUTPUT
+          echo "os_name=$windowsName" >> $env:GITHUB_OUTPUT
+
+      - name: Build With PyInstaller
+        run: |
+          pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed `
+          --add-data "${{ env.CTK_PATH }}\customtkinter;customtkinter" `
+          --add-data "assets\icon.ico;assets" `
+          --add-data "assets\easy_auto_clicker_theme.json;assets" `
+          app.py
+
+      - name: Copy Assets
+        run: xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+
+      - name: Create Installer Directory
+        run: mkdir installer
+
+      - name: Convert LICENSE.md to LICENSE.txt
+        run: |
+          Get-Content "LICENSE.md" | Set-Content "LICENSE.txt"
+
+      - name: Create Inno Setup script
+        run: |
+          $template = Get-Content -Path ".github/workflows/installer.iss" -Raw
+          $script = $template -replace "@VERSION@", "${{ inputs.version }}"
+          $script | Set-Content -Path "setup.iss"
+
+      - name: Create Windows Installer
+        run: |
+          choco install innosetup -y
+          iscc "setup.iss"
+
+      - name: Upload Installer Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-installer
+          path: installer/EasyAutoClicker-Setup-x64.exe
