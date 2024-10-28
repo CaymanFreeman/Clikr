@@ -7,7 +7,7 @@ on:
         description: 'Enter Version:'
         required: true
         type: string
-      pre-release:
+      prerelease:
         description: 'Pre-release'
         required: true
         type: boolean
@@ -87,6 +87,13 @@ jobs:
           choco install innosetup -y
           iscc "setup.iss"
 
+      - name: Create OS Info File
+        run: |
+          @"
+          OS_VERSION=$($env:OS_VERSION)
+          OS_NAME=$($env:OS_NAME)
+          "@ | Set-Content os-info.txt
+
       - name: Upload installer artifact
         uses: actions/upload-artifact@v3
         with:
@@ -97,12 +104,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: os-info
-          path: |
-            echo "OS_VERSION=${{ env.OS_VERSION }}" > os-info.txt
-            echo "OS_NAME=${{ env.OS_NAME }}" >> os-info.txt
+          path: os-info.txt
 
   Create-Draft-Release:
-    needs: [Build For Windows]
+    needs: [Build-For-Windows]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,22 +128,10 @@ jobs:
         id: os-info
         run: |
           source os-info.txt
-          echo "os_version=${OS_VERSION}" >> $GITHUB_OUTPUT
-          echo "os_name=${OS_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Create Source Archives
-        run: |
-          mkdir -p temp_source
-          rsync -av --exclude='.git' --exclude='.github' --exclude='.gitignore' \
-                    --exclude='installer' --exclude='dist' --exclude='build' \
-                    --exclude='__pycache__' --exclude='*.spec' \
-                    --exclude='temp_source' \
-                    . temp_source/
-          cd temp_source
-          zip -r ../Source.zip .
-          tar -czf ../Source.tar.gz .
-          cd ..
-          rm -rf temp_source
+          OS_VERSION=$(echo "$OS_VERSION" | tr -d '\r' | tr -d '\n' | tr -d ' ')
+          OS_NAME=$(echo "$OS_NAME" | tr -d '\r' | tr -d '\n' | tr -d ' ')
+          echo "os_version=$OS_VERSION" >> $GITHUB_OUTPUT
+          echo "os_name=$OS_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -157,7 +150,7 @@ jobs:
             
             ### Build Environments
             #### EasyAutoClicker-Setup-x64.exe: Windows ${{ steps.os-info.outputs.os_name }} (${{ steps.os-info.outputs.os_version }})
-          pre-release: ${{ github.event.inputs.pre-release }}
+          prerelease: ${{ github.event.inputs.prerelease }}
           draft: true
           files: |
             installer/EasyAutoClicker-Setup-x64.exe

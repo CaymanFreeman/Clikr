@@ -6,14 +6,14 @@ from constants import *
 
 
 class HotkeyFrame(customtkinter.CTkFrame):
-    def __init__(self, master, start_stop_frame: StartStopFrame):
+    def __init__(self, master: customtkinter.CTk, start_stop_frame: StartStopFrame):
         super().__init__(master)
         self.start_stop_frame = start_stop_frame
 
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(index=1, weight=1)
+        self.grid_columnconfigure(index=2, weight=1)
 
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(index=0, weight=1)
 
         self.hotkey_value = DEFAULT_HOTKEY
 
@@ -26,7 +26,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
         keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
         self.hotkey_textbox.grid(row=0, column=1, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
-        self.change_hotkey_button = customtkinter.CTkButton(self, text=CHANGE_HOTKEY_LABEL, command=self.change_hotkey_callback)
+        self.change_hotkey_button = customtkinter.CTkButton(self, text=CHANGE_HOTKEY_LABEL,
+                                                            command=self.change_hotkey_callback)
         self.change_hotkey_button.grid(row=0, column=2, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
         self.recording_hotkey = False
         self.pressed_keys = []
@@ -39,7 +40,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
                 keyboard.clear_all_hotkeys()
                 self.hotkey_value = "+".join(self.pressed_keys)
                 keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
-            self.change_hotkey_button.configure(text=CHANGE_HOTKEY_LABEL, fg_color=BUTTON_BLUE_FG, hover_color=BUTTON_BLUE_HOVER)
+            self.change_hotkey_button.configure(text=CHANGE_HOTKEY_LABEL, fg_color=BUTTON_BLUE_FG,
+                                                hover_color=BUTTON_BLUE_HOVER)
             self.hotkey_textbox.configure(text_color=GRAY)
             self.change_hotkey_text(self.hotkey_value.upper())
             self.pressed_keys.clear()
@@ -50,15 +52,15 @@ class HotkeyFrame(customtkinter.CTkFrame):
             self.hotkey_textbox.configure(text_color=GREEN_FG)
             self.change_hotkey_text(HOTKEY_ENTRY_RECORDING)
             self.pressed_keys.clear()
-            keyboard.hook(self.on_key_event)
+            keyboard.hook(callback=self.on_key_event)
         self.recording_hotkey = not self.recording_hotkey
 
-    def on_key_event(self, event) -> None:
+    def on_key_event(self, keyboard_event: keyboard.KeyboardEvent) -> None:
         if not self.recording_hotkey:
             return
 
-        if event.event_type == keyboard.KEY_DOWN:
-            key_name = event.name.lower()
+        if keyboard_event.event_type == keyboard.KEY_DOWN:
+            key_name = keyboard_event.name.lower()
             if key_name in ['left shift', 'right shift']:
                 key_name = 'shift'
             elif key_name in ['left ctrl', 'right ctrl']:
@@ -71,8 +73,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
                 current_keys = "+".join(self.pressed_keys)
                 self.change_hotkey_text(current_keys.upper())
 
-    def change_hotkey_text(self, new_text) -> None:
+    def change_hotkey_text(self, new_text: str) -> None:
         self.hotkey_textbox.configure(state="normal")
-        self.hotkey_textbox.delete("0.0", "end")
-        self.hotkey_textbox.insert("0.0", new_text)
+        self.hotkey_textbox.delete(index1="0.0", index2="end")
+        self.hotkey_textbox.insert(index="0.0", text=new_text)
         self.hotkey_textbox.configure(state="disabled")

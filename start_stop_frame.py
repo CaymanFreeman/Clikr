@@ -6,16 +6,16 @@ from click_process import ClickProcess
 from constants import *
 
 class StartStopFrame(customtkinter.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master: customtkinter.CTk):
         super().__init__(master)
         self.click_process = None
         self.prevent_click_processes = False
         self.terminated_event = None
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(index=0, weight=1)
+        self.grid_columnconfigure(index=1, weight=1)
 
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(index=0, weight=1)
 
         self.start_button = customtkinter.CTkButton(self, text=START_BUTTON_LABEL, command=self.start_button_callback, height=50)
         self.start_button.grid(row=0, column=0, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
@@ -24,9 +24,9 @@ class StartStopFrame(customtkinter.CTkFrame):
         self.stop_button.configure(state="disabled", fg_color=DARK_GRAY)
         self.stop_button.grid(row=0, column=1, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
-        self.after(10, self.monitor_click_process)
+        self.after(ms=10, func=self.monitor_click_process)
 
-    def toggle_start_stop_buttons(self):
+    def toggle_start_stop_buttons(self) -> None:
         if self.start_button.cget("state") == "normal":
             self.start_button.configure(state="disabled", fg_color=DARK_GRAY)
             self.stop_button.configure(state="normal", fg_color=BUTTON_BLUE_FG)
@@ -34,7 +34,7 @@ class StartStopFrame(customtkinter.CTkFrame):
             self.start_button.configure(state="normal", fg_color=BUTTON_BLUE_FG)
             self.stop_button.configure(state="disabled", fg_color=DARK_GRAY)
 
-    def stop_button_callback(self):
+    def stop_button_callback(self) -> None:
         self.terminated_event.set()
 
     def start_button_callback(self) -> None:
@@ -58,7 +58,7 @@ class StartStopFrame(customtkinter.CTkFrame):
     def monitor_click_process(self) -> None:
         if self.terminated_event and self.terminated_event.is_set():
             self.terminate_click_process()
-        self.after(10, self.monitor_click_process)
+        self.after(ms=10, func=self.monitor_click_process)
 
     def terminate_click_process(self) -> None:
         if self.click_process and self.click_process.is_alive():

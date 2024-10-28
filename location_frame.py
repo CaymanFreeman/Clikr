@@ -9,18 +9,18 @@ from constants import *
 
 
 class LocationFrame(customtkinter.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master: customtkinter.CTk):
         super().__init__(master)
         self.cancel_pick_handler = None
         self.pick_handler = None
         self.cursor_location = (0, 0)
-        self.master.setvar("CLICK_LOCATION", "none")
+        self.master.setvar(name="CLICK_LOCATION", value="none")
         self.location_locked = False
 
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(index=1, weight=1)
+        self.grid_columnconfigure(index=2, weight=1)
 
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(index=0, weight=1)
 
         self.hotkey_value = DEFAULT_HOTKEY
 
@@ -28,12 +28,11 @@ class LocationFrame(customtkinter.CTkFrame):
         self.location_label.grid(row=0, column=0, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         self.location_textbox = customtkinter.CTkTextbox(self, activate_scrollbars=False)
-        self.location_textbox.insert("0.0", self.location_string)
+        self.location_textbox.insert(index="0.0", text=self.location_string)
         self.location_textbox.configure(state="disabled", width=50, height=20)
         self.location_textbox.grid(row=0, column=1, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
-        self.pick_location_button = customtkinter.CTkButton(self, text=PICK_LOCATION_LABEL,
-                                                            command=self.pick_location_callback)
+        self.pick_location_button = customtkinter.CTkButton(self, text=PICK_LOCATION_LABEL, command=self.pick_location_callback)
         self.pick_location_button.grid(row=0, column=2, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         threading.Thread(target=self.location_update_process, daemon=True).start()
@@ -44,16 +43,16 @@ class LocationFrame(customtkinter.CTkFrame):
         self.pick_location_button.configure(text=LOCATION_CONFIRM_LABEL, fg_color=DARK_GRAY, state="disabled")
         self.location_textbox.configure(state="normal", text_color=GRAY)
         time.sleep(0.1)
-        self.pick_handler = mouse.on_click(self.pick_location)
-        self.cancel_pick_handler = keyboard.on_press_key("escape", self.cancel_pick_location)
+        self.pick_handler = mouse.on_click(callback=self.pick_location)
+        self.cancel_pick_handler = keyboard.on_press_key(key=CANCEL_LOCATION_PICK_KEY, callback=self.cancel_pick_location)
 
     def unhook_pick_keys(self):
         if self.cancel_pick_handler:
-            keyboard.unhook(self.cancel_pick_handler)
+            keyboard.unhook(remove=self.cancel_pick_handler)
         if self.pick_handler:
-            mouse.unhook(self.pick_handler)
+            mouse.unhook(callback=self.pick_handler)
 
-    def cancel_pick_location(self, key_up_event):
+    def cancel_pick_location(self, _keyboard_event: keyboard.KeyboardEvent):
         self.unhook_pick_keys()
         threading.Thread(target=self.location_update_process, daemon=True).start()
         self.location_textbox.configure(state="normal", text_color=GRAY)
@@ -62,7 +61,7 @@ class LocationFrame(customtkinter.CTkFrame):
     def pick_location(self):
         self.unhook_pick_keys()
         location = tuple(mouse.get_position())
-        self.master.setvar("CLICK_LOCATION", str(location))
+        self.master.setvar(name="CLICK_LOCATION", value=str(location))
         self.cursor_location = location
         self.update_location(location)
         self.location_locked = True
@@ -72,8 +71,8 @@ class LocationFrame(customtkinter.CTkFrame):
     def update_location(self, location) -> None:
         self.cursor_location = location
         self.location_textbox.configure(state="normal")
-        self.location_textbox.delete("0.0", "end")
-        self.location_textbox.insert("0.0", self.location_string)
+        self.location_textbox.delete(index1="0.0", index2="end")
+        self.location_textbox.insert(index="0.0", text=self.location_string)
         self.location_textbox.configure(state="disabled")
 
     @property

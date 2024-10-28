@@ -10,7 +10,18 @@ import pyautogui
 
 
 class ClickProcess(multiprocessing.Process):
-    def __init__(self, click_interval, interval_timescale, click_length, length_timescale, mouse_button, clicks_per_event, click_events, click_location_string: str, terminated_event):
+    def __init__(
+            self,
+            click_interval: str,
+            interval_timescale: str,
+            click_length: str,
+            length_timescale: str,
+            mouse_button: str,
+            clicks_per_event: str,
+            click_events: str,
+            click_location_string: str,
+            terminated_event: multiprocessing.Event
+    ):
         if click_interval == "":
             click_interval = 0
         else:
@@ -30,7 +41,6 @@ class ClickProcess(multiprocessing.Process):
             click_events = 0
         else:
             click_events = int(click_events)
-
 
         match interval_timescale:
             case constants.MILLISECONDS_CHOICE:
@@ -84,7 +94,7 @@ class ClickProcess(multiprocessing.Process):
         if self.using_location:
             pyautogui.moveTo(self.click_location_x, self.click_location_y, _pause=False)
         for _ in range(self.clicks_per_event):
-                mouse.click(self.mouse_button)
+            mouse.click(self.mouse_button)
         remaining_time = max(0.0, next_click_time - time.perf_counter())
         if remaining_time > 0:
             time.sleep(remaining_time)

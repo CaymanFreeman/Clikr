@@ -24,12 +24,6 @@ class App(customtkinter.CTk):
         self.iconbitmap(os.path.join("assets", "icon.ico"))
         self.resizable(width=False, height=False)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
-        self.grid_rowconfigure(3, weight=1)
-
         self.appearance_frame = AppearanceFrame(master=self)
         self.appearance_frame.grid(row=0, column=0, padx=FRAME_PADDING, pady=FRAME_PADDING, sticky="ew")
 
