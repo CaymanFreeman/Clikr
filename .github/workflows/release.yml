@@ -1,0 +1,167 @@
+name: Build and Draft Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Enter Version:'
+        required: true
+        type: string
+      pre-release:
+        description: 'Pre-release'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  Build-For-Windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Create Requirements.txt
+        run: |
+          @"
+          customtkinter
+          keyboard
+          mouse
+          pyautogui
+          "@ | Set-Content requirements.txt
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Get customtkinter Path
+        id: get-customtkinter-path
+        run: |
+          $ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
+          echo "CTK_PATH=$ctk_path" >> $env:GITHUB_ENV
+
+      - name: Get Windows Version
+        id: windows-version
+        run: |
+          $windowsVersion = (Get-WmiObject Win32_OperatingSystem).Version
+          $windowsName = if ([Environment]::OSVersion.Version.Major -eq 10) {
+              if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
+          } else { "10" }
+          echo "OS_VERSION=$windowsVersion" >> $env:GITHUB_ENV
+          echo "OS_NAME=$windowsName" >> $env:GITHUB_ENV
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed `
+          --add-data "${{ env.CTK_PATH }}\customtkinter;customtkinter" `
+          --add-data "assets\icon.ico;assets" `
+          --add-data "assets\easy_auto_clicker_theme.json;assets" `
+          app.py
+
+      - name: Copy Assets
+        run: xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+
+      - name: Create Installer Directory
+        run: mkdir installer
+
+      - name: Convert LICENSE.md to LICENSE.txt
+        run: |
+          Get-Content "LICENSE.md" | Set-Content "LICENSE.txt"
+
+      - name: Create Inno Setup script
+        run: |
+          $template = Get-Content -Path ".github/workflows/installer.iss" -Raw
+          $script = $template -replace "@VERSION@", "${{ github.event.inputs.version }}"
+          $script | Set-Content -Path "setup.iss"
+
+      - name: Create Windows Installer
+        run: |
+          choco install innosetup -y
+          iscc "setup.iss"
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-installer
+          path: installer/EasyAutoClicker-Setup-x64.exe
+
+      - name: Upload OS info
+        uses: actions/upload-artifact@v3
+        with:
+          name: os-info
+          path: |
+            echo "OS_VERSION=${{ env.OS_VERSION }}" > os-info.txt
+            echo "OS_NAME=${{ env.OS_NAME }}" >> os-info.txt
+
+  Create-Draft-Release:
+    needs: [Build For Windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download installer
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-installer
+          path: installer
+
+      - name: Download OS info
+        uses: actions/download-artifact@v3
+        with:
+          name: os-info
+          path: .
+
+      - name: Load OS info
+        id: os-info
+        run: |
+          source os-info.txt
+          echo "os_version=${OS_VERSION}" >> $GITHUB_OUTPUT
+          echo "os_name=${OS_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Create Source Archives
+        run: |
+          mkdir -p temp_source
+          rsync -av --exclude='.git' --exclude='.github' --exclude='.gitignore' \
+                    --exclude='installer' --exclude='dist' --exclude='build' \
+                    --exclude='__pycache__' --exclude='*.spec' \
+                    --exclude='temp_source' \
+                    . temp_source/
+          cd temp_source
+          zip -r ../Source.zip .
+          tar -czf ../Source.tar.gz .
+          cd ..
+          rm -rf temp_source
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.event.inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          body: |
+            ${{ github.event.inputs.description }}
+            
+            ### Changes
+
+            - Fixed lorem
+            - Changed ipsum
+            
+            ##
+            
+            ### Build Environments
+            #### EasyAutoClicker-Setup-x64.exe: Windows ${{ steps.os-info.outputs.os_name }} (${{ steps.os-info.outputs.os_version }})
+          pre-release: ${{ github.event.inputs.pre-release }}
+          draft: true
+          files: |
+            installer/EasyAutoClicker-Setup-x64.exe
+            Source.zip
+            Source.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
