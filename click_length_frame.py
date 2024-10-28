@@ -18,7 +18,7 @@ class ClickLengthFrame(customtkinter.CTkFrame):
         self.length_label.grid(row=0, column=0, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         self.length_entry = IntegerEntry(self, variable_name="CLICK_LENGTH", default_value=DEFAULT_LENGTH,
-                                           max_length=MAX_INTERVAL_DIGITS, min_value=MIN_INTERVAL)
+                                         max_length=MAX_CLICK_INTERVAL_DIGITS, min_value=MIN_CLICK_INTERVAL)
         self.length_entry.grid(row=0, column=1, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         self.length_timescale_dropdown = (

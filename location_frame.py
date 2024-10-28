@@ -2,6 +2,7 @@ import threading
 import time
 
 import customtkinter
+import keyboard
 import mouse
 
 from constants import *
@@ -10,6 +11,8 @@ from constants import *
 class LocationFrame(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
+        self.cancel_pick_handler = None
+        self.pick_handler = None
         self.cursor_location = (0, 0)
         self.master.setvar("CLICK_LOCATION", "none")
         self.location_locked = False
@@ -41,11 +44,24 @@ class LocationFrame(customtkinter.CTkFrame):
         self.pick_location_button.configure(text=LOCATION_CONFIRM_LABEL, fg_color=DARK_GRAY, state="disabled")
         self.location_textbox.configure(state="normal", text_color=GRAY)
         time.sleep(0.1)
-        mouse.on_click(self.pick_location)
+        self.pick_handler = mouse.on_click(self.pick_location)
+        self.cancel_pick_handler = keyboard.on_press_key("escape", self.cancel_pick_location)
+
+    def unhook_pick_keys(self):
+        if self.cancel_pick_handler:
+            keyboard.unhook(self.cancel_pick_handler)
+        if self.pick_handler:
+            mouse.unhook(self.pick_handler)
+
+    def cancel_pick_location(self, key_up_event):
+        self.unhook_pick_keys()
+        threading.Thread(target=self.location_update_process, daemon=True).start()
+        self.location_textbox.configure(state="normal", text_color=GRAY)
+        self.pick_location_button.configure(text=PICK_LOCATION_LABEL, fg_color=BUTTON_BLUE_FG, state="normal")
 
     def pick_location(self):
+        self.unhook_pick_keys()
         location = tuple(mouse.get_position())
-        mouse.unhook_all()
         self.master.setvar("CLICK_LOCATION", str(location))
         self.cursor_location = location
         self.update_location(location)
@@ -67,7 +83,7 @@ class LocationFrame(customtkinter.CTkFrame):
     def location_update_process(self) -> None:
         while True:
             if not self.location_locked:
-                time.sleep(LOCATION_UPDATE_INTERVAL)
+                time.sleep(LOCATION_UPDATE_HARD_INTERVAL)
                 try:
                     cursor_location = tuple(mouse.get_position())
                     if self.cursor_location != cursor_location:

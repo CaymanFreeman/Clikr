@@ -46,8 +46,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
             self.start_stop_frame.prevent_click_processes = False
         else:
             self.start_stop_frame.prevent_click_processes = True
-            self.change_hotkey_button.configure(text=CONFIRM_HOTKEY_LABEL, fg_color=HOTKEY_BUTTON_GREEN_FG, hover_color=HOTKEY_BUTTON_GREEN_HOVER)
-            self.hotkey_textbox.configure(text_color=HOTKEY_BUTTON_GREEN_FG)
+            self.change_hotkey_button.configure(text=CONFIRM_HOTKEY_LABEL, fg_color=GREEN_FG, hover_color=GREEN_HOVER)
+            self.hotkey_textbox.configure(text_color=GREEN_FG)
             self.change_hotkey_text(HOTKEY_ENTRY_RECORDING)
             self.pressed_keys.clear()
             keyboard.hook(self.on_key_event)

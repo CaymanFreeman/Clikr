@@ -18,7 +18,7 @@ class ClickIntervalFrame(customtkinter.CTkFrame):
         self.interval_label.grid(row=0, column=0, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         self.interval_entry = IntegerEntry(self, variable_name="CLICK_INTERVAL", default_value=DEFAULT_INTERVAL,
-                                           max_length=MAX_INTERVAL_DIGITS, min_value=MIN_INTERVAL)
+                                           max_length=MAX_CLICK_INTERVAL_DIGITS, min_value=MIN_CLICK_INTERVAL)
         self.interval_entry.grid(row=0, column=1, padx=ITEM_PADDING, pady=ITEM_PADDING, sticky="ew")
 
         self.interval_timescale_dropdown = (
