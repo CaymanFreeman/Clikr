@@ -1,16 +1,16 @@
 import customtkinter
 import keyboard
 
-from config_handler import HOTKEY_LABEL, CHANGE_HOTKEY_LABEL, \
-    CONFIRM_HOTKEY_LABEL, HOTKEY_RECORDING_LABEL, BUTTON_HOVER_COLOR, BUTTON_FG_COLOR, \
-    BUTTON_GREEN_FG_COLOR, BUTTON_GREEN_HOVER_COLOR, LABEL_TEXT_COLOR
+from appearance_variables import AppearanceVariables
+from label_constants import HOTKEY_LABEL, CHANGE_HOTKEY_LABEL, CONFIRM_HOTKEY_LABEL, HOTKEY_RECORDING_LABEL
 from start_stop_frame import StartStopFrame
 
 
 class HotkeyFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, start_stop_frame: StartStopFrame):
+    def __init__(self, master: customtkinter.CTk, start_stop_frame: StartStopFrame, appearance_variables: AppearanceVariables):
         super().__init__(master)
         self.start_stop_frame = start_stop_frame
+        self.appearance_variables = appearance_variables
 
         item_padding = master.getvar(name="ITEM_PADDING")
 
@@ -45,16 +45,16 @@ class HotkeyFrame(customtkinter.CTkFrame):
                 self.hotkey_value = "+".join(self.pressed_keys)
                 keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
                 self.master.setvar(name="HOTKEY", value=self.hotkey_value)
-            self.change_hotkey_button.configure(text=CHANGE_HOTKEY_LABEL, fg_color=BUTTON_FG_COLOR,
-                                                hover_color=BUTTON_HOVER_COLOR)
-            self.hotkey_textbox.configure(text_color=LABEL_TEXT_COLOR)
+            self.change_hotkey_button.configure(text=CHANGE_HOTKEY_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR,
+                                                hover_color=self.appearance_variables.BUTTON_HOVER_COLOR)
+            self.hotkey_textbox.configure(text_color=self.appearance_variables.LABEL_TEXT_COLOR)
             self.change_hotkey_text(self.hotkey_value.upper())
             self.pressed_keys.clear()
             self.start_stop_frame.prevent_click_processes = False
         else:
             self.start_stop_frame.prevent_click_processes = True
-            self.change_hotkey_button.configure(text=CONFIRM_HOTKEY_LABEL, fg_color=BUTTON_GREEN_FG_COLOR, hover_color=BUTTON_GREEN_HOVER_COLOR)
-            self.hotkey_textbox.configure(text_color=BUTTON_GREEN_FG_COLOR)
+            self.change_hotkey_button.configure(text=CONFIRM_HOTKEY_LABEL, fg_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR, hover_color=self.appearance_variables.BUTTON_CONFIRM_HOVER_COLOR)
+            self.hotkey_textbox.configure(text_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR)
             self.change_hotkey_text(HOTKEY_RECORDING_LABEL)
             self.pressed_keys.clear()
             keyboard.hook(callback=self.on_key_event)

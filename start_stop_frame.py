@@ -2,14 +2,16 @@ import multiprocessing
 
 import customtkinter
 
+from appearance_variables import AppearanceVariables
+from label_constants import START_BUTTON_LABEL, STOP_BUTTON_LABEL
 from click_process import ClickProcess
-from config_handler import START_BUTTON_LABEL, STOP_BUTTON_LABEL, LABEL_TEXT_DISABLED_COLOR, BUTTON_DISABLED_COLOR, \
-    BUTTON_FG_COLOR
 
 
 class StartStopFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk):
+    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables):
         super().__init__(master)
+        self.appearance_variables = appearance_variables
+
         self.click_process = None
         self.prevent_click_processes = False
         self.terminated_event = None
@@ -25,18 +27,18 @@ class StartStopFrame(customtkinter.CTkFrame):
         self.start_button.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
 
         self.stop_button = customtkinter.CTkButton(self, text=STOP_BUTTON_LABEL, command=self.stop_button_callback, height=50)
-        self.stop_button.configure(state="disabled", fg_color=BUTTON_DISABLED_COLOR)
+        self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
         self.stop_button.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
         self.after(ms=10, func=self.monitor_click_process)
 
     def toggle_start_stop_buttons(self) -> None:
         if self.start_button.cget("state") == "normal":
-            self.start_button.configure(state="disabled", fg_color=BUTTON_DISABLED_COLOR)
-            self.stop_button.configure(state="normal", fg_color=BUTTON_FG_COLOR)
+            self.start_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
+            self.stop_button.configure(state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR)
         else:
-            self.start_button.configure(state="normal", fg_color=BUTTON_FG_COLOR)
-            self.stop_button.configure(state="disabled", fg_color=BUTTON_DISABLED_COLOR)
+            self.start_button.configure(state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR)
+            self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
 
     def stop_button_callback(self) -> None:
         self.terminated_event.set()

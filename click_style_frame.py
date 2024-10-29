@@ -2,8 +2,8 @@ import tkinter
 
 import customtkinter
 
-from config_handler import MOUSE_BUTTON_LABEL, MOUSE_1_CHOICE, MOUSE_2_CHOICE, MOUSE_3_CHOICE, CLICKS_PER_EVENT_LABEL, \
-    CLICK_EVENTS_LABEL
+from label_constants import MOUSE_BUTTON_LABEL, MOUSE_2_CHOICE, MOUSE_1_CHOICE, MOUSE_3_CHOICE, \
+    CLICKS_PER_EVENT_LABEL, CLICK_EVENTS_LABEL
 from integer_entry import IntegerEntry
 
 

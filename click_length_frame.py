@@ -2,7 +2,7 @@ import tkinter
 
 import customtkinter
 
-from config_handler import CLICK_LENGTH_LABEL, MILLISECONDS_CHOICE, MINUTES_CHOICE, HOURS_CHOICE, SECONDS_CHOICE
+from label_constants import CLICK_LENGTH_LABEL, MILLISECONDS_CHOICE, SECONDS_CHOICE, MINUTES_CHOICE, HOURS_CHOICE
 from integer_entry import IntegerEntry
 
 

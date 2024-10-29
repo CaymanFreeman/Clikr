@@ -1,42 +1,12 @@
+import os
 from configparser import ConfigParser
 from os.path import isfile
 
 import customtkinter
 
 CONFIG_PATH = "config.ini"
-
-LABEL_TEXT_COLOR = ("#2A2A2A", "#e8edfc")
-LABEL_TEXT_DISABLED_COLOR = ("#545454", "#BABFC7")
-BUTTON_TEXT_COLOR = "#ffffff"
-BUTTON_DISABLED_COLOR = ("#979DA2", "#565B5E")
-BUTTON_FG_COLOR = "#428dff"
-BUTTON_GREEN_FG_COLOR = "#469546"
-BUTTON_HOVER_COLOR = "#3670cc"
-BUTTON_GREEN_HOVER_COLOR = "#326A32"
-
-MILLISECONDS_CHOICE = "Milliseconds"
-SECONDS_CHOICE = "Seconds"
-MINUTES_CHOICE = "Minutes"
-HOURS_CHOICE = "Hours"
-MOUSE_1_CHOICE = "Left (M1)"
-MOUSE_2_CHOICE = "Right (M2)"
-MOUSE_3_CHOICE = "Middle (M3)"
-
-CHANGE_APPEARANCE_LABEL = "Change Appearance"
-CHANGE_HOTKEY_LABEL = "Change Hotkey"
-CLICK_EVENTS_LABEL = "Click Events"
-CLICK_INTERVAL_LABEL = "Click Interval"
-CLICK_LENGTH_LABEL = "Click Length"
-CLICKS_PER_EVENT_LABEL = "Clicks Per Event"
-CONFIRM_HOTKEY_LABEL = "Click to Confirm"
-HOTKEY_RECORDING_LABEL = "Press Key(s)"
-HOTKEY_LABEL = "Hotkey"
-LOCATION_CONFIRM_LABEL = "Click Screen Location"
-LOCATION_LABEL = "Location"
-MOUSE_BUTTON_LABEL = "Mouse Button"
-PICK_LOCATION_LABEL = "Pick Location"
-START_BUTTON_LABEL = "Start"
-STOP_BUTTON_LABEL = "Stop"
+THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
+ICON_PATH = os.path.join("assets", "icon.ico")
 
 class ConfigHandler:
 

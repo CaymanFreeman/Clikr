@@ -16,7 +16,10 @@
     "corner_radius": 6,
     "border_width": 0,
     "fg_color": ["#428dff", "#428dff"],
+    "confirm_fg_color": "#469546",
     "hover_color": ["#3670cc", "#3670cc"],
+    "confirm_hover_color": "#326A32",
+    "disabled_color": ["#979DA2", "#565B5E"],
     "border_color": ["#c6d8fb", "#a4c3fd"],
     "text_color": ["#ffffff", "#ffffff"],
     "text_color_disabled": ["#ffffff", "#ffffff"]
@@ -24,7 +27,8 @@
   "CTkLabel": {
     "corner_radius": 0,
     "fg_color": "transparent",
-    "text_color": ["#2A2A2A", "#e8edfc"]
+    "text_color": ["#2A2A2A", "#e8edfc"],
+    "text_color_disabled": ["#545454", "#BABFC7"]
   },
   "CTkEntry": {
     "corner_radius": 6,
