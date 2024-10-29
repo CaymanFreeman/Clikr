@@ -1,6 +1,6 @@
 <p align="center"><img src="assets/icon.png" width="256" height="256" alt="Easy Auto Clicker Logo"></p> <p align="center">Icon via Flaticon.com</p>
 
-<h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. The latest release for each platform can be found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
+<h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. A Windows installer and source code is included with each release found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
 
 ## Settings
 
