@@ -6,6 +6,13 @@ on:
       version:
         required: true
         type: string
+    outputs:
+      os_version:
+        description: "Windows OS version"
+        value: ${{ jobs.build.outputs.os_version }}
+      os_name:
+        description: "Windows OS name"
+        value: ${{ jobs.build.outputs.os_name }}
 
 permissions:
   contents: read
@@ -16,7 +23,7 @@ jobs:
     outputs:
       os_version: ${{ steps.windows-version.outputs.os_version }}
       os_name: ${{ steps.windows-version.outputs.os_name }}
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -48,13 +55,14 @@ jobs:
 
       - name: Get Windows Version
         id: windows-version
+        shell: pwsh
         run: |
           $windowsVersion = (Get-WmiObject Win32_OperatingSystem).Version
           $windowsName = if ([Environment]::OSVersion.Version.Major -eq 10) {
               if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
           } else { "10" }
-          echo "os_version=$windowsVersion" >> $env:GITHUB_OUTPUT
-          echo "os_name=$windowsName" >> $env:GITHUB_OUTPUT
+          "os_version=$windowsVersion" >> $env:GITHUB_OUTPUT
+          "os_name=$windowsName" >> $env:GITHUB_OUTPUT
 
       - name: Build With PyInstaller
         run: |
@@ -86,7 +94,8 @@ jobs:
           iscc "setup.iss"
 
       - name: Upload Installer Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-installer
           path: installer/EasyAutoClicker-Setup-x64.exe
+          retention-days: 5
