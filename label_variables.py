@@ -1,5 +1,7 @@
 import json
+import locale
 import os.path
+from typing import Union
 
 import customtkinter
 

@@ -1,3 +1,4 @@
+import locale
 import os
 from configparser import ConfigParser
 from os.path import isfile
@@ -8,6 +9,7 @@ CONFIG_PATH = "config.ini"
 THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
 LANGUAGES_PATH = os.path.join("assets", "languages")
 ICON_PATH = os.path.join("assets", "icon.ico")
+
 
 class ConfigHandler:
 
@@ -75,10 +77,17 @@ class ConfigHandler:
     def create_defaults() -> None:
         if isfile(CONFIG_PATH):
             return
+
         default_config = ConfigParser()
 
+        system_locale = locale.getdefaultlocale()[0]
+        if system_locale:
+            system_locale = system_locale.lower().replace('-', '_')
+        else:
+            system_locale = "en_us"
+
         default_config["LANGUAGE"] = {
-            "LANGUAGE_CODE": "en_us"
+            "LANGUAGE_CODE": system_locale
         }
 
         default_config["APPEARANCE"] = {
