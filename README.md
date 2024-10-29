@@ -43,7 +43,9 @@ The hotkey sequence determines which keys will toggle the click process. To chan
 
 Required Packages:
 
-`pip install pyinstaller customtkinter pyautogui keyboard mouse`
+```
+pip install pyinstaller customtkinter pyautogui keyboard mouse
+```
 
 Build (Windows):
 
