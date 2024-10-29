@@ -35,7 +35,7 @@ cp -ruv "assets" "dist/EasyAutoClicker/assets/"
 
 ## Install Location
 
-The default install location using the Windows installer is `C:\Program Files\EasyAutoClicker\`, unless a custom install location was specified.
+The install location using the Windows installer is `C:\Program Files\EasyAutoClicker\`, unless a custom install location was specified.
 
 ## Settings
 
