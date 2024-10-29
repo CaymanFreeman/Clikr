@@ -2,15 +2,17 @@ import customtkinter
 import keyboard
 
 from appearance_variables import AppearanceVariables
-from label_constants import HOTKEY_LABEL, CHANGE_HOTKEY_LABEL, CONFIRM_HOTKEY_LABEL, HOTKEY_RECORDING_LABEL
+from label_variables import LabelVariables
 from start_stop_frame import StartStopFrame
 
 
 class HotkeyFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, start_stop_frame: StartStopFrame, appearance_variables: AppearanceVariables):
+    def __init__(self, master: customtkinter.CTk, start_stop_frame: StartStopFrame,
+                 appearance_variables: AppearanceVariables, label_variables: LabelVariables):
         super().__init__(master)
         self.start_stop_frame = start_stop_frame
         self.appearance_variables = appearance_variables
+        self.label_variables = label_variables
 
         item_padding = master.getvar(name="ITEM_PADDING")
 
@@ -21,7 +23,7 @@ class HotkeyFrame(customtkinter.CTkFrame):
 
         self.hotkey_value = master.getvar(name="HOTKEY")
 
-        self.hotkey_label = customtkinter.CTkLabel(self, text=HOTKEY_LABEL)
+        self.hotkey_label = customtkinter.CTkLabel(self, text=label_variables.HOTKEY_LABEL)
         self.hotkey_label.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
 
         self.hotkey_textbox = customtkinter.CTkTextbox(self, activate_scrollbars=False)
@@ -30,7 +32,7 @@ class HotkeyFrame(customtkinter.CTkFrame):
         keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
         self.hotkey_textbox.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
-        self.change_hotkey_button = customtkinter.CTkButton(self, text=CHANGE_HOTKEY_LABEL,
+        self.change_hotkey_button = customtkinter.CTkButton(self, text=label_variables.CHANGE_HOTKEY_LABEL,
                                                             command=self.change_hotkey_callback)
         self.change_hotkey_button.grid(row=0, column=2, padx=item_padding, pady=item_padding, sticky="ew")
         self.recording_hotkey = False
@@ -45,7 +47,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
                 self.hotkey_value = "+".join(self.pressed_keys)
                 keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
                 self.master.setvar(name="HOTKEY", value=self.hotkey_value)
-            self.change_hotkey_button.configure(text=CHANGE_HOTKEY_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR,
+            self.change_hotkey_button.configure(text=self.label_variables.CHANGE_HOTKEY_LABEL,
+                                                fg_color=self.appearance_variables.BUTTON_FG_COLOR,
                                                 hover_color=self.appearance_variables.BUTTON_HOVER_COLOR)
             self.hotkey_textbox.configure(text_color=self.appearance_variables.LABEL_TEXT_COLOR)
             self.change_hotkey_text(self.hotkey_value.upper())
@@ -53,9 +56,11 @@ class HotkeyFrame(customtkinter.CTkFrame):
             self.start_stop_frame.prevent_click_processes = False
         else:
             self.start_stop_frame.prevent_click_processes = True
-            self.change_hotkey_button.configure(text=CONFIRM_HOTKEY_LABEL, fg_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR, hover_color=self.appearance_variables.BUTTON_CONFIRM_HOVER_COLOR)
+            self.change_hotkey_button.configure(text=self.label_variables.CONFIRM_HOTKEY_LABEL,
+                                                fg_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR,
+                                                hover_color=self.appearance_variables.BUTTON_CONFIRM_HOVER_COLOR)
             self.hotkey_textbox.configure(text_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR)
-            self.change_hotkey_text(HOTKEY_RECORDING_LABEL)
+            self.change_hotkey_text(self.label_variables.HOTKEY_RECORDING_LABEL)
             self.pressed_keys.clear()
             keyboard.hook(callback=self.on_key_event)
         self.recording_hotkey = not self.recording_hotkey

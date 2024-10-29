@@ -6,6 +6,7 @@ import customtkinter
 
 CONFIG_PATH = "config.ini"
 THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
+LANGUAGES_PATH = os.path.join("assets", "languages")
 ICON_PATH = os.path.join("assets", "icon.ico")
 
 class ConfigHandler:
@@ -14,11 +15,14 @@ class ConfigHandler:
     def save_config_and_exit(app: customtkinter.CTk) -> None:
         config = ConfigParser()
 
+        config["LANGUAGE"] = {}
         config["APPEARANCE"] = {}
         config["HOTKEY"] = {}
         config["CLICK_PROCESS"] = {}
         config["LOCATION"] = {}
         config["INPUT_VALIDATION"] = {}
+
+        config["LANGUAGE"]["LANGUAGE_CODE"] = app.getvar(name="LANGUAGE_CODE")
 
         config["APPEARANCE"]["APPEARANCE_MODE"] = customtkinter.get_appearance_mode()
         config["APPEARANCE"]["FRAME_PADDING"] = app.getvar(name="FRAME_PADDING")
@@ -73,6 +77,10 @@ class ConfigHandler:
             return
         default_config = ConfigParser()
 
+        default_config["LANGUAGE"] = {
+            "LANGUAGE_CODE": "en_us"
+        }
+
         default_config["APPEARANCE"] = {
             "APPEARANCE_MODE": "Dark",
             "FRAME_PADDING": "3",
@@ -89,10 +97,10 @@ class ConfigHandler:
             "CLICK_EVENTS": "0",
             "CLICKS_PER_EVENT": "1",
             "CLICK_INTERVAL": "100",
-            "CLICK_INTERVAL_SCALE": MILLISECONDS_CHOICE,
+            "CLICK_INTERVAL_SCALE": "1",
             "CLICK_LENGTH": "0",
-            "CLICK_LENGTH_SCALE": MILLISECONDS_CHOICE,
-            "MOUSE_BUTTON": MOUSE_1_CHOICE,
+            "CLICK_LENGTH_SCALE": "1",
+            "MOUSE_BUTTON": "1",
             "CLICK_LOCATION": "none"
         }
 

@@ -6,13 +6,14 @@ import keyboard
 import mouse
 
 from appearance_variables import AppearanceVariables
-from label_constants import LOCATION_LABEL, PICK_LOCATION_LABEL, LOCATION_CONFIRM_LABEL
+from label_variables import LabelVariables
 
 
 class LocationFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables):
+    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables, label_variables: LabelVariables):
         super().__init__(master)
         self.appearance_variables = appearance_variables
+        self.label_variables = label_variables
 
         self.cancel_pick_handler = None
         self.pick_handler = None
@@ -26,7 +27,7 @@ class LocationFrame(customtkinter.CTkFrame):
 
         self.grid_rowconfigure(index=0, weight=1)
 
-        self.location_label = customtkinter.CTkLabel(self, text=LOCATION_LABEL)
+        self.location_label = customtkinter.CTkLabel(self, text=label_variables.LOCATION_LABEL)
         self.location_label.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
 
         self.location_textbox = customtkinter.CTkTextbox(self, activate_scrollbars=False)
@@ -34,7 +35,7 @@ class LocationFrame(customtkinter.CTkFrame):
         self.location_textbox.configure(state="disabled", width=50, height=20)
         self.location_textbox.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
-        self.pick_location_button = customtkinter.CTkButton(self, text=PICK_LOCATION_LABEL,
+        self.pick_location_button = customtkinter.CTkButton(self, text=label_variables.PICK_LOCATION_LABEL,
                                                             command=self.pick_location_callback)
         self.pick_location_button.grid(row=0, column=2, padx=item_padding, pady=item_padding, sticky="ew")
 
@@ -46,7 +47,7 @@ class LocationFrame(customtkinter.CTkFrame):
     def pick_location_callback(self) -> None:
         self.location_locked = False
         threading.Thread(target=self.location_update_process, daemon=True).start()
-        self.pick_location_button.configure(text=LOCATION_CONFIRM_LABEL, fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+        self.pick_location_button.configure(text=self.label_variables.LOCATION_CONFIRM_LABEL, fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
                                             state="disabled")
         self.location_textbox.configure(text_color=self.appearance_variables.LABEL_TEXT_COLOR)
         time.sleep(0.1)
@@ -65,7 +66,7 @@ class LocationFrame(customtkinter.CTkFrame):
         self.master.setvar(name="CLICK_LOCATION", value="none")
         threading.Thread(target=self.location_update_process, daemon=True).start()
         self.location_textbox.configure(text_color=self.appearance_variables.LABEL_TEXT_COLOR)
-        self.pick_location_button.configure(text=PICK_LOCATION_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR, state="normal")
+        self.pick_location_button.configure(text=self.label_variables.PICK_LOCATION_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR, state="normal")
 
     def pick_location(self):
         self.unhook_pick_keys()
@@ -75,7 +76,7 @@ class LocationFrame(customtkinter.CTkFrame):
         self.update_location(location)
         self.location_locked = True
         self.location_textbox.configure(text_color=self.appearance_variables.LABEL_TEXT_DISABLED_COLOR)
-        self.pick_location_button.configure(text=PICK_LOCATION_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR, state="normal")
+        self.pick_location_button.configure(text=self.label_variables.PICK_LOCATION_LABEL, fg_color=self.appearance_variables.BUTTON_FG_COLOR, state="normal")
 
     def update_location(self, location) -> None:
         self.click_location = location

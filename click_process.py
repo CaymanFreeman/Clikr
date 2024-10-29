@@ -4,10 +4,7 @@ import time
 
 import mouse
 
-import click_style_frame
 import pyautogui
-
-import config_handler
 
 
 class ClickProcess(multiprocessing.Process):
@@ -44,31 +41,31 @@ class ClickProcess(multiprocessing.Process):
             click_events = int(click_events)
 
         match interval_timescale:
-            case config_handler.MILLISECONDS_CHOICE:
+            case "1":
                 self.click_interval = float(datetime.timedelta(milliseconds=click_interval).total_seconds())
-            case config_handler.SECONDS_CHOICE:
+            case "2":
                 self.click_interval = float(click_interval)
-            case config_handler.MINUTES_CHOICE:
+            case "3":
                 self.click_interval = float(datetime.timedelta(minutes=click_interval).total_seconds())
-            case config_handler.HOURS_CHOICE:
+            case "4":
                 self.click_interval = float(datetime.timedelta(hours=click_interval).total_seconds())
 
         match length_timescale:
-            case config_handler.MILLISECONDS_CHOICE:
+            case "1":
                 self.click_length = float(datetime.timedelta(milliseconds=click_length).total_seconds())
-            case config_handler.SECONDS_CHOICE:
+            case "2":
                 self.click_length = float(click_length)
-            case config_handler.MINUTES_CHOICE:
+            case "3":
                 self.click_length = float(datetime.timedelta(minutes=click_length).total_seconds())
-            case config_handler.HOURS_CHOICE:
+            case "4":
                 self.click_length = float(datetime.timedelta(hours=click_length).total_seconds())
 
         match mouse_button:
-            case config_handler.MOUSE_1_CHOICE:
+            case "1":
                 self.mouse_button = mouse.LEFT
-            case config_handler.MOUSE_2_CHOICE:
+            case "2":
                 self.mouse_button = mouse.RIGHT
-            case config_handler.MOUSE_3_CHOICE:
+            case "3":
                 self.mouse_button = mouse.MIDDLE
 
         self.interval_timescale = interval_timescale

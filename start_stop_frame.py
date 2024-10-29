@@ -3,12 +3,12 @@ import multiprocessing
 import customtkinter
 
 from appearance_variables import AppearanceVariables
-from label_constants import START_BUTTON_LABEL, STOP_BUTTON_LABEL
 from click_process import ClickProcess
+from label_variables import LabelVariables
 
 
 class StartStopFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables):
+    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables, label_variables: LabelVariables):
         super().__init__(master)
         self.appearance_variables = appearance_variables
 
@@ -23,10 +23,10 @@ class StartStopFrame(customtkinter.CTkFrame):
 
         self.grid_rowconfigure(index=0, weight=1)
 
-        self.start_button = customtkinter.CTkButton(self, text=START_BUTTON_LABEL, command=self.start_button_callback, height=50)
+        self.start_button = customtkinter.CTkButton(self, text=label_variables.START_BUTTON_LABEL, command=self.start_button_callback, height=50)
         self.start_button.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
 
-        self.stop_button = customtkinter.CTkButton(self, text=STOP_BUTTON_LABEL, command=self.stop_button_callback, height=50)
+        self.stop_button = customtkinter.CTkButton(self, text=label_variables.STOP_BUTTON_LABEL, command=self.stop_button_callback, height=50)
         self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
         self.stop_button.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
