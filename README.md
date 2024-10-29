@@ -11,6 +11,8 @@ git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
 cd EasyAutoClicker
 ```
 
+Optionally, source code can be downloaded from each [release](https://github.com/CaymanFreeman/EasyAutoClicker/releases).
+
 Required Packages:
 
 ```
