@@ -4,9 +4,10 @@ import time
 
 import mouse
 
-import constants
 import click_style_frame
 import pyautogui
+
+import config_handler
 
 
 class ClickProcess(multiprocessing.Process):
@@ -43,31 +44,31 @@ class ClickProcess(multiprocessing.Process):
             click_events = int(click_events)
 
         match interval_timescale:
-            case constants.MILLISECONDS_CHOICE:
+            case config_handler.MILLISECONDS_CHOICE:
                 self.click_interval = float(datetime.timedelta(milliseconds=click_interval).total_seconds())
-            case constants.SECONDS_CHOICE:
+            case config_handler.SECONDS_CHOICE:
                 self.click_interval = float(click_interval)
-            case constants.MINUTES_CHOICE:
+            case config_handler.MINUTES_CHOICE:
                 self.click_interval = float(datetime.timedelta(minutes=click_interval).total_seconds())
-            case constants.HOURS_CHOICE:
+            case config_handler.HOURS_CHOICE:
                 self.click_interval = float(datetime.timedelta(hours=click_interval).total_seconds())
 
         match length_timescale:
-            case constants.MILLISECONDS_CHOICE:
+            case config_handler.MILLISECONDS_CHOICE:
                 self.click_length = float(datetime.timedelta(milliseconds=click_length).total_seconds())
-            case constants.SECONDS_CHOICE:
+            case config_handler.SECONDS_CHOICE:
                 self.click_length = float(click_length)
-            case constants.MINUTES_CHOICE:
+            case config_handler.MINUTES_CHOICE:
                 self.click_length = float(datetime.timedelta(minutes=click_length).total_seconds())
-            case constants.HOURS_CHOICE:
+            case config_handler.HOURS_CHOICE:
                 self.click_length = float(datetime.timedelta(hours=click_length).total_seconds())
 
         match mouse_button:
-            case click_style_frame.MOUSE_1_CHOICE:
+            case config_handler.MOUSE_1_CHOICE:
                 self.mouse_button = mouse.LEFT
-            case click_style_frame.MOUSE_2_CHOICE:
+            case config_handler.MOUSE_2_CHOICE:
                 self.mouse_button = mouse.RIGHT
-            case click_style_frame.MOUSE_3_CHOICE:
+            case config_handler.MOUSE_3_CHOICE:
                 self.mouse_button = mouse.MIDDLE
 
         self.interval_timescale = interval_timescale

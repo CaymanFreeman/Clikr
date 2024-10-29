@@ -127,3 +127,5 @@ dmypy.json
 .idea/
 
 LICENSE.txt
+
+config.ini

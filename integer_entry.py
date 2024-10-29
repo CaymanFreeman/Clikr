@@ -2,7 +2,7 @@ import customtkinter
 
 
 class IntegerEntry(customtkinter.CTkEntry):
-    def __init__(self, master: customtkinter.CTkFrame, variable_name: str, default_value: str, max_length: int,
+    def __init__(self, master: customtkinter.CTkFrame, variable_name: str, max_length: int,
                  max_value: int = 9999999, min_value: int = 1):
         super().__init__(master)
         self.variable_name = variable_name
@@ -13,7 +13,7 @@ class IntegerEntry(customtkinter.CTkEntry):
         validation_command = (self.register(self.validate_entry), "%d", "%S", "%V", "%P")
         self.configure(validate="all", validatecommand=validation_command)
 
-        self.insert(index=0, string=default_value)
+        self.insert(index=0, string=master.master.getvar(variable_name))
 
     def validate_entry(self, action_code: str, attempted_text: str, callback_reason: str,
                        text_after_change: str) -> bool:
@@ -21,7 +21,7 @@ class IntegerEntry(customtkinter.CTkEntry):
             if text_after_change == "":
                 self.insert(index=0, string=self.min_value)
         if self.max_length:
-            if len(text_after_change) > self.max_length:
+            if len(text_after_change) > int(self.max_length):
                 return False
         if action_code == "1":
             try:
