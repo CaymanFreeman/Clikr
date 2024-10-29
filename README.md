@@ -41,6 +41,13 @@ The hotkey sequence determines which keys will toggle the click process. To chan
 
 ## Build Information
 
+Clone:
+
+```
+git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
+cd EasyAutoClicker
+```
+
 Required Packages:
 
 ```
