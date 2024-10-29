@@ -8,10 +8,10 @@ on:
         type: string
     outputs:
       os_version:
-        description: "Windows OS version"
+        description: "Windows OS Version"
         value: ${{ jobs.build.outputs.os_version }}
       os_name:
-        description: "Windows OS name"
+        description: "Windows OS Name"
         value: ${{ jobs.build.outputs.os_name }}
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Create Requirements.txt
+      - name: Create Requirements File
         run: |
           @"
           customtkinter
@@ -47,7 +47,7 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
 
-      - name: Get customtkinter Path
+      - name: Get CTk Path
         id: get-customtkinter-path
         run: |
           $ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
@@ -68,12 +68,15 @@ jobs:
         run: |
           pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed `
           --add-data "${{ env.CTK_PATH }}\customtkinter;customtkinter" `
-          --add-data "assets\icon.ico;assets" `
-          --add-data "assets\easy_auto_clicker_theme.json;assets" `
           app.py
 
       - name: Copy Assets
         run: xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+
+      - name: Create Windows Archive
+        run: |
+          cd dist\EasyAutoClicker
+          Compress-Archive -Path * -DestinationPath "..\..\EasyAutoClicker-${{ inputs.version }}-Win-x64.zip"
 
       - name: Create Installer Directory
         run: mkdir installer
@@ -82,7 +85,7 @@ jobs:
         run: |
           Get-Content "LICENSE.md" | Set-Content "LICENSE.txt"
 
-      - name: Create Inno Setup script
+      - name: Create Inno Setup Script
         run: |
           $template = Get-Content -Path ".github/workflows/installer.iss" -Raw
           $script = $template -replace "@VERSION@", "${{ inputs.version }}"
@@ -92,6 +95,13 @@ jobs:
         run: |
           choco install innosetup -y
           iscc "setup.iss"
+
+      - name: Upload Windows Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-archive
+          path: EasyAutoClicker-${{ inputs.version }}-Win-x64.zip
+          retention-days: 5
 
       - name: Upload Installer Artifact
         uses: actions/upload-artifact@v4

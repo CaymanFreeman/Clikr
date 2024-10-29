@@ -22,18 +22,35 @@ jobs:
     with:
       version: ${{ inputs.version }}
 
+  build-linux:
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      version: ${{ inputs.version }}
+
   create-release:
-    needs: build-windows
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Windows installer
+      - name: Download Windows Installer
         uses: actions/download-artifact@v4
         with:
           name: windows-installer
           path: installer
+
+      - name: Download Windows Build Archive
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-archive
+          path: archives
+
+      - name: Download Linux Build Archive
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-archive
+          path: archives
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -45,6 +62,8 @@ jobs:
             
             ### Build Environments
             **EasyAutoClicker-Setup-x64.exe:** Windows ${{ needs.build-windows.outputs.os_name }} (${{ needs.build-windows.outputs.os_version }})
+            **EasyAutoClicker-${{ inputs.version }}-Win-x64.zip:** Windows ${{ needs.build-windows.outputs.os_name }} (${{ needs.build-windows.outputs.os_version }})
+            **EasyAutoClicker-${{ inputs.version }}-Linux-x64.tar.gz:** ${{ needs.build-linux.outputs.ubuntu_version }}
             
             ### Changes
 
@@ -54,5 +73,7 @@ jobs:
           draft: true
           files: |
             installer/EasyAutoClicker-Setup-x64.exe
+            archives/EasyAutoClicker-${{ inputs.version }}-Win-x64.zip
+            archives/EasyAutoClicker-${{ inputs.version }}-Linux-x64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

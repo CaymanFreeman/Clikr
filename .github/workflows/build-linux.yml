@@ -1,0 +1,78 @@
+name: Build for Linux
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+    outputs:
+      ubuntu_version:
+        description: "Ubuntu Version"
+        value: ${{ jobs.build.outputs.ubuntu_version }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      ubuntu_version: ${{ steps.ubuntu-version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Ubuntu Version
+        id: ubuntu-version
+        run: |
+          version=$(lsb_release -ds)
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Create Requirements.txt
+        run: |
+          cat << EOF > requirements.txt
+          customtkinter
+          keyboard
+          mouse
+          pyautogui
+          EOF
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Get customtkinter Path
+        id: get-customtkinter-path
+        run: |
+          CTK_PATH=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
+          echo "CTK_PATH=$CTK_PATH" >> $GITHUB_ENV
+
+      - name: Build With PyInstaller
+        run: |
+          pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" \
+          --onedir --windowed \
+          --add-data "${{ env.CTK_PATH }}/customtkinter:customtkinter" \
+          app.py
+
+      - name: Copy Assets
+        run: cp -ruv "assets" "dist/EasyAutoClicker/assets/"
+
+      - name: Create Linux Archive
+        run: |
+          cd dist/EasyAutoClicker
+          tar -czf "../../EasyAutoClicker-${{ inputs.version }}-Linux-x64.tar.gz" *
+
+      - name: Upload Linux Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-archive
+          path: EasyAutoClicker-${{ inputs.version }}-Linux-x64.tar.gz
+          retention-days: 5
