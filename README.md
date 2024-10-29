@@ -2,6 +2,41 @@
 
 <h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. A Windows installer and source code is included with each release found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
 
+## Build Information
+
+Clone:
+
+```
+git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
+cd EasyAutoClicker
+```
+
+Required Packages:
+
+```
+pip install pyinstaller customtkinter pyautogui keyboard mouse
+```
+
+Build (Windows):
+
+```
+$ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$ctk_path\customtkinter;customtkinter" app.py
+xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+```
+
+Build (Linux):
+
+```
+ctk_path=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$ctk_path/customtkinter;customtkinter" app.py
+cp -ruv "assets" "dist/EasyAutoClicker/assets/"
+```
+
+## Install Location
+
+The default install location using the Windows installer is `C:\Program Files\EasyAutoClicker\`, unless a custom install location was specified.
+
 ## Settings
 
 ### Click Length
@@ -39,33 +74,10 @@ The location determines where each click event will occur. A location can be pic
 ##### Default: CTRL+F8
 The hotkey sequence determines which keys will toggle the click process. To change the hotkey, press the "Change Hotkey" button, enter the desired hotkey (up to 3 keys), and press "Click to Confirm".
 
-## Build Information
+## Settings Config
 
-Clone:
+The `config.ini` file contains all the current settings from the last application close and is used to save settings between sessions. You can change the settings between sessions by manually editing this file. Making changes to this file could possibly break the application, do so with caution. If you want to reset the settings to default, deleting this file will force the creation of a new default file when the application starts.
 
-```
-git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
-cd EasyAutoClicker
-```
+## Appearance Theme
 
-Required Packages:
-
-```
-pip install pyinstaller customtkinter pyautogui keyboard mouse
-```
-
-Build (Windows):
-
-```
-$ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
-pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$ctk_path\customtkinter;customtkinter" app.py
-xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
-```
-
-Build (Linux):
-
-```
-ctk_path=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
-pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$ctk_path/customtkinter;customtkinter" app.py
-cp -ruv "assets" "dist/EasyAutoClicker/assets/"
-```
+Within the assets directory, `easy_auto_clicker_theme.json` can be modified to change the colors for both the dark and light modes of the GUI.
