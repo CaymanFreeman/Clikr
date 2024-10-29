@@ -3,6 +3,8 @@
 <h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. The latest release for each platform can be found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>. You can find a description and other important information for each setting below.</h3>
 <h1></h1>
 
+## Settings
+
 ### Click Length
 
 ##### Default: 0
@@ -37,3 +39,25 @@ The location determines where each click event will occur. A location can be pic
 
 ##### Default: CTRL+F8
 The hotkey sequence determines which keys will toggle the click process. To change the hotkey, press the "Change Hotkey" button, enter the desired hotkey (up to 3 keys), and press "Click to Confirm".
+
+## Build Information
+
+Required Packages:
+
+`pip install pyinstaller customtkinter pyautogui keyboard mouse`
+
+Build (Windows):
+
+```
+$ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$ctk_path\customtkinter;customtkinter" app.py
+xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+```
+
+Build (Linux):
+
+```
+ctk_path=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$ctk_path/customtkinter;customtkinter" app.py
+cp -ruv "assets" "dist/EasyAutoClicker/assets/"
+```
