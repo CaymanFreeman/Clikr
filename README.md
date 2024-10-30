@@ -20,16 +20,16 @@ pip install pyinstaller customtkinter pyautogui keyboard mouse
 Build (Windows):
 
 ```
-$ctk_path = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
-pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$ctk_path\customtkinter;customtkinter" app.py
+$CTK_PATH = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$CTK_PATH\customtkinter;customtkinter" app.py
 xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
 ```
 
 Build (Linux):
 
 ```
-ctk_path=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
-pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$ctk_path/customtkinter;customtkinter" app.py
+CTK_PATH=$(pip show customtkinter | grep 'Location:' | awk '{print $2}')
+pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$CTK_PATH/customtkinter;customtkinter" app.py
 cp -ruv "assets" "dist/EasyAutoClicker/assets/"
 ```
 
