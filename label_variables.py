@@ -1,7 +1,5 @@
 import json
-import locale
 import os.path
-from typing import Union
 
 import customtkinter
 
@@ -11,7 +9,7 @@ from config_handler import LANGUAGES_PATH
 class LabelVariables:
     def __init__(self, app: customtkinter.CTk):
         language_file = os.path.join(LANGUAGES_PATH, app.getvar(name="LANGUAGE_CODE") + ".json")
-        with open(language_file, "r") as file:
+        with open(language_file, "r", encoding='utf-8') as file:
             language_json = json.load(file)
             self.CHANGE_APPEARANCE_LABEL = self.get_translation(language_json=language_json, key="CHANGE_APPEARANCE_LABEL")
             self.CHANGE_HOTKEY_LABEL = self.get_translation(language_json=language_json, key="CHANGE_HOTKEY_LABEL")
