@@ -31,7 +31,7 @@ CTK_PATH=$(pip show customtkinter | grep 'Location:' | awk '{print $2}') && pyin
 
 ## Windows Installer
 
-The install location using the Windows installer is `C:\Program Files\EasyAutoClicker` for "all users" and `C:\Users\<User>\AppData\Local\Programs\EasyAutoClicker` for "me only", unless a custom path was provided during installation.
+The install location using the Windows installer is `C:\Program Files\EasyAutoClicker` for "all users" and `C:\Users\<User>\AppData\Local\Programs\EasyAutoClicker` for "me only", unless a custom path was provided during installation. Installing for "all users" will require "Run as administrator" to save settings between sessions.
 
 ## Settings
 
