@@ -35,7 +35,7 @@ cp -ruv "assets" "dist/EasyAutoClicker/assets/"
 
 ## Windows Installer
 
-The install location using the Windows installer is `C:\Program Files\EasyAutoClicker\` for "all users" and `C:\Users\<User>\AppData\Local\Programs\EasyAutoClicker` for "me only", unless a custom path was provided during installation. Installing in a privileged scope (e.g. Program Files) will require running as administrator for each launch.
+The install location using the Windows installer is `C:\Program Files\EasyAutoClicker` for "all users" and `C:\Users\<User>\AppData\Local\Programs\EasyAutoClicker` for "me only", unless a custom path was provided during installation. Installing in a privileged scope (e.g. Program Files) will require running as administrator for each launch.
 
 ## Settings
 
