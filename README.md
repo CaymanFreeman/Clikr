@@ -11,10 +11,10 @@ git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
 cd EasyAutoClicker
 ```
 
-Required Packages:
+Required Packages (Windows):
 
 ```
-pip install pyinstaller customtkinter pyautogui keyboard mouse
+pip install pyinstaller customtkinter pyautogui keyboard mouse pywin32
 ```
 
 Build (Windows):
@@ -23,6 +23,12 @@ Build (Windows):
 $CTK_PATH = pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }
 pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$CTK_PATH\customtkinter;customtkinter" app.py
 xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+```
+
+Required Packages (Linux):
+
+```
+pip install pyinstaller customtkinter pyautogui keyboard mouse
 ```
 
 Build (Linux):
