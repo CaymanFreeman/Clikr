@@ -56,24 +56,31 @@ class ConfigHandler:
                 config.write(file)
             except Exception as error:
                 print(f"Can't write config: {error}")
-        app.destroy()
+        exit(0)
 
     @staticmethod
-    def initialize_config(app: customtkinter.CTk) -> None:
-        ConfigHandler.create_defaults()
-        ConfigHandler.read_config(app)
+    def read_config_values(app: customtkinter.CTk) -> None:
+        config = ConfigParser()
+        config.read(CONFIG_PATH)
+        for section in config.sections():
+            for name, value in config.items(section):
+                app.setvar(name.upper(), value)
 
     @staticmethod
     def read_config(app: customtkinter.CTk) -> None:
-        config = ConfigParser()
-        config.read(CONFIG_PATH)
         try:
-            for section in config.sections():
-                for name, value in config.items(section):
-                    app.setvar(name.upper(), value)
+            ConfigHandler.read_config_values(app)
+        except FileNotFoundError:
+            try:
+                ConfigHandler.create_defaults()
+                ConfigHandler.read_config_values(app)
+            except Exception as error:
+                print(f"Could not read config: {error}")
+                exit(0)
         except Exception as error:
-            print(f"Error loading config: {error}")
+            print(f"Could not read config and default could not be created: {error}")
             exit(0)
+
 
     @staticmethod
     def create_defaults() -> None:

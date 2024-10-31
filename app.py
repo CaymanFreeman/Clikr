@@ -19,7 +19,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        ConfigHandler.initialize_config(self)
+        ConfigHandler.read_config(self)
         label_variables = LabelVariables(self)
         self.protocol(name="WM_DELETE_WINDOW", func = lambda: ConfigHandler.save_config_and_exit(self))
 
