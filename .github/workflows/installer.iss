@@ -35,6 +35,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "dist\EasyAutoClicker\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\EasyAutoClicker\config.ini"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\EasyAutoClicker\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "dist\EasyAutoClicker\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 

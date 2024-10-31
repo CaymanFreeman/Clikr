@@ -126,6 +126,5 @@ dmypy.json
 # JetBrains IDE
 .idea/
 
+# License
 LICENSE.txt
-
-config.ini

@@ -71,8 +71,10 @@ jobs:
           --add-data "${{ env.CTK_PATH }}\customtkinter;customtkinter" `
           app.py
 
-      - name: Copy Assets
-        run: xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+      - name: Copy Assets and Default Config
+        run: |
+          xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y
+          xcopy "config.ini" "dist\EasyAutoClicker\" /E /I /Y
 
       - name: Create Windows Archive
         run: |

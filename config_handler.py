@@ -52,7 +52,10 @@ class ConfigHandler:
         config["INPUT_VALIDATION"]["MIN_CLICK_INTERVAL"] = app.getvar(name="MIN_CLICK_INTERVAL")
 
         with open(CONFIG_PATH, "w") as file:
-            config.write(file)
+            try:
+                config.write(file)
+            except Exception as error:
+                print(f"Can't write config: {error}")
         app.destroy()
 
     @staticmethod
