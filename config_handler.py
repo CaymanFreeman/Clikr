@@ -1,5 +1,6 @@
 import locale
 import os
+import sys
 from configparser import ConfigParser
 from os.path import isfile
 
@@ -51,12 +52,15 @@ class ConfigHandler:
         config["INPUT_VALIDATION"]["MAX_CLICK_INTERVAL_DIGITS"] = app.getvar(name="MAX_CLICK_INTERVAL_DIGITS")
         config["INPUT_VALIDATION"]["MIN_CLICK_INTERVAL"] = app.getvar(name="MIN_CLICK_INTERVAL")
 
-        with open(CONFIG_PATH, "w") as file:
-            try:
+        try:
+            with open(CONFIG_PATH, "w") as file:
                 config.write(file)
-            except Exception as error:
-                print(f"Can't write config: {error}")
-        exit(0)
+        except Exception as error:
+            print(f"Can't write config: {error}")
+        finally:
+            app.quit()
+            app.destroy()
+            exit(0)
 
     @staticmethod
     def read_config_values(app: customtkinter.CTk) -> None:
