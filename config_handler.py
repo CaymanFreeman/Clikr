@@ -1,12 +1,9 @@
 import locale
 import os
-import sys
 from configparser import ConfigParser
 from os.path import isfile
 
 import customtkinter
-import ntsecuritycon
-import win32security
 
 CONFIG_PATH = "config.ini"
 THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
@@ -129,17 +126,7 @@ class ConfigHandler:
         }
 
         with open(CONFIG_PATH, "w") as file:
-            default_config.write(file)
-
-        try:
-            if sys.platform.startswith('win'):
-                everyone = win32security.ConvertStringSidToSid("S-1-1-0")
-                security = win32security.GetFileSecurity(CONFIG_PATH, win32security.DACL_SECURITY_INFORMATION)
-                dacl = security.GetSecurityDescriptorDacl()
-                dacl.AddAccessAllowedAce(win32security.ACL_REVISION, ntsecuritycon.FILE_GENERIC_READ | ntsecuritycon.FILE_GENERIC_WRITE, everyone)
-                security.SetSecurityDescriptorDacl(1, dacl, 0)
-                win32security.SetFileSecurity(CONFIG_PATH, win32security.DACL_SECURITY_INFORMATION, security)
-            else:
-                os.chmod(CONFIG_PATH, 0o666)
-        except Exception as error:
-            print(f"Error setting file permissions: {error}")
+            try:
+                default_config.write(file)
+            except Exception as error:
+                print(f"Can't write config: {error}")

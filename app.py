@@ -1,6 +1,4 @@
-import ctypes
 import multiprocessing
-import os
 import sys
 
 import customtkinter
@@ -9,12 +7,11 @@ from appearance_frame import AppearanceFrame
 from appearance_variables import AppearanceVariables
 from click_length_frame import ClickLengthFrame
 from click_style_frame import ClickStyleFrame
-from config_handler import ConfigHandler, THEME_PATH, ICON_PATH, CONFIG_PATH
+from config_handler import ConfigHandler, THEME_PATH, ICON_PATH
 from hotkey_frame import HotkeyFrame
 from interval_frame import ClickIntervalFrame
 from label_variables import LabelVariables
 from location_frame import LocationFrame
-from privilege_handler import PrivilegeHandler
 from start_stop_frame import StartStopFrame
 
 
@@ -63,10 +60,6 @@ class App(customtkinter.CTk):
 def main():
     if sys.platform.startswith('win'):
         multiprocessing.freeze_support()
-
-    if PrivilegeHandler.require_admin_privileges() and not PrivilegeHandler.is_admin():
-        PrivilegeHandler.run_as_admin()
-
     app = App()
     app.mainloop()
 
