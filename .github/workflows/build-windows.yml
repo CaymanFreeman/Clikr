@@ -39,6 +39,7 @@ jobs:
           keyboard
           mouse
           pyautogui
+          pywin32
           "@ | Set-Content requirements.txt
 
       - name: Install Dependencies
