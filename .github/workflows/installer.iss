@@ -18,6 +18,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=LICENSE.txt
+PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=installer
 OutputBaseFilename=EasyAutoClicker-Setup-x64
