@@ -10,7 +10,6 @@ THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
 LANGUAGES_PATH = os.path.join("assets", "languages")
 ICON_PATH = os.path.join("assets", "icon.ico")
 
-
 class ConfigHandler:
 
     @staticmethod
