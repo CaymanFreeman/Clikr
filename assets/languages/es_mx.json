@@ -1,4 +1,5 @@
 {
+    "LANGUAGE": "Español (México)",
     "CHANGE_APPEARANCE_LABEL": "Cambiar Apariencia",
     "CHANGE_HOTKEY_LABEL": "Cambiar Tecla Rápida",
     "CLICK_EVENTS_LABEL": "Eventos de Clic",
@@ -8,6 +9,7 @@
     "CONFIRM_HOTKEY_LABEL": "Confirmar Tecla Rápida",
     "HOTKEY_RECORDING_LABEL": "Presionar Tecla(s)",
     "HOTKEY_LABEL": "Tecla Rápida",
+    "LANGUAGE_LABEL": "Idioma",
     "LOCATION_CONFIRM_LABEL": "Confirmar Ubicación en Pantalla",
     "LOCATION_LABEL": "Ubicación",
     "MOUSE_BUTTON_LABEL": "Botón del Ratón",

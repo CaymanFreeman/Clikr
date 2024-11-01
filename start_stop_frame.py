@@ -2,15 +2,16 @@ import multiprocessing
 
 import customtkinter
 
-from appearance_variables import AppearanceVariables
-from click_process import ClickProcess
-from label_variables import LabelVariables
+from appearance_handler import AppearanceHandler
+from click_handler import ClickHandler
+from language_handler import LanguageHandler
+from variable_button import VariableButton
 
 
 class StartStopFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, appearance_variables: AppearanceVariables, label_variables: LabelVariables):
+    def __init__(self, master: customtkinter.CTk, appearance_handler: AppearanceHandler, language_handler: LanguageHandler):
         super().__init__(master)
-        self.appearance_variables = appearance_variables
+        self.appearance_variables = appearance_handler
 
         self.click_process = None
         self.prevent_click_processes = False
@@ -23,10 +24,10 @@ class StartStopFrame(customtkinter.CTkFrame):
 
         self.grid_rowconfigure(index=0, weight=1)
 
-        self.start_button = customtkinter.CTkButton(self, text=label_variables.START_BUTTON_LABEL, command=self.start_button_callback, height=50)
+        self.start_button = VariableButton(self, language_handler=language_handler, label_key="START_BUTTON_LABEL", command=self.start_button_callback, height=50)
         self.start_button.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
 
-        self.stop_button = customtkinter.CTkButton(self, text=label_variables.STOP_BUTTON_LABEL, command=self.stop_button_callback, height=50)
+        self.stop_button = VariableButton(self, language_handler=language_handler, label_key="STOP_BUTTON_LABEL", command=self.stop_button_callback, height=50)
         self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
         self.stop_button.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
@@ -47,7 +48,7 @@ class StartStopFrame(customtkinter.CTkFrame):
         if self.prevent_click_processes:
             return
         self.terminated_event = multiprocessing.Event()
-        self.click_process = ClickProcess(
+        self.click_process = ClickHandler(
             self.master.getvar(name="CLICK_INTERVAL"),
             self.master.getvar(name="CLICK_INTERVAL_SCALE"),
             self.master.getvar(name="CLICK_LENGTH"),

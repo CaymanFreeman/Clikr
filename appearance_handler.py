@@ -4,25 +4,25 @@ from typing import Union
 from config_handler import THEME_PATH
 
 
-class AppearanceVariables:
+class AppearanceHandler:
     def __init__(self):
         with open(THEME_PATH, "r") as file:
             theme_json = json.load(file)
-            self.LABEL_TEXT_COLOR = AppearanceVariables.to_variable(
+            self.LABEL_TEXT_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkLabel"]["text_color"])
-            self.LABEL_TEXT_DISABLED_COLOR = AppearanceVariables.to_variable(
+            self.LABEL_TEXT_DISABLED_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkLabel"]["text_color_disabled"])
-            self.BUTTON_TEXT_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_TEXT_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["text_color"])
-            self.BUTTON_DISABLED_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_DISABLED_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["disabled_color"])
-            self.BUTTON_FG_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_FG_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["fg_color"])
-            self.BUTTON_CONFIRM_FG_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_CONFIRM_FG_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["confirm_fg_color"])
-            self.BUTTON_HOVER_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_HOVER_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["hover_color"])
-            self.BUTTON_CONFIRM_HOVER_COLOR = AppearanceVariables.to_variable(
+            self.BUTTON_CONFIRM_HOVER_COLOR = AppearanceHandler.to_variable(
                 theme_json["CTkButton"]["confirm_hover_color"])
 
     @staticmethod

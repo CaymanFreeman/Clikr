@@ -7,7 +7,7 @@ import mouse
 import pyautogui
 
 
-class ClickProcess(multiprocessing.Process):
+class ClickHandler(multiprocessing.Process):
     def __init__(
             self,
             click_interval: str,

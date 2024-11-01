@@ -1,6 +1,5 @@
 import locale
 import os
-import sys
 from configparser import ConfigParser
 from os.path import isfile
 

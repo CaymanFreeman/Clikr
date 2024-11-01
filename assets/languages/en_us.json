@@ -1,4 +1,5 @@
 {
+    "LANGUAGE": "English (United States)",
     "CHANGE_APPEARANCE_LABEL": "Change Appearance",
     "CHANGE_HOTKEY_LABEL": "Change Hotkey",
     "CLICK_EVENTS_LABEL": "Click Events",
@@ -8,6 +9,7 @@
     "CONFIRM_HOTKEY_LABEL": "Click to Confirm",
     "HOTKEY_RECORDING_LABEL": "Press Key(s)",
     "HOTKEY_LABEL": "Hotkey",
+    "LANGUAGE_LABEL": "Language",
     "LOCATION_CONFIRM_LABEL": "Click Screen Location",
     "LOCATION_LABEL": "Location",
     "MOUSE_BUTTON_LABEL": "Mouse Button",
