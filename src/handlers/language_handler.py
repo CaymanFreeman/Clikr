@@ -3,7 +3,7 @@ import os.path
 
 import customtkinter
 
-from config_handler import LANGUAGES_PATH
+from handlers.config_handler import LANGUAGES_PATH
 
 
 class LanguageHandler:
@@ -11,22 +11,26 @@ class LanguageHandler:
         self.app = app
 
         self.labeled_item_registry = []
-        
+
         language_file = os.path.join(LANGUAGES_PATH, app.getvar(name="LANGUAGE_CODE") + ".json")
         with open(language_file, "r", encoding="utf-8") as file:
             language_json = json.load(file)
             self.labels = {
-                "CHANGE_APPEARANCE_LABEL": self.get_translation(language_json=language_json, key="CHANGE_APPEARANCE_LABEL"),
+                "CHANGE_APPEARANCE_LABEL": self.get_translation(language_json=language_json,
+                                                                key="CHANGE_APPEARANCE_LABEL"),
                 "CHANGE_HOTKEY_LABEL": self.get_translation(language_json=language_json, key="CHANGE_HOTKEY_LABEL"),
                 "CLICK_EVENTS_LABEL": self.get_translation(language_json=language_json, key="CLICK_EVENTS_LABEL"),
                 "CLICK_INTERVAL_LABEL": self.get_translation(language_json=language_json, key="CLICK_INTERVAL_LABEL"),
                 "CLICK_LENGTH_LABEL": self.get_translation(language_json=language_json, key="CLICK_LENGTH_LABEL"),
-                "CLICKS_PER_EVENT_LABEL": self.get_translation(language_json=language_json, key="CLICKS_PER_EVENT_LABEL"),
+                "CLICKS_PER_EVENT_LABEL": self.get_translation(language_json=language_json,
+                                                               key="CLICKS_PER_EVENT_LABEL"),
                 "CONFIRM_HOTKEY_LABEL": self.get_translation(language_json=language_json, key="CONFIRM_HOTKEY_LABEL"),
-                "HOTKEY_RECORDING_LABEL": self.get_translation(language_json=language_json, key="HOTKEY_RECORDING_LABEL"),
+                "HOTKEY_RECORDING_LABEL": self.get_translation(language_json=language_json,
+                                                               key="HOTKEY_RECORDING_LABEL"),
                 "HOTKEY_LABEL": self.get_translation(language_json=language_json, key="HOTKEY_LABEL"),
                 "LANGUAGE_LABEL": self.get_translation(language_json=language_json, key="LANGUAGE_LABEL"),
-                "LOCATION_CONFIRM_LABEL": self.get_translation(language_json=language_json, key="LOCATION_CONFIRM_LABEL"),
+                "LOCATION_CONFIRM_LABEL": self.get_translation(language_json=language_json,
+                                                               key="LOCATION_CONFIRM_LABEL"),
                 "LOCATION_LABEL": self.get_translation(language_json=language_json, key="LOCATION_LABEL"),
                 "MOUSE_BUTTON_LABEL": self.get_translation(language_json=language_json, key="MOUSE_BUTTON_LABEL"),
                 "PICK_LOCATION_LABEL": self.get_translation(language_json=language_json, key="PICK_LOCATION_LABEL"),
@@ -72,8 +76,6 @@ class LanguageHandler:
         self.labeled_item_registry = labeled_item_registry
         for labeled_item in labeled_item_registry:
             labeled_item.reload()
-
-
 
     @staticmethod
     def get_translation(language_json, key: str) -> str:

@@ -1,7 +1,7 @@
 import json
 from typing import Union
 
-from config_handler import THEME_PATH
+from handlers.config_handler import THEME_PATH
 
 
 class AppearanceHandler:

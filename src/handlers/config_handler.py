@@ -5,10 +5,11 @@ from os.path import isfile
 
 import customtkinter
 
-CONFIG_PATH = "config.ini"
-THEME_PATH = os.path.join("assets", "easy_auto_clicker_theme.json")
-LANGUAGES_PATH = os.path.join("assets", "languages")
-ICON_PATH = os.path.join("assets", "icon.ico")
+ROOT_PATH = os.path.abspath("")
+CONFIG_PATH = os.path.join(ROOT_PATH, "config.ini")
+THEME_PATH = os.path.join(ROOT_PATH, "assets", "easy_auto_clicker_theme.json")
+LANGUAGES_PATH = os.path.join(ROOT_PATH, "assets", "languages")
+ICON_PATH = os.path.join(ROOT_PATH, "assets", "icon.ico")
 
 class ConfigHandler:
 
@@ -83,7 +84,6 @@ class ConfigHandler:
         except Exception as error:
             print(f"Could not read config and default could not be created: {error}")
             exit(0)
-
 
     @staticmethod
     def create_defaults() -> None:

@@ -1,9 +1,9 @@
 import customtkinter
 
-from language_handler import LanguageHandler
+from handlers.language_handler import LanguageHandler
 
 
-class VariableButton(customtkinter.CTkButton):
+class VariableLabel(customtkinter.CTkLabel):
     def __init__(self, master, language_handler: LanguageHandler, label_key: str, **kwargs):
         super().__init__(master, text=language_handler.labels[label_key], **kwargs)
         self.language_handler = language_handler

@@ -2,7 +2,7 @@ import tkinter
 
 import customtkinter
 
-from language_handler import LanguageHandler
+from handlers.language_handler import LanguageHandler
 
 
 class VariableDropdown(customtkinter.CTkOptionMenu):
@@ -20,4 +20,5 @@ class VariableDropdown(customtkinter.CTkOptionMenu):
         for label_key in self.label_keys:
             values.append(self.language_handler.labels[label_key])
         self.configure(values=values)
-        self.configure(variable=tkinter.StringVar(value=self.language_handler.mouse_buttons[self.master.getvar(name="MOUSE_BUTTON")]))
+        self.configure(variable=tkinter.StringVar(
+            value=self.language_handler.mouse_buttons[self.master.getvar(name="MOUSE_BUTTON")]))

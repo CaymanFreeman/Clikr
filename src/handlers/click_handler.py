@@ -3,7 +3,6 @@ import multiprocessing
 import time
 
 import mouse
-
 import pyautogui
 
 

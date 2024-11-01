@@ -60,7 +60,7 @@ jobs:
           pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" \
           --onedir --windowed \
           --add-data "${{ env.CTK_PATH }}/customtkinter:customtkinter" \
-          app.py
+          "src/app.py"
 
       - name: Copy Assets
         run: cp -ruv "assets" "dist/EasyAutoClicker/assets/"

@@ -1,19 +1,18 @@
 import multiprocessing
 import sys
-
 import customtkinter
 
-from appearance_frame import AppearanceFrame
-from appearance_handler import AppearanceHandler
-from click_length_frame import ClickLengthFrame
-from click_style_frame import ClickStyleFrame
-from config_handler import ConfigHandler, THEME_PATH, ICON_PATH
-from hotkey_frame import HotkeyFrame
-from click_interval_frame import ClickIntervalFrame
-from language_frame import LanguageFrame
-from language_handler import LanguageHandler
-from location_frame import LocationFrame
-from start_stop_frame import StartStopFrame
+from gui.frames.appearance_frame import AppearanceFrame
+from handlers.appearance_handler import AppearanceHandler
+from gui.frames.click_length_frame import ClickLengthFrame
+from gui.frames.click_style_frame import ClickStyleFrame
+from handlers.config_handler import ConfigHandler, THEME_PATH, ICON_PATH
+from gui.frames.hotkey_frame import HotkeyFrame
+from gui.frames.click_interval_frame import ClickIntervalFrame
+from gui.frames.language_frame import LanguageFrame
+from handlers.language_handler import LanguageHandler
+from gui.frames.location_frame import LocationFrame
+from gui.frames.start_stop_frame import StartStopFrame
 
 
 class App(customtkinter.CTk):
@@ -22,7 +21,7 @@ class App(customtkinter.CTk):
 
         ConfigHandler.read_config(self)
         language_handler = LanguageHandler(self)
-        self.protocol(name="WM_DELETE_WINDOW", func = lambda: ConfigHandler.save_config_and_exit(self))
+        self.protocol(name="WM_DELETE_WINDOW", func=lambda: ConfigHandler.save_config_and_exit(self))
 
         appearance_variables = AppearanceHandler()
 
@@ -50,16 +49,20 @@ class App(customtkinter.CTk):
         self.click_style_frame = ClickStyleFrame(master=self, language_handler=language_handler)
         self.click_style_frame.grid(row=4, column=0, padx=frame_padding, pady=frame_padding, sticky="ew")
 
-        self.location_frame = LocationFrame(master=self, appearance_handler=appearance_variables, language_handler=language_handler)
+        self.location_frame = LocationFrame(master=self, appearance_handler=appearance_variables,
+                                            language_handler=language_handler)
         self.location_frame.grid(row=5, column=0, padx=frame_padding, pady=frame_padding, sticky="ew")
 
-        self.start_stop_frame = StartStopFrame(master=self, appearance_handler=appearance_variables, language_handler=language_handler)
+        self.start_stop_frame = StartStopFrame(master=self, appearance_handler=appearance_variables,
+                                               language_handler=language_handler)
         self.start_stop_frame.grid(row=7, column=0, padx=frame_padding, pady=frame_padding, sticky="ew")
 
-        self.hotkey_frame = HotkeyFrame(master=self, start_stop_frame=self.start_stop_frame, appearance_handler=appearance_variables, language_handler=language_handler)
+        self.hotkey_frame = HotkeyFrame(master=self, start_stop_frame=self.start_stop_frame,
+                                        appearance_handler=appearance_variables, language_handler=language_handler)
         self.hotkey_frame.grid(row=6, column=0, padx=frame_padding, pady=frame_padding, sticky="ew")
 
         self.update()
+
 
 def main():
     if sys.platform.startswith('win'):
@@ -67,7 +70,6 @@ def main():
     app = App()
     app.mainloop()
 
+
 if __name__ == "__main__":
     main()
-
-

@@ -1,11 +1,11 @@
 import customtkinter
 import keyboard
 
-from appearance_handler import AppearanceHandler
-from language_handler import LanguageHandler
-from start_stop_frame import StartStopFrame
-from variable_button import VariableButton
-from variable_label import VariableLabel
+from gui.frames.start_stop_frame import StartStopFrame
+from gui.items.variable_button import VariableButton
+from gui.items.variable_label import VariableLabel
+from handlers.appearance_handler import AppearanceHandler
+from handlers.language_handler import LanguageHandler
 
 
 class HotkeyFrame(customtkinter.CTkFrame):
@@ -34,7 +34,8 @@ class HotkeyFrame(customtkinter.CTkFrame):
         keyboard.add_hotkey(self.hotkey_value, lambda: self.start_stop_frame.hotkey_toggle())
         self.hotkey_textbox.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
 
-        self.change_hotkey_button = VariableButton(self, language_handler=language_handler, label_key="CHANGE_HOTKEY_LABEL", command=self.change_hotkey_callback)
+        self.change_hotkey_button = VariableButton(self, language_handler=language_handler,
+                                                   label_key="CHANGE_HOTKEY_LABEL", command=self.change_hotkey_callback)
         self.change_hotkey_button.grid(row=0, column=2, padx=item_padding, pady=item_padding, sticky="ew")
         self.recording_hotkey = False
         self.pressed_keys = []
