@@ -4,7 +4,9 @@ from handlers.language_handler import LanguageHandler
 
 
 class VariableButton(customtkinter.CTkButton):
-    def __init__(self, master, language_handler: LanguageHandler, label_key: str, **kwargs):
+    def __init__(
+        self, master, language_handler: LanguageHandler, label_key: str, **kwargs
+    ):
         super().__init__(master, text=language_handler.labels[label_key], **kwargs)
         self.language_handler = language_handler
         self.label_key = label_key

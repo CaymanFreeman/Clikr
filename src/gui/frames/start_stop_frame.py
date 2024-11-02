@@ -1,7 +1,6 @@
 import multiprocessing
 
 import customtkinter
-
 from gui.items.variable_button import VariableButton
 from handlers.appearance_handler import AppearanceHandler
 from handlers.click_handler import ClickHandler
@@ -9,8 +8,12 @@ from handlers.language_handler import LanguageHandler
 
 
 class StartStopFrame(customtkinter.CTkFrame):
-    def __init__(self, master: customtkinter.CTk, appearance_handler: AppearanceHandler,
-                 language_handler: LanguageHandler):
+    def __init__(
+        self,
+        master: customtkinter.CTk,
+        appearance_handler: AppearanceHandler,
+        language_handler: LanguageHandler,
+    ):
         super().__init__(master)
         self.appearance_variables = appearance_handler
 
@@ -25,24 +28,50 @@ class StartStopFrame(customtkinter.CTkFrame):
 
         self.grid_rowconfigure(index=0, weight=1)
 
-        self.start_button = VariableButton(self, language_handler=language_handler, label_key="START_BUTTON_LABEL",
-                                           command=self.start_button_callback, height=50)
-        self.start_button.grid(row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew")
+        self.start_button = VariableButton(
+            self,
+            language_handler=language_handler,
+            label_key="START_BUTTON_LABEL",
+            command=self.start_button_callback,
+            height=50,
+        )
+        self.start_button.grid(
+            row=0, column=0, padx=item_padding, pady=item_padding, sticky="ew"
+        )
 
-        self.stop_button = VariableButton(self, language_handler=language_handler, label_key="STOP_BUTTON_LABEL",
-                                          command=self.stop_button_callback, height=50)
-        self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
-        self.stop_button.grid(row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew")
+        self.stop_button = VariableButton(
+            self,
+            language_handler=language_handler,
+            label_key="STOP_BUTTON_LABEL",
+            command=self.stop_button_callback,
+            height=50,
+        )
+        self.stop_button.configure(
+            state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR
+        )
+        self.stop_button.grid(
+            row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew"
+        )
 
         self.after(ms=10, func=self.monitor_click_process)
 
     def toggle_start_stop_buttons(self) -> None:
         if self.start_button.cget("state") == "normal":
-            self.start_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
-            self.stop_button.configure(state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR)
+            self.start_button.configure(
+                state="disabled",
+                fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+            )
+            self.stop_button.configure(
+                state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR
+            )
         else:
-            self.start_button.configure(state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR)
-            self.stop_button.configure(state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR)
+            self.start_button.configure(
+                state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR
+            )
+            self.stop_button.configure(
+                state="disabled",
+                fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+            )
 
     def stop_button_callback(self) -> None:
         self.terminated_event.set()
@@ -60,7 +89,7 @@ class StartStopFrame(customtkinter.CTkFrame):
             self.master.getvar(name="CLICKS_PER_EVENT"),
             self.master.getvar(name="CLICK_EVENTS"),
             self.master.getvar(name="CLICK_LOCATION"),
-            self.terminated_event
+            self.terminated_event,
         )
         self.click_process.start()
         self.toggle_start_stop_buttons()

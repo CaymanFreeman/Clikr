@@ -8,16 +8,16 @@ import pyautogui
 
 class ClickHandler(multiprocessing.Process):
     def __init__(
-            self,
-            click_interval: str,
-            interval_timescale: str,
-            click_length: str,
-            length_timescale: str,
-            mouse_button: str,
-            clicks_per_event: str,
-            click_events: str,
-            click_location_string: str,
-            terminated_event: multiprocessing.Event
+        self,
+        click_interval: str,
+        interval_timescale: str,
+        click_length: str,
+        length_timescale: str,
+        mouse_button: str,
+        clicks_per_event: str,
+        click_events: str,
+        click_location_string: str,
+        terminated_event: multiprocessing.Event,
     ):
         if click_interval == "":
             click_interval = 0
@@ -41,23 +41,35 @@ class ClickHandler(multiprocessing.Process):
 
         match interval_timescale:
             case "1":
-                self.click_interval = float(datetime.timedelta(milliseconds=click_interval).total_seconds())
+                self.click_interval = float(
+                    datetime.timedelta(milliseconds=click_interval).total_seconds()
+                )
             case "2":
                 self.click_interval = float(click_interval)
             case "3":
-                self.click_interval = float(datetime.timedelta(minutes=click_interval).total_seconds())
+                self.click_interval = float(
+                    datetime.timedelta(minutes=click_interval).total_seconds()
+                )
             case "4":
-                self.click_interval = float(datetime.timedelta(hours=click_interval).total_seconds())
+                self.click_interval = float(
+                    datetime.timedelta(hours=click_interval).total_seconds()
+                )
 
         match length_timescale:
             case "1":
-                self.click_length = float(datetime.timedelta(milliseconds=click_length).total_seconds())
+                self.click_length = float(
+                    datetime.timedelta(milliseconds=click_length).total_seconds()
+                )
             case "2":
                 self.click_length = float(click_length)
             case "3":
-                self.click_length = float(datetime.timedelta(minutes=click_length).total_seconds())
+                self.click_length = float(
+                    datetime.timedelta(minutes=click_length).total_seconds()
+                )
             case "4":
-                self.click_length = float(datetime.timedelta(hours=click_length).total_seconds())
+                self.click_length = float(
+                    datetime.timedelta(hours=click_length).total_seconds()
+                )
 
         match mouse_button:
             case "1":
@@ -76,7 +88,7 @@ class ClickHandler(multiprocessing.Process):
         self.using_location = click_location_string != "none"
 
         if self.using_location:
-            click_location = click_location_string.strip('()').split(',')
+            click_location = click_location_string.strip("()").split(",")
             self.click_location_x = int(float(click_location[0]))
             self.click_location_y = int(float(click_location[1]))
 

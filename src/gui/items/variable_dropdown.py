@@ -1,12 +1,13 @@
 import tkinter
 
 import customtkinter
-
 from handlers.language_handler import LanguageHandler
 
 
 class VariableDropdown(customtkinter.CTkOptionMenu):
-    def __init__(self, master, language_handler: LanguageHandler, label_keys: list[str], **kwargs):
+    def __init__(
+        self, master, language_handler: LanguageHandler, label_keys: list[str], **kwargs
+    ):
         values = []
         for label_key in label_keys:
             values.append(language_handler.labels[label_key])
@@ -20,5 +21,10 @@ class VariableDropdown(customtkinter.CTkOptionMenu):
         for label_key in self.label_keys:
             values.append(self.language_handler.labels[label_key])
         self.configure(values=values)
-        self.configure(variable=tkinter.StringVar(
-            value=self.language_handler.mouse_buttons[self.master.getvar(name="MOUSE_BUTTON")]))
+        self.configure(
+            variable=tkinter.StringVar(
+                value=self.language_handler.mouse_buttons[
+                    self.master.getvar(name="MOUSE_BUTTON")
+                ]
+            )
+        )
