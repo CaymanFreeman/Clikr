@@ -72,11 +72,11 @@ class HotkeyFrame(customtkinter.CTkFrame):
                 self.master.setvar(name="HOTKEY", value=self.hotkey_value)
             self.change_hotkey_button.configure(
                 text=self.language_handler.labels["CHANGE_HOTKEY_LABEL"],
-                fg_color=self.appearance_variables.BUTTON_FG_COLOR,
-                hover_color=self.appearance_variables.BUTTON_HOVER_COLOR,
+                fg_color=self.appearance_variables.button_fg_color,
+                hover_color=self.appearance_variables.button_hover_color,
             )
             self.hotkey_textbox.configure(
-                text_color=self.appearance_variables.LABEL_TEXT_COLOR
+                text_color=self.appearance_variables.label_text_color
             )
             self.change_hotkey_text(self.hotkey_value.upper())
             self.pressed_keys.clear()
@@ -85,11 +85,11 @@ class HotkeyFrame(customtkinter.CTkFrame):
             self.start_stop_frame.prevent_click_processes = True
             self.change_hotkey_button.configure(
                 text=self.language_handler.labels["CONFIRM_HOTKEY_LABEL"],
-                fg_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR,
-                hover_color=self.appearance_variables.BUTTON_CONFIRM_HOVER_COLOR,
+                fg_color=self.appearance_variables.button_confirm_fg_color,
+                hover_color=self.appearance_variables.button_confirm_hover_color,
             )
             self.hotkey_textbox.configure(
-                text_color=self.appearance_variables.BUTTON_CONFIRM_FG_COLOR
+                text_color=self.appearance_variables.button_confirm_fg_color
             )
             self.change_hotkey_text(
                 self.language_handler.labels["HOTKEY_RECORDING_LABEL"]

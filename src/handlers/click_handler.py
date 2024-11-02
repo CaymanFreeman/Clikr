@@ -121,20 +121,15 @@ class ClickHandler(multiprocessing.Process):
             time.sleep(remaining_time)
 
     def click_process(self) -> None:
-        try:
-            if self.click_length > 0:
-                click_event = self.held_click_event
-            else:
-                click_event = self.click_event
+        if self.click_length > 0:
+            click_event = self.held_click_event
+        else:
+            click_event = self.click_event
 
-            if self.click_events == 0:
-                while True:
-                    click_event()
-            else:
-                for _ in range(self.click_events):
-                    click_event()
-                self.terminated_event.set()
-        except Exception as error:
-            print(f"Click process error: {error}")
+        if self.click_events == 0:
+            while True:
+                click_event()
+        else:
+            for _ in range(self.click_events):
+                click_event()
             self.terminated_event.set()
-            return

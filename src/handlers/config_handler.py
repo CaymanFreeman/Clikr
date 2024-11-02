@@ -1,5 +1,9 @@
+import configparser
+import errno
 import locale
+import logging
 import os
+import sys
 from configparser import ConfigParser
 from os.path import isfile
 
@@ -26,6 +30,7 @@ class ConfigHandler:
         config["INPUT_VALIDATION"] = {}
 
         config["LANGUAGE"]["LANGUAGE_CODE"] = app.getvar(name="LANGUAGE_CODE")
+        config["LANGUAGE"]["FALLBACK_CODE"] = app.getvar(name="FALLBACK_CODE")
 
         config["APPEARANCE"]["APPEARANCE_MODE"] = customtkinter.get_appearance_mode()
         config["APPEARANCE"]["FRAME_PADDING"] = app.getvar(name="FRAME_PADDING")
@@ -74,14 +79,33 @@ class ConfigHandler:
         )
 
         try:
-            with open(CONFIG_PATH, "w") as file:
+            with open(CONFIG_PATH, "w", encoding="utf-8") as file:
                 config.write(file)
-        except Exception as error:
-            print(f"Can't write config: {error}")
+        except PermissionError as error:
+            logging.warning(
+                "Permission was denied while saving config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+            )
+        except FileNotFoundError as error:
+            logging.warning(
+                "Could not find directory to save config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+            )
+        except OSError as error:
+            if error.errno == errno.ENOSPC:
+                logging.warning(
+                    "No disk space to save config file at '%s': %s", CONFIG_PATH, error
+                )
+            else:
+                logging.warning(
+                    "OS error while saving config file at '%s': %s", CONFIG_PATH, error
+                )
         finally:
             app.quit()
             app.destroy()
-            exit(0)
+            sys.exit(0)
 
     @staticmethod
     def read_config_values(app: customtkinter.CTk) -> None:
@@ -103,14 +127,49 @@ class ConfigHandler:
             ConfigHandler.read_config_values(app)
         except FileNotFoundError:
             try:
+                logging.info("Configuration file not found. Creating defaults...")
                 ConfigHandler.create_defaults()
                 ConfigHandler.read_config_values(app)
-            except Exception as error:
-                print(f"Could not read config: {error}")
-                exit(0)
-        except Exception as error:
-            print(f"Could not read config and default could not be created: {error}")
-            exit(0)
+            except configparser.Error as error:
+                logging.critical(
+                    "Error while parsing config file at '%s': %s",
+                    CONFIG_PATH,
+                    error,
+                    exc_info=True,
+                )
+                sys.exit(1)
+        except PermissionError as error:
+            logging.critical(
+                "Permission was denied while reading config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+                exc_info=True,
+            )
+            sys.exit(1)
+        except configparser.Error as error:
+            logging.critical(
+                "Error while parsing config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+                exc_info=True,
+            )
+            sys.exit(1)
+        except ValueError as error:
+            logging.critical(
+                "Invalid value in config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+                exc_info=True,
+            )
+            sys.exit(1)
+        except OSError as error:
+            logging.critical(
+                "OS error while reading config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+                exc_info=True,
+            )
+            sys.exit(1)
 
     @staticmethod
     def create_defaults() -> None:
@@ -119,7 +178,10 @@ class ConfigHandler:
 
         default_config = ConfigParser()
 
-        default_config["LANGUAGE"] = {"LANGUAGE_CODE": "system"}
+        default_config["LANGUAGE"] = {
+            "LANGUAGE_CODE": "system",
+            "FALLBACK_CODE": "en_us",
+        }
 
         default_config["APPEARANCE"] = {
             "APPEARANCE_MODE": "Dark",
@@ -155,8 +217,30 @@ class ConfigHandler:
             "MIN_CLICK_INTERVAL": "0",
         }
 
-        with open(CONFIG_PATH, "w") as file:
+        with open(CONFIG_PATH, "w", encoding="utf-8") as file:
             try:
                 default_config.write(file)
-            except Exception as error:
-                print(f"Can't write config: {error}")
+            except PermissionError as error:
+                logging.critical(
+                    "Permission was denied while creating default config file at '%s': %s",
+                    CONFIG_PATH,
+                    error,
+                    exc_info=True,
+                )
+                sys.exit(1)
+            except OSError as error:
+                if error.errno == errno.ENOSPC:
+                    logging.critical(
+                        "No disk space to create default config file at '%s': %s",
+                        CONFIG_PATH,
+                        error,
+                        exc_info=True,
+                    )
+                else:
+                    logging.critical(
+                        "OS error while creating default config file at '%s': %s",
+                        CONFIG_PATH,
+                        error,
+                        exc_info=True,
+                    )
+                sys.exit(1)

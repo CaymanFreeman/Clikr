@@ -23,7 +23,7 @@ class LanguageFrame(customtkinter.CTkFrame):
 
         self.language_dropdown = customtkinter.CTkOptionMenu(
             self,
-            values=language_handler.language_choices,
+            values=language_handler.language_dropdown_choices,
             command=self.language_dropdown_callback,
         )
         self.language_dropdown.grid(

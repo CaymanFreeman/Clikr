@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Union
 
 from handlers.config_handler import THEME_PATH
@@ -6,47 +7,55 @@ from handlers.config_handler import THEME_PATH
 
 class AppearanceHandler:
     def __init__(self):
-        with open(THEME_PATH, "r") as file:
+        with open(THEME_PATH, "r", encoding="utf-8") as file:
             theme_json = json.load(file)
-            self.LABEL_TEXT_COLOR = AppearanceHandler.to_variable(
+            self.label_text_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkLabel"]["text_color"]
             )
-            self.LABEL_TEXT_DISABLED_COLOR = AppearanceHandler.to_variable(
+            self.label_text_disabled_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkLabel"]["text_color_disabled"]
             )
-            self.BUTTON_TEXT_COLOR = AppearanceHandler.to_variable(
+            self.button_text_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["text_color"]
             )
-            self.BUTTON_DISABLED_COLOR = AppearanceHandler.to_variable(
+            self.button_disabled_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["disabled_color"]
             )
-            self.BUTTON_FG_COLOR = AppearanceHandler.to_variable(
+            self.button_fg_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["fg_color"]
             )
-            self.BUTTON_CONFIRM_FG_COLOR = AppearanceHandler.to_variable(
+            self.button_confirm_fg_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["confirm_fg_color"]
             )
-            self.BUTTON_HOVER_COLOR = AppearanceHandler.to_variable(
+            self.button_hover_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["hover_color"]
             )
-            self.BUTTON_CONFIRM_HOVER_COLOR = AppearanceHandler.to_variable(
+            self.button_confirm_hover_color = AppearanceHandler.to_color_variable(
                 theme_json["CTkButton"]["confirm_hover_color"]
             )
 
     @staticmethod
-    def to_variable(json_setting: Union[list, tuple, str]) -> Union[tuple, str]:
+    def to_color_variable(json_setting: Union[list, str]) -> Union[tuple, str]:
         if isinstance(json_setting, list):
             if len(json_setting) > 2:
-                print(
-                    f"Json setting list too long: {json_setting} has {len(json_setting)} elements"
+                logging.warning(
+                    "Color value of %s has %d elements (max 2) in theme file at '%s'",
+                    json_setting,
+                    len(json_setting),
+                    THEME_PATH,
                 )
-            elif len(json_setting) == 2:
+                return tuple(json_setting[:2])
+            if len(json_setting) == 2:
                 return tuple(json_setting)
-            elif len(json_setting) == 1:
+            if len(json_setting) == 1:
                 return json_setting[0]
         elif isinstance(json_setting, str):
             return json_setting
         else:
-            print(
-                f"Invalid json setting type: {json_setting} as a {type(json_setting)}"
+            logging.warning(
+                "Invalid color value of %s (%s) in theme file at '%s'",
+                json_setting,
+                type(json_setting),
+                THEME_PATH,
             )
+        return "#FF69B4"

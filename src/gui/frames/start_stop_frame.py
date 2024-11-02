@@ -47,7 +47,7 @@ class StartStopFrame(customtkinter.CTkFrame):
             height=50,
         )
         self.stop_button.configure(
-            state="disabled", fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR
+            state="disabled", fg_color=self.appearance_variables.button_disabled_color
         )
         self.stop_button.grid(
             row=0, column=1, padx=item_padding, pady=item_padding, sticky="ew"
@@ -59,18 +59,18 @@ class StartStopFrame(customtkinter.CTkFrame):
         if self.start_button.cget("state") == "normal":
             self.start_button.configure(
                 state="disabled",
-                fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+                fg_color=self.appearance_variables.button_disabled_color,
             )
             self.stop_button.configure(
-                state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR
+                state="normal", fg_color=self.appearance_variables.button_fg_color
             )
         else:
             self.start_button.configure(
-                state="normal", fg_color=self.appearance_variables.BUTTON_FG_COLOR
+                state="normal", fg_color=self.appearance_variables.button_fg_color
             )
             self.stop_button.configure(
                 state="disabled",
-                fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+                fg_color=self.appearance_variables.button_disabled_color,
             )
 
     def stop_button_callback(self) -> None:

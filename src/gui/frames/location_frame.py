@@ -61,7 +61,7 @@ class LocationFrame(customtkinter.CTkFrame):
 
         if self.location_locked:
             self.location_textbox.configure(
-                text_color=self.appearance_variables.LABEL_TEXT_DISABLED_COLOR
+                text_color=self.appearance_variables.label_text_disabled_color
             )
 
         threading.Thread(target=self.location_update_process, daemon=True).start()
@@ -71,11 +71,11 @@ class LocationFrame(customtkinter.CTkFrame):
         threading.Thread(target=self.location_update_process, daemon=True).start()
         self.pick_location_button.configure(
             text=self.label_variables.labels["LOCATION_CONFIRM_LABEL"],
-            fg_color=self.appearance_variables.BUTTON_DISABLED_COLOR,
+            fg_color=self.appearance_variables.button_disabled_color,
             state="disabled",
         )
         self.location_textbox.configure(
-            text_color=self.appearance_variables.LABEL_TEXT_COLOR
+            text_color=self.appearance_variables.label_text_color
         )
         time.sleep(0.1)
         self.pick_handler = mouse.on_click(callback=self.pick_location)
@@ -95,11 +95,11 @@ class LocationFrame(customtkinter.CTkFrame):
         self.master.setvar(name="CLICK_LOCATION", value="none")
         threading.Thread(target=self.location_update_process, daemon=True).start()
         self.location_textbox.configure(
-            text_color=self.appearance_variables.LABEL_TEXT_COLOR
+            text_color=self.appearance_variables.label_text_color
         )
         self.pick_location_button.configure(
             text=self.label_variables.labels["PICK_LOCATION_LABEL"],
-            fg_color=self.appearance_variables.BUTTON_FG_COLOR,
+            fg_color=self.appearance_variables.button_fg_color,
             state="normal",
         )
 
@@ -111,11 +111,11 @@ class LocationFrame(customtkinter.CTkFrame):
         self.update_location(location)
         self.location_locked = True
         self.location_textbox.configure(
-            text_color=self.appearance_variables.LABEL_TEXT_DISABLED_COLOR
+            text_color=self.appearance_variables.label_text_disabled_color
         )
         self.pick_location_button.configure(
             text=self.label_variables.labels["PICK_LOCATION_LABEL"],
-            fg_color=self.appearance_variables.BUTTON_FG_COLOR,
+            fg_color=self.appearance_variables.button_fg_color,
             state="normal",
         )
 
