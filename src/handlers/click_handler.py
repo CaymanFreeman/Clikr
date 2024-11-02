@@ -124,8 +124,8 @@ class ClickHandler(multiprocessing.Process):
     def click_process(self) -> None:
         logging.info(
             "Starting click process with: "
-            "Click Length - %d, "
-            "Click Interval - %d, "
+            "Click Length - %f, "
+            "Click Interval - %f, "
             "Mouse Button - %s, "
             "Clicks Per Event - %d, "
             "Click Events - %d, "
@@ -136,7 +136,7 @@ class ClickHandler(multiprocessing.Process):
             self.clicks_per_event,
             self.click_events,
             (
-                f"({self.click_location_y},{self.click_location_y})"
+                f"({self.click_location_x},{self.click_location_y})"
                 if self.using_location
                 else "none"
             ),
