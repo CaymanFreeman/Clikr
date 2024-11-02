@@ -1,4 +1,5 @@
 import datetime
+import logging
 import multiprocessing
 import time
 
@@ -121,6 +122,25 @@ class ClickHandler(multiprocessing.Process):
             time.sleep(remaining_time)
 
     def click_process(self) -> None:
+        logging.info(
+            "Starting click process with: "
+            "Click Length - %d, "
+            "Click Interval - %d, "
+            "Mouse Button - %s, "
+            "Clicks Per Event - %d, "
+            "Click Events - %d, "
+            "Location - %s",
+            self.click_length,
+            self.click_interval,
+            self.mouse_button,
+            self.clicks_per_event,
+            self.click_events,
+            (
+                f"({self.click_location_y},{self.click_location_y})"
+                if self.using_location
+                else "none"
+            ),
+        )
         if self.click_length > 0:
             click_event = self.held_click_event
         else:

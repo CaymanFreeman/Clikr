@@ -75,13 +75,16 @@ class LanguageHandler:
         }
 
     def reload_labeled_items(self) -> None:
+        logging.info("Reloading all labels...")
         labeled_item_registry = self.labeled_item_registry
         self.setup_handler()
         self.labeled_item_registry = labeled_item_registry
         for labeled_item in labeled_item_registry:
             labeled_item.reload()
+        logging.info("Labels reloaded")
 
     def load_labels(self) -> None:
+        logging.info("Loading labels...")
         language_file_path = os.path.join(
             LANGUAGES_PATH, self.app.getvar(name="LANGUAGE_CODE") + ".json"
         )
@@ -104,6 +107,7 @@ class LanguageHandler:
                     fallback_file_path=fallback_file_path,
                     key=label_key,
                 )
+        logging.info("Labels loaded")
 
     @staticmethod
     def get_translation(
@@ -116,7 +120,7 @@ class LanguageHandler:
 
         def attempt_fallback_translation() -> str:
             try:
-                logging.info("Attempting fallback translation...")
+                logging.info("Attempting fallback translation for key %s...", key)
                 return fallback_json[key]
             except KeyError:
                 logging.warning(
@@ -124,11 +128,11 @@ class LanguageHandler:
                     key,
                     fallback_file_path,
                 )
-            except ValueError as error:
+            except ValueError as value:
                 logging.warning(
-                    "Invalid language value in language file at '%s': %s",
+                    "Invalid language value of %s in language file at '%s'",
+                    value,
                     fallback_file_path,
-                    error,
                 )
             return "LANGUAGE_ERROR"
 
@@ -141,26 +145,33 @@ class LanguageHandler:
                 language_file_path,
             )
             return attempt_fallback_translation()
-        except ValueError as error:
+        except ValueError as value:
             logging.warning(
-                "Invalid language value in language file at '%s': %s",
+                "Invalid language value of %s in language file at '%s'",
+                value,
                 language_file_path,
-                error,
             )
             return attempt_fallback_translation()
 
     def load_language_names(self) -> None:
+        logging.info("Scanning for languages...")
+        language_count = 0
         for file_name in os.listdir(LANGUAGES_PATH):
             if file_name.endswith(".json"):
-                with open(
-                    os.path.join(LANGUAGES_PATH, file_name), "r", encoding="utf-8"
-                ) as file:
-                    file_json = json.load(file)
-                    self.languages[file_json["LANGUAGE"]] = file_name.removesuffix(
-                        ".json"
-                    )
-                    self.languages[file_name.removesuffix(".json")] = file_json[
-                        "LANGUAGE"
-                    ]
-                    self.language_dropdown_choices.append(file_json["LANGUAGE"])
+                try:
+                    with open(
+                        os.path.join(LANGUAGES_PATH, file_name), "r", encoding="utf-8"
+                    ) as file:
+                        file_json = json.load(file)
+                        self.languages[file_json["LANGUAGE"]] = file_name.removesuffix(
+                            ".json"
+                        )
+                        self.languages[file_name.removesuffix(".json")] = file_json[
+                            "LANGUAGE"
+                        ]
+                        self.language_dropdown_choices.append(file_json["LANGUAGE"])
+                    language_count += 1
+                except KeyError:
+                    pass
         self.language_dropdown_choices = sorted(self.language_dropdown_choices)
+        logging.info("Found %d languages", language_count)

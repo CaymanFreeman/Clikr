@@ -5,7 +5,6 @@ import logging
 import os
 import sys
 from configparser import ConfigParser
-from os.path import isfile
 
 import customtkinter
 
@@ -18,16 +17,48 @@ ICON_PATH = os.path.join(ROOT_PATH, "assets", "icon.ico")
 
 class ConfigHandler:
 
+    default_config = {
+        "LANGUAGE": {
+            "LANGUAGE_CODE": "system",
+            "FALLBACK_CODE": "en_us",
+        },
+        "APPEARANCE": {
+            "APPEARANCE_MODE": "Dark",
+            "FRAME_PADDING": "3",
+            "ITEM_PADDING": "5",
+            "RESIZABLE_WIDTH": "False",
+            "RESIZABLE_HEIGHT": "False",
+        },
+        "HOTKEY": {"HOTKEY": "ctrl+f8"},
+        "CLICK_PROCESS": {
+            "CLICK_EVENTS": "0",
+            "CLICKS_PER_EVENT": "1",
+            "CLICK_INTERVAL": "100",
+            "CLICK_INTERVAL_SCALE": "1",
+            "CLICK_LENGTH": "0",
+            "CLICK_LENGTH_SCALE": "1",
+            "MOUSE_BUTTON": "1",
+            "CLICK_LOCATION": "none",
+        },
+        "LOCATION": {
+            "CANCEL_LOCATION_PICK_KEY": "escape",
+            "LOCATION_UPDATE_INTERVAL_SECONDS": "0.05",
+        },
+        "INPUT_VALIDATION": {
+            "MAX_HOTKEY_KEYS": "3",
+            "MAX_CLICK_EVENTS_DIGITS": "6",
+            "MAX_CLICKS_PER_EVENT_DIGITS": "3",
+            "MAX_CLICK_INTERVAL_DIGITS": "6",
+            "MIN_CLICK_INTERVAL": "0",
+        },
+    }
+
     @staticmethod
     def save_config_and_exit(app: customtkinter.CTk) -> None:
         config = ConfigParser()
 
-        config["LANGUAGE"] = {}
-        config["APPEARANCE"] = {}
-        config["HOTKEY"] = {}
-        config["CLICK_PROCESS"] = {}
-        config["LOCATION"] = {}
-        config["INPUT_VALIDATION"] = {}
+        for section in ConfigHandler.default_config:
+            config[section] = {}
 
         config["LANGUAGE"]["LANGUAGE_CODE"] = app.getvar(name="LANGUAGE_CODE")
         config["LANGUAGE"]["FALLBACK_CODE"] = app.getvar(name="FALLBACK_CODE")
@@ -80,6 +111,7 @@ class ConfigHandler:
 
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as file:
+                logging.info("Writing config options to file...")
                 config.write(file)
         except PermissionError as error:
             logging.warning(
@@ -103,34 +135,78 @@ class ConfigHandler:
                     "OS error while saving config file at '%s': %s", CONFIG_PATH, error
                 )
         finally:
-            app.quit()
-            app.destroy()
             sys.exit(0)
+
+    @staticmethod
+    def repair_config(config: ConfigParser) -> None:
+        for section, options in ConfigHandler.default_config.items():
+            logging.info("Reviewing section %s for repairs...", section)
+            if not config.has_section(section):
+                logging.warning(
+                    "Config is missing section %s, attempting repair...", section
+                )
+                config.add_section(section)
+
+            for option, default_value in options.items():
+                logging.info("Reviewing option %s for repairs...", option)
+                if not config.has_option(section, option):
+                    logging.warning(
+                        "Config is missing option %s from section %s, attempting repair...",
+                        option,
+                        section,
+                    )
+                    config[section][option] = default_value
+                elif not config.get(section, option).strip():
+                    logging.warning(
+                        "Config option %s from section %s is empty, attempting repair...",
+                        option,
+                        section,
+                    )
+                    config[section][option] = default_value
 
     @staticmethod
     def read_config_values(app: customtkinter.CTk) -> None:
         config = ConfigParser()
         config.read(CONFIG_PATH)
+
+        try:
+            logging.info("Starting repair review for config at '%s'", CONFIG_PATH)
+            ConfigHandler.repair_config(config)
+        except configparser.Error as error:
+            logging.critical(
+                "Error while attempting repair for config file at '%s': %s",
+                CONFIG_PATH,
+                error,
+                exc_info=True,
+            )
+            sys.exit(1)
+
         for section in config.sections():
+            section = section.upper()
             for name, value in config.items(section):
+                name = name.upper()
                 if (
-                    section.upper() == "LANGUAGE"
-                    and name.upper() == "LANGUAGE_CODE"
+                    section == "LANGUAGE"
+                    and name == "LANGUAGE_CODE"
                     and value == "system"
                 ):
                     value = locale.getdefaultlocale()[0].lower().replace("-", "_")
-                app.setvar(name.upper(), value)
+                logging.info("Reading option %s as %s", name, value)
+                app.setvar(name, value)
 
     @staticmethod
     def read_config(app: customtkinter.CTk) -> None:
         try:
+            if not os.path.exists(CONFIG_PATH):
+                logging.info("Config file does not exist")
+                raise FileNotFoundError
             ConfigHandler.read_config_values(app)
         except FileNotFoundError:
             try:
-                logging.info("Configuration file not found. Creating defaults...")
+                logging.info("Creating default config...")
                 ConfigHandler.create_defaults()
                 ConfigHandler.read_config_values(app)
-            except configparser.Error as error:
+            except configparser.ParsingError as error:
                 logging.critical(
                     "Error while parsing config file at '%s': %s",
                     CONFIG_PATH,
@@ -173,49 +249,10 @@ class ConfigHandler:
 
     @staticmethod
     def create_defaults() -> None:
-        if isfile(CONFIG_PATH):
-            return
-
         default_config = ConfigParser()
 
-        default_config["LANGUAGE"] = {
-            "LANGUAGE_CODE": "system",
-            "FALLBACK_CODE": "en_us",
-        }
-
-        default_config["APPEARANCE"] = {
-            "APPEARANCE_MODE": "Dark",
-            "FRAME_PADDING": "3",
-            "ITEM_PADDING": "5",
-            "RESIZABLE_WIDTH": "False",
-            "RESIZABLE_HEIGHT": "False",
-        }
-
-        default_config["HOTKEY"] = {"HOTKEY": "ctrl+f8"}
-
-        default_config["CLICK_PROCESS"] = {
-            "CLICK_EVENTS": "0",
-            "CLICKS_PER_EVENT": "1",
-            "CLICK_INTERVAL": "100",
-            "CLICK_INTERVAL_SCALE": "1",
-            "CLICK_LENGTH": "0",
-            "CLICK_LENGTH_SCALE": "1",
-            "MOUSE_BUTTON": "1",
-            "CLICK_LOCATION": "none",
-        }
-
-        default_config["LOCATION"] = {
-            "CANCEL_LOCATION_PICK_KEY": "escape",
-            "LOCATION_UPDATE_INTERVAL_SECONDS": "0.05",
-        }
-
-        default_config["INPUT_VALIDATION"] = {
-            "MAX_HOTKEY_KEYS": "3",
-            "MAX_CLICK_EVENTS_DIGITS": "6",
-            "MAX_CLICKS_PER_EVENT_DIGITS": "3",
-            "MAX_CLICK_INTERVAL_DIGITS": "6",
-            "MIN_CLICK_INTERVAL": "0",
-        }
+        for section, options in ConfigHandler.default_config.items():
+            default_config[section] = options
 
         with open(CONFIG_PATH, "w", encoding="utf-8") as file:
             try:
@@ -227,7 +264,6 @@ class ConfigHandler:
                     error,
                     exc_info=True,
                 )
-                sys.exit(1)
             except OSError as error:
                 if error.errno == errno.ENOSPC:
                     logging.critical(
@@ -243,4 +279,3 @@ class ConfigHandler:
                         error,
                         exc_info=True,
                     )
-                sys.exit(1)
