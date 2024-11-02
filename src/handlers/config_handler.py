@@ -11,6 +11,7 @@ THEME_PATH = os.path.join(ROOT_PATH, "assets", "easy_auto_clicker_theme.json")
 LANGUAGES_PATH = os.path.join(ROOT_PATH, "assets", "languages")
 ICON_PATH = os.path.join(ROOT_PATH, "assets", "icon.ico")
 
+
 class ConfigHandler:
 
     @staticmethod
@@ -68,6 +69,8 @@ class ConfigHandler:
         config.read(CONFIG_PATH)
         for section in config.sections():
             for name, value in config.items(section):
+                if section.upper() == "LANGUAGE" and name.upper() == "LANGUAGE_CODE" and value == "system":
+                    value = locale.getdefaultlocale()[0].lower().replace('-', '_')
                 app.setvar(name.upper(), value)
 
     @staticmethod
@@ -92,14 +95,8 @@ class ConfigHandler:
 
         default_config = ConfigParser()
 
-        system_locale = locale.getdefaultlocale()[0]
-        if system_locale:
-            system_locale = system_locale.lower().replace('-', '_')
-        else:
-            system_locale = "en_us"
-
         default_config["LANGUAGE"] = {
-            "LANGUAGE_CODE": system_locale
+            "LANGUAGE_CODE": "system"
         }
 
         default_config["APPEARANCE"] = {
