@@ -1,33 +1,10 @@
 <p align="center"><img src="assets/icon.png" width="256" height="256" alt="Easy Auto Clicker Logo"></p> <p align="center">Icon via Flaticon.com</p>
 
-<h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. Source code, build archives, and a Windows installer are included with each release found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
+<h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. Source code, build archives, and installers are included with each release found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
 
-## Build Information
+## Build Recipe
 
-Clone:
 
-```
-git clone https://github.com/CaymanFreeman/EasyAutoClicker.git
-cd EasyAutoClicker
-```
-
-Required Packages:
-
-```
-pip install pyinstaller customtkinter pyautogui keyboard mouse
-```
-
-Build (Windows):
-
-```
-$ctk_path = (pip show customtkinter | Select-String -Pattern "Location: (.*)" | ForEach-Object { $_.Matches.Groups[1].Value }); pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets\icon.ico" --onedir --windowed --add-data "$CTK_PATH\customtkinter;customtkinter" app.py; xcopy "assets" "dist\EasyAutoClicker\assets\" /E /I /Y; xcopy "config.ini" "dist\EasyAutoClicker\" /E /I /Y
-```
-
-Build (Linux):
-
-```
-ctk_path=$(pip show customtkinter | grep 'Location:' | awk '{print $2}') && pyinstaller --noconfirm --name "EasyAutoClicker" --icon="assets/icon.ico" --onedir --windowed --add-data "$CTK_PATH/customtkinter;customtkinter" app.py && cp -ruv "assets" "dist/EasyAutoClicker/assets/" && cp -ruv "config.ini" "dist/EasyAutoClicker/"
-```
 
 ## Windows Installer
 
