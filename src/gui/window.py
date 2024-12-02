@@ -1,48 +1,64 @@
+from pathlib import Path
+
 from PyQt5.QtCore import Qt, QSize, QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QSizePolicy, QGridLayout, QLayout, QLabel, QComboBox, QLineEdit, QKeySequenceEdit, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QTabWidget,
+    QSizePolicy,
+    QGridLayout,
+    QLayout,
+    QLabel,
+    QComboBox,
+    QLineEdit,
+    QKeySequenceEdit,
+    QPushButton,
+    QHBoxLayout,
+)
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.central_widget = QWidget
-        self.central_widget_layout = QVBoxLayout
-        self.tab_widget = QTabWidget
-        self.simple_tab = QWidget
-        self.simple_grid_layout = QGridLayout
-        self.simple_click_interval_label = QLabel
-        self.simple_click_interval_timescale_combo_box = QComboBox
-        self.simple_hotkey_label = QLabel
-        self.simple_location_display_line_edit = QLineEdit
-        self.simple_mouse_button_combo_box = QComboBox
-        self.simple_hotkey_key_sequence = QKeySequenceEdit
-        self.simple_change_location_button = QPushButton
-        self.simple_mouse_button_label = QLabel
-        self.simple_click_interval_line_edit = QLineEdit
-        self.simple_location_label = QLabel
-        self.advanced_tab = QWidget
-        self.advanced_grid_layout = QGridLayout
-        self.advanced_clicks_per_event_line_edit = QLineEdit
-        self.advanced_click_events_line_edit = QLineEdit
-        self.advanced_clicks_per_event_label = QLabel
-        self.advanced_mouse_button_label = QLabel
-        self.advanced_hotkey_label = QLabel
-        self.advanced_click_interval_timescale_combo_box = QComboBox
-        self.advanced_click_events_label = QLabel
-        self.advanced_click_interval_label = QLabel
-        self.advanced_change_location_button = QPushButton
-        self.advanced_click_length_timescale_combo_box = QComboBox
-        self.advanced_hotkey_key_sequence = QKeySequenceEdit
-        self.advanced_click_length_label = QLabel
-        self.advanced_click_interval_line_edit = QLineEdit
-        self.advanced_mouse_button_combo_box = QComboBox
-        self.advanced_click_length_line_edit = QLineEdit
-        self.advanced_location_display_line_edit = QLineEdit
-        self.advanced_location_label = QLabel
-        self.button_layout = QHBoxLayout
-        self.start_button = QPushButton
-        self.stop_button = QPushButton
+        self.central_wgt = QWidget
+        self.central_wgt_layout = QVBoxLayout
+        self.tab_wgt = QTabWidget
+        self.smpl_tab = QWidget
+        self.smpl_grid_layout = QGridLayout
+        self.smpl_clk_intvl_lbl = QLabel
+        self.smpl_clk_intvl_scale_cbox = QComboBox
+        self.smpl_hkey_lbl = QLabel
+        self.smpl_loc_display_ledit = QLineEdit
+        self.smpl_mb_cbox = QComboBox
+        self.smpl_hkey_keyseq = QKeySequenceEdit
+        self.smpl_change_loc_btn = QPushButton
+        self.smpl_mb_lbl = QLabel
+        self.smpl_clk_intvl_ledit = QLineEdit
+        self.smpl_loc_lbl = QLabel
+        self.adv_tab = QWidget
+        self.adv_grid_layout = QGridLayout
+        self.adv_clicks_per_event_ledit = QLineEdit
+        self.adv_clk_events_ledit = QLineEdit
+        self.adv_clicks_per_event_lbl = QLabel
+        self.adv_mb_lbl = QLabel
+        self.adv_hkey_lbl = QLabel
+        self.adv_clk_intvl_scale_cbox = QComboBox
+        self.adv_clk_events_lbl = QLabel
+        self.adv_clk_intvl_lbl = QLabel
+        self.adv_change_loc_btn = QPushButton
+        self.adv_clen_scale_cbox = QComboBox
+        self.adv_hkey_keyseq = QKeySequenceEdit
+        self.adv_clen_lbl = QLabel
+        self.adv_clk_intvl_ledit = QLineEdit
+        self.adv_mb_cbox = QComboBox
+        self.adv_clen_ledit = QLineEdit
+        self.adv_loc_display_ledit = QLineEdit
+        self.adv_loc_lbl = QLabel
+        self.btn_layout = QHBoxLayout
+        self.start_btn = QPushButton
+        self.stop_btn = QPushButton
 
         self.initialize_window()
         self.translate_ui()
@@ -50,342 +66,368 @@ class MainWindow(QMainWindow):
     def initialize_window(self):
         self.setObjectName("main_window")
         self.resize(425, 0)
-        self.setWindowIcon(QIcon("../../assets/icon.png"))
+        self.setWindowIcon(QIcon(str(Path("assets/icon.png"))))
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
 
-        self.initialize_central_widget()
+        self.initialize_central_wgt()
 
+    def initialize_central_wgt(self):
+        central_wgt = QWidget()
+        central_wgt.setObjectName("central_wgt")
 
-    def initialize_central_widget(self):
-        central_widget = QWidget()
-        central_widget.setObjectName("central_widget")
+        central_wgt_layout = QVBoxLayout(central_wgt)
+        central_wgt_layout.setObjectName("central_wgt_layout")
+        central_wgt_layout.setContentsMargins(5, 5, 5, 5)
+        central_wgt_layout.setSpacing(0)
+        central_wgt.setLayout(central_wgt_layout)
+        self.central_wgt_layout = central_wgt_layout
 
-        central_widget_layout = QVBoxLayout(central_widget)
-        central_widget_layout.setObjectName("central_widget_layout")
-        central_widget_layout.setContentsMargins(5, 5, 5, 5)
-        central_widget_layout.setSpacing(0)
-        central_widget.setLayout(central_widget_layout)
-        self.central_widget_layout = central_widget_layout
-
-        self.setCentralWidget(central_widget)
-        self.central_widget = central_widget
+        self.setCentralWidget(central_wgt)
+        self.central_wgt = central_wgt
 
         self.initialize_tabs()
-        self.initialize_button_controls()
+        self.initialize_btn_controls()
 
     def initialize_tabs(self):
-        tab_widget = QTabWidget(self.central_widget)
-        tab_widget.setObjectName("tab_widget")
+        tab_wgt = QTabWidget(self.central_wgt)
+        tab_wgt.setObjectName("tab_wgt")
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(tab_widget.sizePolicy().hasHeightForWidth())
-        tab_widget.setSizePolicy(size_policy)
-        tab_widget.setMinimumSize(QSize(0, 0))
-        tab_widget.setAutoFillBackground(False)
-        tab_widget.setTabShape(QTabWidget.Rounded)
+        size_policy.setHeightForWidth(tab_wgt.sizePolicy().hasHeightForWidth())
+        tab_wgt.setSizePolicy(size_policy)
+        tab_wgt.setMinimumSize(QSize(0, 0))
+        tab_wgt.setAutoFillBackground(False)
+        tab_wgt.setTabShape(QTabWidget.Rounded)
 
-        self.central_widget_layout.addWidget(tab_widget)
-        self.tab_widget = tab_widget
+        self.central_wgt_layout.addWidget(tab_wgt)
+        self.tab_wgt = tab_wgt
 
-        self.initialize_simple_tab()
-        self.initialize_advanced_tab()
+        self.initialize_smpl_tab()
+        self.initialize_adv_tab()
 
-    def initialize_simple_tab(self):
-        simple_tab = QWidget()
-        simple_tab.setObjectName("simple_tab")
+    def initialize_smpl_tab(self):
+        smpl_tab = QWidget()
+        smpl_tab.setObjectName("smpl_tab")
 
-        simple_grid_layout = QGridLayout(simple_tab)
-        simple_grid_layout.setObjectName("simple_grid_layout")
-        simple_grid_layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
+        smpl_grid_layout = QGridLayout(smpl_tab)
+        smpl_grid_layout.setObjectName("smpl_grid_layout")
+        smpl_grid_layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
 
-        simple_click_interval_label = QLabel(simple_tab)
-        simple_click_interval_label.setObjectName("simple_click_interval_label")
-        simple_click_interval_label.setLayoutDirection(Qt.LeftToRight)
-        simple_grid_layout.addWidget(simple_click_interval_label, 0, 0, 1, 1, Qt.AlignRight)
-        self.simple_click_interval_label = simple_click_interval_label
+        smpl_clk_intvl_lbl = QLabel(smpl_tab)
+        smpl_clk_intvl_lbl.setObjectName("smpl_clk_intvl_lbl")
+        smpl_clk_intvl_lbl.setLayoutDirection(Qt.LeftToRight)
+        smpl_grid_layout.addWidget(smpl_clk_intvl_lbl, 0, 0, 1, 1, Qt.AlignRight)
+        self.smpl_clk_intvl_lbl = smpl_clk_intvl_lbl
 
-        simple_click_interval_timescale_combo_box = QComboBox(simple_tab)
-        simple_click_interval_timescale_combo_box.setObjectName("simple_click_interval_timescale_combo_box")
-        simple_click_interval_timescale_combo_box.setMinimumSize(QSize(0, 0))
-        simple_click_interval_timescale_combo_box.addItem("")
-        simple_click_interval_timescale_combo_box.addItem("")
-        simple_click_interval_timescale_combo_box.addItem("")
-        simple_click_interval_timescale_combo_box.addItem("")
-        simple_grid_layout.addWidget(simple_click_interval_timescale_combo_box, 0, 2, 1, 1)
-        self.simple_click_interval_timescale_combo_box = simple_click_interval_timescale_combo_box
+        smpl_clk_intvl_scale_cbox = QComboBox(smpl_tab)
+        smpl_clk_intvl_scale_cbox.setObjectName("smpl_clk_intvl_scale_cbox")
+        smpl_clk_intvl_scale_cbox.setMinimumSize(QSize(0, 0))
+        smpl_clk_intvl_scale_cbox.addItem("")
+        smpl_clk_intvl_scale_cbox.addItem("")
+        smpl_clk_intvl_scale_cbox.addItem("")
+        smpl_clk_intvl_scale_cbox.addItem("")
+        smpl_grid_layout.addWidget(smpl_clk_intvl_scale_cbox, 0, 2, 1, 1)
+        self.smpl_clk_intvl_scale_cbox = smpl_clk_intvl_scale_cbox
 
-        simple_hotkey_label = QLabel(simple_tab)
-        simple_hotkey_label.setObjectName("simple_hotkey_label")
-        simple_grid_layout.addWidget(simple_hotkey_label, 3, 0, 1, 1, Qt.AlignRight)
-        self.simple_hotkey_label = simple_hotkey_label
+        smpl_hkey_lbl = QLabel(smpl_tab)
+        smpl_hkey_lbl.setObjectName("smpl_hkey_lbl")
+        smpl_grid_layout.addWidget(smpl_hkey_lbl, 3, 0, 1, 1, Qt.AlignRight)
+        self.smpl_hkey_lbl = smpl_hkey_lbl
 
-        simple_location_display_line_edit = QLineEdit(simple_tab)
-        simple_location_display_line_edit.setObjectName("simple_location_display_line_edit")
-        simple_location_display_line_edit.setReadOnly(True)
-        simple_location_display_line_edit.setPlaceholderText("")
-        simple_grid_layout.addWidget(simple_location_display_line_edit, 2, 1, 1, 1)
-        self.simple_location_display_line_edit = simple_location_display_line_edit
+        smpl_loc_display_ledit = QLineEdit(smpl_tab)
+        smpl_loc_display_ledit.setObjectName("smpl_loc_display_ledit")
+        smpl_loc_display_ledit.setReadOnly(True)
+        smpl_loc_display_ledit.setPlaceholderText("")
+        smpl_grid_layout.addWidget(smpl_loc_display_ledit, 2, 1, 1, 1)
+        self.smpl_loc_display_ledit = smpl_loc_display_ledit
 
-        simple_mouse_button_combo_box = QComboBox(simple_tab)
-        simple_mouse_button_combo_box.setObjectName("simple_mouse_button_combo_box")
+        smpl_mb_cbox = QComboBox(smpl_tab)
+        smpl_mb_cbox.setObjectName("smpl_mb_cbox")
         size_policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(simple_mouse_button_combo_box.sizePolicy().hasHeightForWidth())
-        simple_mouse_button_combo_box.setSizePolicy(size_policy)
-        simple_mouse_button_combo_box.setEditable(False)
-        simple_mouse_button_combo_box.setMaxVisibleItems(3)
-        simple_mouse_button_combo_box.addItem("")
-        simple_mouse_button_combo_box.addItem("")
-        simple_mouse_button_combo_box.addItem("")
-        simple_grid_layout.addWidget(simple_mouse_button_combo_box, 1, 1, 1, 2)
-        self.simple_mouse_button_combo_box = simple_mouse_button_combo_box
+        size_policy.setHeightForWidth(smpl_mb_cbox.sizePolicy().hasHeightForWidth())
+        smpl_mb_cbox.setSizePolicy(size_policy)
+        smpl_mb_cbox.setEditable(False)
+        smpl_mb_cbox.setMaxVisibleItems(3)
+        smpl_mb_cbox.addItem("")
+        smpl_mb_cbox.addItem("")
+        smpl_mb_cbox.addItem("")
+        smpl_grid_layout.addWidget(smpl_mb_cbox, 1, 1, 1, 2)
+        self.smpl_mb_cbox = smpl_mb_cbox
 
-        simple_hotkey_key_sequence = QKeySequenceEdit(simple_tab)
-        simple_hotkey_key_sequence.setObjectName("simple_hotkey_key_sequence")
+        smpl_hkey_keyseq = QKeySequenceEdit(smpl_tab)
+        smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(simple_hotkey_key_sequence.sizePolicy().hasHeightForWidth())
-        simple_hotkey_key_sequence.setSizePolicy(size_policy)
-        simple_grid_layout.addWidget(simple_hotkey_key_sequence, 3, 1, 1, 2)
-        self.simple_hotkey_key_sequence = simple_hotkey_key_sequence
+        size_policy.setHeightForWidth(smpl_hkey_keyseq.sizePolicy().hasHeightForWidth())
+        smpl_hkey_keyseq.setSizePolicy(size_policy)
+        smpl_grid_layout.addWidget(smpl_hkey_keyseq, 3, 1, 1, 2)
+        self.smpl_hkey_keyseq = smpl_hkey_keyseq
 
-        simple_change_location_button = QPushButton(simple_tab)
-        simple_change_location_button.setObjectName("simple_change_location_button")
-        simple_grid_layout.addWidget(simple_change_location_button, 2, 2, 1, 1)
-        self.simple_change_location_button = simple_change_location_button
+        smpl_change_loc_btn = QPushButton(smpl_tab)
+        smpl_change_loc_btn.setObjectName("smpl_change_loc_btn")
+        smpl_grid_layout.addWidget(smpl_change_loc_btn, 2, 2, 1, 1)
+        self.smpl_change_loc_btn = smpl_change_loc_btn
 
-        simple_mouse_button_label = QLabel(simple_tab)
-        simple_mouse_button_label.setObjectName("simple_mouse_button_label")
-        simple_grid_layout.addWidget(simple_mouse_button_label, 1, 0, 1, 1, Qt.AlignRight)
-        self.simple_mouse_button_label = simple_mouse_button_label
+        smpl_mb_lbl = QLabel(smpl_tab)
+        smpl_mb_lbl.setObjectName("smpl_mb_lbl")
+        smpl_grid_layout.addWidget(smpl_mb_lbl, 1, 0, 1, 1, Qt.AlignRight)
+        self.smpl_mb_lbl = smpl_mb_lbl
 
-        simple_click_interval_line_edit = QLineEdit(simple_tab)
-        simple_click_interval_line_edit.setObjectName("simple_click_interval_line_edit")
-        simple_click_interval_line_edit.setMaxLength(7)
-        simple_grid_layout.addWidget(simple_click_interval_line_edit, 0, 1, 1, 1)
-        self.simple_click_interval_line_edit = simple_click_interval_line_edit
+        smpl_clk_intvl_ledit = QLineEdit(smpl_tab)
+        smpl_clk_intvl_ledit.setObjectName("smpl_clk_intvl_ledit")
+        smpl_clk_intvl_ledit.setMaxLength(7)
+        smpl_grid_layout.addWidget(smpl_clk_intvl_ledit, 0, 1, 1, 1)
+        self.smpl_clk_intvl_ledit = smpl_clk_intvl_ledit
 
-        simple_location_label = QLabel(simple_tab)
-        simple_location_label.setObjectName("simple_location_label")
-        simple_grid_layout.addWidget(simple_location_label, 2, 0, 1, 1, Qt.AlignRight)
-        self.simple_location_label = simple_location_label
+        smpl_loc_lbl = QLabel(smpl_tab)
+        smpl_loc_lbl.setObjectName("smpl_loc_lbl")
+        smpl_grid_layout.addWidget(smpl_loc_lbl, 2, 0, 1, 1, Qt.AlignRight)
+        self.smpl_loc_lbl = smpl_loc_lbl
 
-        simple_grid_layout.setColumnStretch(0, 0)
-        simple_grid_layout.setColumnStretch(1, 4)
-        simple_grid_layout.setColumnStretch(2, 3)
-        self.simple_grid_layout = simple_grid_layout
+        smpl_grid_layout.setColumnStretch(0, 0)
+        smpl_grid_layout.setColumnStretch(1, 4)
+        smpl_grid_layout.setColumnStretch(2, 3)
+        self.smpl_grid_layout = smpl_grid_layout
 
-        self.tab_widget.addTab(simple_tab, "")
-        self.simple_tab = simple_tab
-    
-    def initialize_advanced_tab(self):
-        advanced_tab = QWidget()
-        advanced_tab.setObjectName("advanced_tab")
-        
-        advanced_grid_layout = QGridLayout(advanced_tab)
-        advanced_grid_layout.setObjectName("advanced_grid_layout")
-        advanced_grid_layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
-        
-        advanced_location_label = QLabel(advanced_tab)
-        advanced_location_label.setObjectName("advanced_location_label")
-        advanced_grid_layout.addWidget(advanced_location_label, 5, 0, 1, 1, Qt.AlignRight)
-        self.advanced_location_label = advanced_location_label
-        
-        advanced_location_display_line_edit = QLineEdit(advanced_tab)
-        advanced_location_display_line_edit.setObjectName("advanced_location_display_line_edit")
-        advanced_location_display_line_edit.setReadOnly(True)
-        advanced_location_display_line_edit.setPlaceholderText("")
-        advanced_grid_layout.addWidget(advanced_location_display_line_edit, 5, 1, 1, 1)
-        self.advanced_location_display_line_edit = advanced_location_display_line_edit
-        
-        advanced_click_length_line_edit = QLineEdit(advanced_tab)
-        advanced_click_length_line_edit.setObjectName("advanced_click_length_line_edit")
-        advanced_grid_layout.addWidget(advanced_click_length_line_edit, 1, 1, 1, 1)
-        self.advanced_click_length_line_edit = advanced_click_length_line_edit
-        
-        advanced_mouse_button_combo_box = QComboBox(advanced_tab)
-        advanced_mouse_button_combo_box.setObjectName("advanced_mouse_button_combo_box")
+        self.tab_wgt.addTab(smpl_tab, "")
+        self.smpl_tab = smpl_tab
+
+    def initialize_adv_tab(self):
+        adv_tab = QWidget()
+        adv_tab.setObjectName("adv_tab")
+
+        adv_grid_layout = QGridLayout(adv_tab)
+        adv_grid_layout.setObjectName("adv_grid_layout")
+        adv_grid_layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
+
+        adv_loc_lbl = QLabel(adv_tab)
+        adv_loc_lbl.setObjectName("adv_loc_lbl")
+        adv_grid_layout.addWidget(adv_loc_lbl, 5, 0, 1, 1, Qt.AlignRight)
+        self.adv_loc_lbl = adv_loc_lbl
+
+        adv_loc_display_ledit = QLineEdit(adv_tab)
+        adv_loc_display_ledit.setObjectName("adv_loc_display_ledit")
+        adv_loc_display_ledit.setReadOnly(True)
+        adv_loc_display_ledit.setPlaceholderText("")
+        adv_grid_layout.addWidget(adv_loc_display_ledit, 5, 1, 1, 1)
+        self.adv_loc_display_ledit = adv_loc_display_ledit
+
+        adv_clen_ledit = QLineEdit(adv_tab)
+        adv_clen_ledit.setObjectName("adv_clen_ledit")
+        adv_grid_layout.addWidget(adv_clen_ledit, 1, 1, 1, 1)
+        self.adv_clen_ledit = adv_clen_ledit
+
+        adv_mb_cbox = QComboBox(adv_tab)
+        adv_mb_cbox.setObjectName("adv_mb_cbox")
         size_policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(advanced_mouse_button_combo_box.sizePolicy().hasHeightForWidth())
-        advanced_mouse_button_combo_box.setSizePolicy(size_policy)
-        advanced_mouse_button_combo_box.setEditable(False)
-        advanced_mouse_button_combo_box.setMaxVisibleItems(3)
-        advanced_mouse_button_combo_box.addItem("")
-        advanced_mouse_button_combo_box.addItem("")
-        advanced_mouse_button_combo_box.addItem("")
-        advanced_grid_layout.addWidget(advanced_mouse_button_combo_box, 4, 1, 1, 2)
-        self.advanced_mouse_button_combo_box = advanced_mouse_button_combo_box
-        
-        advanced_click_interval_line_edit = QLineEdit(advanced_tab)
-        advanced_click_interval_line_edit.setObjectName("advanced_click_interval_line_edit")
-        advanced_click_interval_line_edit.setMaxLength(7)
-        advanced_grid_layout.addWidget(advanced_click_interval_line_edit, 0, 1, 1, 1)
-        self.advanced_click_interval_line_edit = advanced_click_interval_line_edit
-        
-        advanced_click_length_label = QLabel(advanced_tab)
-        advanced_click_length_label.setObjectName("advanced_click_length_label")
-        advanced_grid_layout.addWidget(advanced_click_length_label, 1, 0, 1, 1, Qt.AlignRight)
-        self.advanced_click_length_label = advanced_click_length_label
-        
-        advanced_hotkey_key_sequence = QKeySequenceEdit(advanced_tab)
-        advanced_hotkey_key_sequence.setObjectName("advanced_hotkey_key_sequence")
+        size_policy.setHeightForWidth(adv_mb_cbox.sizePolicy().hasHeightForWidth())
+        adv_mb_cbox.setSizePolicy(size_policy)
+        adv_mb_cbox.setEditable(False)
+        adv_mb_cbox.setMaxVisibleItems(3)
+        adv_mb_cbox.addItem("")
+        adv_mb_cbox.addItem("")
+        adv_mb_cbox.addItem("")
+        adv_grid_layout.addWidget(adv_mb_cbox, 4, 1, 1, 2)
+        self.adv_mb_cbox = adv_mb_cbox
+
+        adv_clk_intvl_ledit = QLineEdit(adv_tab)
+        adv_clk_intvl_ledit.setObjectName("adv_clk_intvl_ledit")
+        adv_clk_intvl_ledit.setMaxLength(7)
+        adv_grid_layout.addWidget(adv_clk_intvl_ledit, 0, 1, 1, 1)
+        self.adv_clk_intvl_ledit = adv_clk_intvl_ledit
+
+        adv_clen_lbl = QLabel(adv_tab)
+        adv_clen_lbl.setObjectName("adv_clen_lbl")
+        adv_grid_layout.addWidget(adv_clen_lbl, 1, 0, 1, 1, Qt.AlignRight)
+        self.adv_clen_lbl = adv_clen_lbl
+
+        adv_hkey_keyseq = QKeySequenceEdit(adv_tab)
+        adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(advanced_hotkey_key_sequence.sizePolicy().hasHeightForWidth())
-        advanced_hotkey_key_sequence.setSizePolicy(size_policy)
-        advanced_grid_layout.addWidget(advanced_hotkey_key_sequence, 6, 1, 1, 2)
-        self.advanced_hotkey_key_sequence = advanced_hotkey_key_sequence
-        
-        advanced_click_length_timescale_combo_box = QComboBox(advanced_tab)
-        advanced_click_length_timescale_combo_box.setObjectName("advanced_click_length_timescale_combo_box")
-        advanced_click_length_timescale_combo_box.addItem("")
-        advanced_click_length_timescale_combo_box.addItem("")
-        advanced_click_length_timescale_combo_box.addItem("")
-        advanced_click_length_timescale_combo_box.addItem("")
-        advanced_grid_layout.addWidget(advanced_click_length_timescale_combo_box, 1, 2, 1, 1)
-        self.advanced_click_length_timescale_combo_box = advanced_click_length_timescale_combo_box
-        
-        advanced_change_location_button = QPushButton(advanced_tab)
-        advanced_change_location_button.setObjectName("advanced_change_location_button")
-        advanced_grid_layout.addWidget(advanced_change_location_button, 5, 2, 1, 1)
-        self.advanced_change_location_button = advanced_change_location_button
-        
-        advanced_click_interval_label = QLabel(advanced_tab)
-        advanced_click_interval_label.setObjectName("advanced_click_interval_label")
-        advanced_click_interval_label.setLayoutDirection(Qt.LeftToRight)
-        advanced_grid_layout.addWidget(advanced_click_interval_label, 0, 0, 1, 1, Qt.AlignRight)
-        self.advanced_click_interval_label = advanced_click_interval_label
-        
-        advanced_click_events_label = QLabel(advanced_tab)
-        advanced_click_events_label.setObjectName("advanced_click_events_label")
-        advanced_grid_layout.addWidget(advanced_click_events_label, 2, 0, 1, 1, Qt.AlignRight)
-        self.advanced_click_events_label = advanced_click_events_label
-        
-        advanced_click_interval_timescale_combo_box = QComboBox(advanced_tab)
-        advanced_click_interval_timescale_combo_box.setObjectName("advanced_click_interval_timescale_combo_box")
-        advanced_click_interval_timescale_combo_box.setMinimumSize(QSize(0, 0))
-        advanced_click_interval_timescale_combo_box.addItem("")
-        advanced_click_interval_timescale_combo_box.addItem("")
-        advanced_click_interval_timescale_combo_box.addItem("")
-        advanced_click_interval_timescale_combo_box.addItem("")
-        advanced_grid_layout.addWidget(advanced_click_interval_timescale_combo_box, 0, 2, 1, 1)
-        self.advanced_click_interval_timescale_combo_box = advanced_click_interval_timescale_combo_box
-        
-        advanced_hotkey_label = QLabel(advanced_tab)
-        advanced_hotkey_label.setObjectName("advanced_hotkey_label")
-        advanced_grid_layout.addWidget(advanced_hotkey_label, 6, 0, 1, 1, Qt.AlignRight)
-        self.advanced_hotkey_label = advanced_hotkey_label
-        
-        advanced_mouse_button_label = QLabel(advanced_tab)
-        advanced_mouse_button_label.setObjectName("advanced_mouse_button_label")
-        advanced_grid_layout.addWidget(advanced_mouse_button_label, 4, 0, 1, 1, Qt.AlignRight)
-        self.advanced_mouse_button_label = advanced_mouse_button_label
-        
-        advanced_clicks_per_event_label = QLabel(advanced_tab)
-        advanced_clicks_per_event_label.setObjectName("advanced_clicks_per_event_label")
-        advanced_grid_layout.addWidget(advanced_clicks_per_event_label, 3, 0, 1, 1, Qt.AlignRight)
-        self.advanced_clicks_per_event_label = advanced_clicks_per_event_label
-        
-        advanced_click_events_line_edit = QLineEdit(advanced_tab)
-        advanced_click_events_line_edit.setObjectName("advanced_click_events_line_edit")
-        advanced_grid_layout.addWidget(advanced_click_events_line_edit, 2, 1, 1, 2)
-        self.advanced_click_events_line_edit = advanced_click_events_line_edit
-        
-        advanced_clicks_per_event_line_edit = QLineEdit(advanced_tab)
-        advanced_clicks_per_event_line_edit.setObjectName("advanced_clicks_per_event_line_edit")
-        advanced_grid_layout.addWidget(advanced_clicks_per_event_line_edit, 3, 1, 1, 2)
-        self.advanced_clicks_per_event_line_edit = advanced_clicks_per_event_line_edit
-        
-        advanced_grid_layout.setColumnStretch(0, 0)
-        advanced_grid_layout.setColumnStretch(1, 4)
-        advanced_grid_layout.setColumnStretch(2, 3)
-        self.advanced_grid_layout = advanced_grid_layout
-        
-        self.tab_widget.addTab(advanced_tab, "")
-        self.advanced_tab = advanced_tab
+        size_policy.setHeightForWidth(adv_hkey_keyseq.sizePolicy().hasHeightForWidth())
+        adv_hkey_keyseq.setSizePolicy(size_policy)
+        adv_grid_layout.addWidget(adv_hkey_keyseq, 6, 1, 1, 2)
+        self.adv_hkey_keyseq = adv_hkey_keyseq
 
-    def initialize_button_controls(self):
-        button_layout = QHBoxLayout()
-        button_layout.setSizeConstraint(QLayout.SetDefaultConstraint)
-        button_layout.setContentsMargins(0, 5, 0, 0)
-        button_layout.setSpacing(5)
-        button_layout.setObjectName("button_layout")
+        adv_clen_scale_cbox = QComboBox(adv_tab)
+        adv_clen_scale_cbox.setObjectName("adv_clen_scale_cbox")
+        adv_clen_scale_cbox.addItem("")
+        adv_clen_scale_cbox.addItem("")
+        adv_clen_scale_cbox.addItem("")
+        adv_clen_scale_cbox.addItem("")
+        adv_grid_layout.addWidget(adv_clen_scale_cbox, 1, 2, 1, 1)
+        self.adv_clen_scale_cbox = adv_clen_scale_cbox
 
-        start_button = QPushButton(self.central_widget)
+        adv_change_loc_btn = QPushButton(adv_tab)
+        adv_change_loc_btn.setObjectName("adv_change_loc_btn")
+        adv_grid_layout.addWidget(adv_change_loc_btn, 5, 2, 1, 1)
+        self.adv_change_loc_btn = adv_change_loc_btn
+
+        adv_clk_intvl_lbl = QLabel(adv_tab)
+        adv_clk_intvl_lbl.setObjectName("adv_clk_intvl_lbl")
+        adv_clk_intvl_lbl.setLayoutDirection(Qt.LeftToRight)
+        adv_grid_layout.addWidget(adv_clk_intvl_lbl, 0, 0, 1, 1, Qt.AlignRight)
+        self.adv_clk_intvl_lbl = adv_clk_intvl_lbl
+
+        adv_clk_events_lbl = QLabel(adv_tab)
+        adv_clk_events_lbl.setObjectName("adv_clk_events_lbl")
+        adv_grid_layout.addWidget(adv_clk_events_lbl, 2, 0, 1, 1, Qt.AlignRight)
+        self.adv_clk_events_lbl = adv_clk_events_lbl
+
+        adv_clk_intvl_scale_cbox = QComboBox(adv_tab)
+        adv_clk_intvl_scale_cbox.setObjectName("adv_clk_intvl_scale_cbox")
+        adv_clk_intvl_scale_cbox.setMinimumSize(QSize(0, 0))
+        adv_clk_intvl_scale_cbox.addItem("")
+        adv_clk_intvl_scale_cbox.addItem("")
+        adv_clk_intvl_scale_cbox.addItem("")
+        adv_clk_intvl_scale_cbox.addItem("")
+        adv_grid_layout.addWidget(adv_clk_intvl_scale_cbox, 0, 2, 1, 1)
+        self.adv_clk_intvl_scale_cbox = adv_clk_intvl_scale_cbox
+
+        adv_hkey_lbl = QLabel(adv_tab)
+        adv_hkey_lbl.setObjectName("adv_hkey_lbl")
+        adv_grid_layout.addWidget(adv_hkey_lbl, 6, 0, 1, 1, Qt.AlignRight)
+        self.adv_hkey_lbl = adv_hkey_lbl
+
+        adv_mb_lbl = QLabel(adv_tab)
+        adv_mb_lbl.setObjectName("adv_mb_lbl")
+        adv_grid_layout.addWidget(adv_mb_lbl, 4, 0, 1, 1, Qt.AlignRight)
+        self.adv_mb_lbl = adv_mb_lbl
+
+        adv_clicks_per_event_lbl = QLabel(adv_tab)
+        adv_clicks_per_event_lbl.setObjectName("adv_clicks_per_event_lbl")
+        adv_grid_layout.addWidget(adv_clicks_per_event_lbl, 3, 0, 1, 1, Qt.AlignRight)
+        self.adv_clicks_per_event_lbl = adv_clicks_per_event_lbl
+
+        adv_clk_events_ledit = QLineEdit(adv_tab)
+        adv_clk_events_ledit.setObjectName("adv_clk_events_ledit")
+        adv_grid_layout.addWidget(adv_clk_events_ledit, 2, 1, 1, 2)
+        self.adv_clk_events_ledit = adv_clk_events_ledit
+
+        adv_clicks_per_event_ledit = QLineEdit(adv_tab)
+        adv_clicks_per_event_ledit.setObjectName("adv_clicks_per_event_ledit")
+        adv_grid_layout.addWidget(adv_clicks_per_event_ledit, 3, 1, 1, 2)
+        self.adv_clicks_per_event_ledit = adv_clicks_per_event_ledit
+
+        adv_grid_layout.setColumnStretch(0, 0)
+        adv_grid_layout.setColumnStretch(1, 4)
+        adv_grid_layout.setColumnStretch(2, 3)
+        self.adv_grid_layout = adv_grid_layout
+
+        self.tab_wgt.addTab(adv_tab, "")
+        self.adv_tab = adv_tab
+
+    def initialize_btn_controls(self):
+        btn_layout = QHBoxLayout()
+        btn_layout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        btn_layout.setContentsMargins(0, 5, 0, 0)
+        btn_layout.setSpacing(5)
+        btn_layout.setObjectName("btn_layout")
+
+        start_btn = QPushButton(self.central_wgt)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(start_button.sizePolicy().hasHeightForWidth())
-        start_button.setSizePolicy(size_policy)
-        start_button.setMinimumSize(QSize(0, 50))
-        start_button.setObjectName("start_button")
-        button_layout.addWidget(start_button)
-        self.start_button = start_button
+        size_policy.setHeightForWidth(start_btn.sizePolicy().hasHeightForWidth())
+        start_btn.setSizePolicy(size_policy)
+        start_btn.setMinimumSize(QSize(0, 50))
+        start_btn.setObjectName("start_btn")
+        btn_layout.addWidget(start_btn)
+        self.start_btn = start_btn
 
-        stop_button = QPushButton(self.central_widget)
+        stop_btn = QPushButton(self.central_wgt)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(stop_button.sizePolicy().hasHeightForWidth())
-        stop_button.setSizePolicy(size_policy)
-        stop_button.setMinimumSize(QSize(0, 50))
-        stop_button.setBaseSize(QSize(0, 0))
-        stop_button.setObjectName("stop_button")
-        button_layout.addWidget(stop_button)
-        self.stop_button = stop_button
+        size_policy.setHeightForWidth(stop_btn.sizePolicy().hasHeightForWidth())
+        stop_btn.setSizePolicy(size_policy)
+        stop_btn.setMinimumSize(QSize(0, 50))
+        stop_btn.setBaseSize(QSize(0, 0))
+        stop_btn.setObjectName("stop_btn")
+        btn_layout.addWidget(stop_btn)
+        self.stop_btn = stop_btn
 
-        button_layout.setStretch(0, 1)
-        button_layout.setStretch(1, 1)
-        self.central_widget_layout.addLayout(button_layout)
-        self.button_layout = button_layout
+        btn_layout.setStretch(0, 1)
+        btn_layout.setStretch(1, 1)
+        self.central_wgt_layout.addLayout(btn_layout)
+        self.btn_layout = btn_layout
 
     def translate_ui(self):
         translate = QCoreApplication.translate
         self.setWindowTitle(translate("main_window", "Easy Auto Clicker"))
-        self.simple_click_interval_label.setText(translate("main_window", "Click Interval"))
-        self.simple_click_interval_timescale_combo_box.setItemText(0, translate("main_window", "Milliseconds"))
-        self.simple_click_interval_timescale_combo_box.setItemText(1, translate("main_window", "Seconds"))
-        self.simple_click_interval_timescale_combo_box.setItemText(2, translate("main_window", "Minutes"))
-        self.simple_click_interval_timescale_combo_box.setItemText(3, translate("main_window", "Hours"))
-        self.simple_hotkey_label.setText(translate("main_window", "Hotkey"))
-        self.simple_mouse_button_combo_box.setItemText(0, translate("main_window", "Left (M1)"))
-        self.simple_mouse_button_combo_box.setItemText(1, translate("main_window", "Right (M2)"))
-        self.simple_mouse_button_combo_box.setItemText(2, translate("main_window", "Middle (M3)"))
-        self.simple_change_location_button.setText(translate("main_window", "Change"))
-        self.simple_mouse_button_label.setText(translate("main_window", "Mouse Button"))
-        self.simple_click_interval_line_edit.setPlaceholderText(translate("main_window", "e.g. 100"))
-        self.simple_location_label.setText(translate("main_window", "Location"))
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.simple_tab), translate("main_window", "Simple"))
-        self.advanced_location_label.setText(translate("main_window", "Location"))
-        self.advanced_click_length_line_edit.setPlaceholderText(translate("main_window", "e.g. 50"))
-        self.advanced_mouse_button_combo_box.setItemText(0, translate("main_window", "Left (M1)"))
-        self.advanced_mouse_button_combo_box.setItemText(1, translate("main_window", "Right (M2)"))
-        self.advanced_mouse_button_combo_box.setItemText(2, translate("main_window", "Middle (M3)"))
-        self.advanced_click_interval_line_edit.setPlaceholderText(translate("main_window", "e.g. 100"))
-        self.advanced_click_length_label.setText(translate("main_window", "Click Length"))
-        self.advanced_click_length_timescale_combo_box.setItemText(0, translate("main_window", "Milliseconds"))
-        self.advanced_click_length_timescale_combo_box.setItemText(1, translate("main_window", "Seconds"))
-        self.advanced_click_length_timescale_combo_box.setItemText(2, translate("main_window", "Minutes"))
-        self.advanced_click_length_timescale_combo_box.setItemText(3, translate("main_window", "Hours"))
-        self.advanced_change_location_button.setText(translate("main_window", "Change"))
-        self.advanced_click_interval_label.setText(translate("main_window", "Click Interval"))
-        self.advanced_click_events_label.setText(translate("main_window", "Click Events"))
-        self.advanced_click_interval_timescale_combo_box.setItemText(0, translate("main_window", "Milliseconds"))
-        self.advanced_click_interval_timescale_combo_box.setItemText(1, translate("main_window", "Seconds"))
-        self.advanced_click_interval_timescale_combo_box.setItemText(2, translate("main_window", "Minutes"))
-        self.advanced_click_interval_timescale_combo_box.setItemText(3, translate("main_window", "Hours"))
-        self.advanced_hotkey_label.setText(translate("main_window", "Hotkey"))
-        self.advanced_mouse_button_label.setText(translate("main_window", "Mouse Button"))
-        self.advanced_clicks_per_event_label.setText(translate("main_window", "Clicks per Event"))
-        self.advanced_click_events_line_edit.setPlaceholderText(translate("main_window", "e.g. 0"))
-        self.advanced_clicks_per_event_line_edit.setPlaceholderText(translate("main_window", "e.g. 1"))
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.advanced_tab), translate("main_window", "Advanced"))
-        self.start_button.setText(translate("main_window", "Start"))
-        self.stop_button.setText(translate("main_window", "Stop"))
+        self.smpl_clk_intvl_lbl.setText(translate("main_window", "Click Interval"))
+        self.smpl_clk_intvl_scale_cbox.setItemText(
+            0, translate("main_window", "Milliseconds")
+        )
+        self.smpl_clk_intvl_scale_cbox.setItemText(
+            1, translate("main_window", "Seconds")
+        )
+        self.smpl_clk_intvl_scale_cbox.setItemText(
+            2, translate("main_window", "Minutes")
+        )
+        self.smpl_clk_intvl_scale_cbox.setItemText(3, translate("main_window", "Hours"))
+        self.smpl_hkey_lbl.setText(translate("main_window", "Hotkey"))
+        self.smpl_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
+        self.smpl_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
+        self.smpl_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
+        self.smpl_change_loc_btn.setText(translate("main_window", "Change"))
+        self.smpl_mb_lbl.setText(translate("main_window", "Mouse Button"))
+        self.smpl_clk_intvl_ledit.setPlaceholderText(
+            translate("main_window", "e.g. 100")
+        )
+        self.smpl_loc_lbl.setText(translate("main_window", "Location"))
+        self.tab_wgt.setTabText(
+            self.tab_wgt.indexOf(self.smpl_tab), translate("main_window", "Simple")
+        )
+        self.adv_loc_lbl.setText(translate("main_window", "Location"))
+        self.adv_clen_ledit.setPlaceholderText(translate("main_window", "e.g. 50"))
+        self.adv_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
+        self.adv_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
+        self.adv_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
+        self.adv_clk_intvl_ledit.setPlaceholderText(
+            translate("main_window", "e.g. 100")
+        )
+        self.adv_clen_lbl.setText(translate("main_window", "Click Length"))
+        self.adv_clen_scale_cbox.setItemText(
+            0, translate("main_window", "Milliseconds")
+        )
+        self.adv_clen_scale_cbox.setItemText(1, translate("main_window", "Seconds"))
+        self.adv_clen_scale_cbox.setItemText(2, translate("main_window", "Minutes"))
+        self.adv_clen_scale_cbox.setItemText(3, translate("main_window", "Hours"))
+        self.adv_change_loc_btn.setText(translate("main_window", "Change"))
+        self.adv_clk_intvl_lbl.setText(translate("main_window", "Click Interval"))
+        self.adv_clk_events_lbl.setText(translate("main_window", "Click Events"))
+        self.adv_clk_intvl_scale_cbox.setItemText(
+            0, translate("main_window", "Milliseconds")
+        )
+        self.adv_clk_intvl_scale_cbox.setItemText(
+            1, translate("main_window", "Seconds")
+        )
+        self.adv_clk_intvl_scale_cbox.setItemText(
+            2, translate("main_window", "Minutes")
+        )
+        self.adv_clk_intvl_scale_cbox.setItemText(3, translate("main_window", "Hours"))
+        self.adv_hkey_lbl.setText(translate("main_window", "Hotkey"))
+        self.adv_mb_lbl.setText(translate("main_window", "Mouse Button"))
+        self.adv_clicks_per_event_lbl.setText(
+            translate("main_window", "Clicks per Event")
+        )
+        self.adv_clk_events_ledit.setPlaceholderText(translate("main_window", "e.g. 0"))
+        self.adv_clicks_per_event_ledit.setPlaceholderText(
+            translate("main_window", "e.g. 1")
+        )
+        self.tab_wgt.setTabText(
+            self.tab_wgt.indexOf(self.adv_tab),
+            translate("main_window", "Advanced"),
+        )
+        self.start_btn.setText(translate("main_window", "Start"))
+        self.stop_btn.setText(translate("main_window", "Stop"))
