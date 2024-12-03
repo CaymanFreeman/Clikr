@@ -2,10 +2,12 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from multiprocessing import Process
-from typing import Optional, Tuple, Callable
+from typing import Optional, Tuple, Callable, List
 
 import mouse
 import pyautogui
+
+from app import LOGGER
 
 
 @dataclass
@@ -71,36 +73,7 @@ class ClickProcessInputs:
                 return mouse.MIDDLE
 
 
-class ClickProcess(ABC):
-
-    @staticmethod
-    def get_appropriate(inputs: ClickProcessInputs):
-        return (
-            AdvancedClickProcess(inputs)
-            if inputs.is_advanced
-            else SimpleClickProcess(inputs)
-        )
-
-    @abstractmethod
-    @property
-    def appropriate_process_type(self) -> Callable[[], None]:
-        pass
-
-    @abstractmethod
-    def start(self) -> None:
-        pass
-
-    @abstractmethod
-    def click_process(self) -> None:
-        pass
-
-    @abstractmethod
-    def location_click_process(self) -> None:
-        pass
-
-
-class SimpleClickProcess(ClickProcess):
-
+class ClickProcess:
     __slots__ = [
         "click_interval",
         "mouse_button",
@@ -108,22 +81,45 @@ class SimpleClickProcess(ClickProcess):
         "location_y",
     ]
 
+    _active_processes: List[Process] = []
+
     def __init__(self, inputs: ClickProcessInputs):
         self.click_interval = inputs.scaled_click_interval
         self.mouse_button = inputs.mouse_button_str
         self.location_x = inputs.location_x
         self.location_y = inputs.location_y
 
-    @property
-    def appropriate_process_type(self) -> Callable[[], None]:
-        return (
+    @classmethod
+    def get_appropriate(cls, inputs: ClickProcessInputs):
+        return AdvancedClickProcess(inputs) if inputs.is_advanced else cls(inputs)
+
+    @classmethod
+    def terminate_all(cls):
+        for process in cls._active_processes:
+            try:
+                LOGGER.info(f"Attempting to terminate process {process.pid} gracefully")
+                process.join(timeout=1)
+                if process.is_alive():
+                    LOGGER.warning(f"Terminating process {process.pid} forcefully")
+                    process.terminate()
+                process.close()
+
+            except Exception as e:
+                LOGGER.error("Error while terminating process: %s", e)
+        LOGGER.info("Terminated all click processes")
+        cls._active_processes.clear()
+
+    def start(self) -> Process:
+        process_type = (
             self.location_click_process
-            if self.location_x is not None
+            if self.location_x is not None and self.location_y is not None
             else self.click_process
         )
-
-    def start(self) -> None:
-        Process(target=self.appropriate_process_type, daemon=True)
+        process = Process(target=process_type, daemon=True)
+        self.__class__._active_processes.append(process)
+        process.start()
+        LOGGER.info(f"Started click process with PID {process.pid}")
+        return process
 
     def click_process(self) -> None:
         while True:
@@ -131,7 +127,7 @@ class SimpleClickProcess(ClickProcess):
 
     def location_click_process(self) -> None:
         while True:
-            pyautogui.moveTo(self.location_x, self.location_x, _pause=False)
+            pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
             self.run_click_event()
 
     def run_click_event(self) -> None:
@@ -145,41 +141,22 @@ class SimpleClickProcess(ClickProcess):
 
 class AdvancedClickProcess(ClickProcess):
 
-    __slots__ = [
-        "click_interval",
+    __slots__ = ClickProcess.__slots__ + [
         "click_length",
         "clicks_per_event",
         "click_events",
-        "mouse_button",
-        "location_x",
-        "location_y",
     ]
 
     def __init__(self, inputs: ClickProcessInputs):
-        self.click_interval = inputs.scaled_click_interval
+        super().__init__(inputs)
         self.click_length = inputs.scaled_click_length
         self.clicks_per_event = inputs.clicks_per_event
         self.click_events = inputs.click_events
-        self.mouse_button = inputs.mouse_button_str
-        self.location_x = inputs.location_x
-        self.location_y = inputs.location_y
-
-    @property
-    def appropriate_process_type(self) -> Callable[[], None]:
-        return (
-            self.location_click_process
-            if self.location_x is not None
-            else self.click_process
-        )
-
-    def start(self) -> None:
-        Process(target=self.appropriate_process_type, daemon=True)
 
     def click_process(self) -> None:
-        if self.click_length > 0:
-            click_event = self.run_held_click_event
-        else:
-            click_event = self.run_click_event
+        click_event = (
+            self.run_held_click_event if self.click_length > 0 else self.run_click_event
+        )
 
         if self.click_events is None:
             while True:
@@ -189,21 +166,17 @@ class AdvancedClickProcess(ClickProcess):
                 click_event()
 
     def location_click_process(self) -> None:
-        if self.click_length > 0:
-            click_event = self.run_held_click_event
-        else:
-            click_event = self.run_click_event
-
-        def move():
-            pyautogui.moveTo(self.location_x, self.location_x, _pause=False)
+        click_event = (
+            self.run_held_click_event if self.click_length > 0 else self.run_click_event
+        )
 
         if self.click_events is None:
             while True:
-                move()
+                pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
                 click_event()
         else:
             for _ in range(self.click_events):
-                move()
+                pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
                 click_event()
 
     def run_click_event(self) -> None:
