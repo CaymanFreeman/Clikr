@@ -1,6 +1,5 @@
 from pathlib import Path
-
-from PyQt5.QtCore import Qt, QSize, QCoreApplication
+from PyQt5.QtCore import Qt, QSize, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -17,6 +16,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QHBoxLayout,
 )
+
+from src.click_process import ClickProcessInputs, ClickProcess
 
 
 class MainWindow(QMainWindow):
@@ -60,6 +61,10 @@ class MainWindow(QMainWindow):
         self.start_btn = QPushButton
         self.stop_btn = QPushButton
 
+        self.advanced_location = None
+        self.simple_location = None
+        self.active_process = False
+
         self.initialize_window()
         self.translate_ui()
 
@@ -92,6 +97,7 @@ class MainWindow(QMainWindow):
     def initialize_tabs(self):
         tab_wgt = QTabWidget(self.central_wgt)
         tab_wgt.setObjectName("tab_wgt")
+        tab_wgt.currentChanged.connect(self.terminate_processes)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -334,17 +340,20 @@ class MainWindow(QMainWindow):
         btn_layout.setObjectName("btn_layout")
 
         start_btn = QPushButton(self.central_wgt)
+        start_btn.setObjectName("start_btn")
+        start_btn.clicked.connect(self.start_button_clicked)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
         size_policy.setHeightForWidth(start_btn.sizePolicy().hasHeightForWidth())
         start_btn.setSizePolicy(size_policy)
         start_btn.setMinimumSize(QSize(0, 50))
-        start_btn.setObjectName("start_btn")
         btn_layout.addWidget(start_btn)
         self.start_btn = start_btn
 
         stop_btn = QPushButton(self.central_wgt)
+        stop_btn.setObjectName("stop_btn")
+        stop_btn.clicked.connect(self.stop_button_clicked)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -352,7 +361,6 @@ class MainWindow(QMainWindow):
         stop_btn.setSizePolicy(size_policy)
         stop_btn.setMinimumSize(QSize(0, 50))
         stop_btn.setBaseSize(QSize(0, 0))
-        stop_btn.setObjectName("stop_btn")
         btn_layout.addWidget(stop_btn)
         self.stop_btn = stop_btn
 
@@ -431,3 +439,66 @@ class MainWindow(QMainWindow):
         )
         self.start_btn.setText(translate("main_window", "Start"))
         self.stop_btn.setText(translate("main_window", "Stop"))
+
+    @property
+    def in_advanced_tab(self):
+        return self.tab_wgt.currentIndex == 1
+
+    @property
+    def inputs(self) -> ClickProcessInputs:
+        inputs = ClickProcessInputs()
+        inputs.is_advanced = self.in_advanced_tab
+        if inputs.is_advanced:
+            if self.adv_clk_intvl_ledit.text() != "":
+                inputs.click_interval = self.adv_clk_intvl_ledit.text()
+            inputs.click_interval_scale_index = (
+                self.adv_clk_intvl_scale_cbox.currentIndex()
+            )
+            if self.adv_clen_ledit.text() != "":
+                inputs.click_length = self.adv_clen_ledit.text()
+            inputs.click_length_scale_index = self.adv_clen_scale_cbox.currentIndex()
+            if self.adv_clicks_per_event_ledit.text() != "":
+                inputs.clicks_per_event = self.adv_clicks_per_event_ledit.text()
+            inputs.click_events = (
+                self.adv_clk_events_ledit.text()
+                if self.adv_clk_events_ledit.text() != ""
+                else None
+            )
+            inputs.click_location = self.advanced_location
+            inputs.mouse_button_index = self.adv_mb_cbox.currentIndex()
+        else:
+            if self.smpl_clk_intvl_ledit.text() != "":
+                inputs.click_interval = self.smpl_clk_intvl_ledit.text()
+            inputs.click_interval_scale_index = (
+                self.smpl_clk_intvl_scale_cbox.currentIndex()
+            )
+            inputs.click_location = self.simple_location
+            inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
+        return inputs
+
+    @pyqtSlot()
+    def terminate_processes(self):
+        ClickProcess.terminate_all()
+
+    @pyqtSlot()
+    def start_button_clicked(self):
+        self.active_process = True
+        self.stop_btn.setDisabled(False)
+        self.start_btn.setDisabled(True)
+        ClickProcess.terminate_all()
+        click_process = ClickProcess.get_appropriate(self.inputs)
+        click_process.start()
+
+    @pyqtSlot()
+    def stop_button_clicked(self):
+        self.active_process = False
+        self.stop_btn.setDisabled(True)
+        self.start_btn.setDisabled(False)
+        self.terminate_processes()
+
+    def hotkey_toggle(self):
+        (
+            self.stop_button_clicked()
+            if self.active_process
+            else self.start_button_clicked()
+        )

@@ -1,13 +1,23 @@
+import logging
 import time
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from multiprocessing import Process
-from typing import Optional, Tuple, Callable, List
+from typing import Optional, Tuple, List
 
 import mouse
 import pyautogui
 
-from app import LOGGER
+
+def log_setup() -> logging.Logger:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],
+    )
+    return logging.getLogger(__name__)
+
+
+LOGGER = log_setup()
 
 
 @dataclass
@@ -95,15 +105,13 @@ class ClickProcess:
 
     @classmethod
     def terminate_all(cls):
+        if len(cls._active_processes) == 0:
+            return
         for process in cls._active_processes:
             try:
-                LOGGER.info(f"Attempting to terminate process {process.pid} gracefully")
-                process.join(timeout=1)
                 if process.is_alive():
-                    LOGGER.warning(f"Terminating process {process.pid} forcefully")
+                    LOGGER.info(f"Terminating process {process.pid}")
                     process.terminate()
-                process.close()
-
             except Exception as e:
                 LOGGER.error("Error while terminating process: %s", e)
         LOGGER.info("Terminated all click processes")
