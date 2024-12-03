@@ -126,7 +126,9 @@ class ClickProcess:
         process = Process(target=process_type, daemon=True)
         self.__class__._active_processes.append(process)
         process.start()
-        LOGGER.info(f"Started click process with PID {process.pid}")
+        LOGGER.info(
+            f"Started {"advanced " if isinstance(self, AdvancedClickProcess) else ""}click process with PID {process.pid}"
+        )
         return process
 
     def click_process(self) -> None:

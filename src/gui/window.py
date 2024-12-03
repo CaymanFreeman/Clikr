@@ -1,6 +1,8 @@
 from pathlib import Path
+from pprint import pprint
+
 from PyQt5.QtCore import Qt, QSize, QCoreApplication, pyqtSlot
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -15,6 +17,7 @@ from PyQt5.QtWidgets import (
     QKeySequenceEdit,
     QPushButton,
     QHBoxLayout,
+    QShortcut,
 )
 
 from src.click_process import ClickProcessInputs, ClickProcess
@@ -61,9 +64,12 @@ class MainWindow(QMainWindow):
         self.start_btn = QPushButton
         self.stop_btn = QPushButton
 
+        self.hotkey_shortcut = None
+
         self.advanced_location = None
         self.simple_location = None
         self.active_process = False
+        self.first_tab_switch = True
 
         self.initialize_window()
         self.translate_ui()
@@ -97,7 +103,7 @@ class MainWindow(QMainWindow):
     def initialize_tabs(self):
         tab_wgt = QTabWidget(self.central_wgt)
         tab_wgt.setObjectName("tab_wgt")
-        tab_wgt.currentChanged.connect(self.terminate_processes)
+        tab_wgt.currentChanged.connect(self.switched_tabs)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -166,6 +172,7 @@ class MainWindow(QMainWindow):
 
         smpl_hkey_keyseq = QKeySequenceEdit(smpl_tab)
         smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
+        smpl_hkey_keyseq.editingFinished.connect(self.update_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -186,6 +193,7 @@ class MainWindow(QMainWindow):
 
         smpl_clk_intvl_ledit = QLineEdit(smpl_tab)
         smpl_clk_intvl_ledit.setObjectName("smpl_clk_intvl_ledit")
+        smpl_clk_intvl_ledit.setValidator(QIntValidator())
         smpl_clk_intvl_ledit.setMaxLength(7)
         smpl_grid_layout.addWidget(smpl_clk_intvl_ledit, 0, 1, 1, 1)
         self.smpl_clk_intvl_ledit = smpl_clk_intvl_ledit
@@ -225,6 +233,7 @@ class MainWindow(QMainWindow):
 
         adv_clen_ledit = QLineEdit(adv_tab)
         adv_clen_ledit.setObjectName("adv_clen_ledit")
+        adv_clen_ledit.setValidator(QIntValidator())
         adv_grid_layout.addWidget(adv_clen_ledit, 1, 1, 1, 1)
         self.adv_clen_ledit = adv_clen_ledit
 
@@ -245,6 +254,7 @@ class MainWindow(QMainWindow):
 
         adv_clk_intvl_ledit = QLineEdit(adv_tab)
         adv_clk_intvl_ledit.setObjectName("adv_clk_intvl_ledit")
+        adv_clk_intvl_ledit.setValidator(QIntValidator())
         adv_clk_intvl_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_intvl_ledit, 0, 1, 1, 1)
         self.adv_clk_intvl_ledit = adv_clk_intvl_ledit
@@ -256,6 +266,7 @@ class MainWindow(QMainWindow):
 
         adv_hkey_keyseq = QKeySequenceEdit(adv_tab)
         adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
+        adv_hkey_keyseq.editingFinished.connect(self.update_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -316,11 +327,13 @@ class MainWindow(QMainWindow):
 
         adv_clk_events_ledit = QLineEdit(adv_tab)
         adv_clk_events_ledit.setObjectName("adv_clk_events_ledit")
+        adv_clk_events_ledit.setValidator(QIntValidator())
         adv_grid_layout.addWidget(adv_clk_events_ledit, 2, 1, 1, 2)
         self.adv_clk_events_ledit = adv_clk_events_ledit
 
         adv_clicks_per_event_ledit = QLineEdit(adv_tab)
         adv_clicks_per_event_ledit.setObjectName("adv_clicks_per_event_ledit")
+        adv_clicks_per_event_ledit.setValidator(QIntValidator())
         adv_grid_layout.addWidget(adv_clicks_per_event_ledit, 3, 1, 1, 2)
         self.adv_clicks_per_event_ledit = adv_clicks_per_event_ledit
 
@@ -354,6 +367,7 @@ class MainWindow(QMainWindow):
         stop_btn = QPushButton(self.central_wgt)
         stop_btn.setObjectName("stop_btn")
         stop_btn.clicked.connect(self.stop_button_clicked)
+        stop_btn.setDisabled(True)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -442,7 +456,7 @@ class MainWindow(QMainWindow):
 
     @property
     def in_advanced_tab(self):
-        return self.tab_wgt.currentIndex == 1
+        return self.tab_wgt.currentIndex() == 1
 
     @property
     def inputs(self) -> ClickProcessInputs:
@@ -474,6 +488,7 @@ class MainWindow(QMainWindow):
             )
             inputs.click_location = self.simple_location
             inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
+        pprint(inputs)
         return inputs
 
     @pyqtSlot()
@@ -495,6 +510,27 @@ class MainWindow(QMainWindow):
         self.stop_btn.setDisabled(True)
         self.start_btn.setDisabled(False)
         self.terminate_processes()
+
+    @pyqtSlot()
+    def switched_tabs(self):
+        if self.first_tab_switch:
+            self.first_tab_switch = False
+            return
+        self.terminate_processes()
+
+    @pyqtSlot()
+    def update_hotkey(self):
+        if self.sender() == self.adv_hkey_keyseq:
+            self.smpl_hkey_keyseq.setKeySequence(self.adv_hkey_keyseq.keySequence())
+            key_sequence = self.adv_hkey_keyseq.keySequence()
+        else:
+            self.adv_hkey_keyseq.setKeySequence(self.smpl_hkey_keyseq.keySequence())
+            key_sequence = self.smpl_hkey_keyseq.keySequence()
+
+        if self.hotkey_shortcut:
+            del self.hotkey_shortcut
+        self.hotkey_shortcut = QShortcut(key_sequence, self)
+        self.hotkey_shortcut.activated.connect(self.hotkey_toggle)
 
     def hotkey_toggle(self):
         (
