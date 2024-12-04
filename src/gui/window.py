@@ -1,6 +1,10 @@
 from pathlib import Path
 from pprint import pprint
+from time import sleep
 
+import mouse
+import pyautogui
+import keyboard
 from PyQt5.QtCore import Qt, QSize, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtWidgets import (
@@ -17,7 +21,7 @@ from PyQt5.QtWidgets import (
     QKeySequenceEdit,
     QPushButton,
     QHBoxLayout,
-    QShortcut,
+    QApplication,
 )
 
 from src.click_process import ClickProcessInputs, ClickProcess
@@ -64,13 +68,14 @@ class MainWindow(QMainWindow):
         self.start_btn = QPushButton
         self.stop_btn = QPushButton
 
-        self.hotkey_shortcut = None
+        self.current_hotkey = None
 
         self.advanced_location = None
         self.simple_location = None
         self.active_process = False
         self.first_tab_switch = True
 
+        QApplication.processEvents()
         self.initialize_window()
         self.translate_ui()
 
@@ -78,9 +83,7 @@ class MainWindow(QMainWindow):
         self.setObjectName("main_window")
         self.resize(425, 0)
         self.setWindowIcon(QIcon(str(Path("assets/icon.png"))))
-
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
-
         self.initialize_central_wgt()
 
     def initialize_central_wgt(self):
@@ -183,6 +186,7 @@ class MainWindow(QMainWindow):
 
         smpl_change_loc_btn = QPushButton(smpl_tab)
         smpl_change_loc_btn.setObjectName("smpl_change_loc_btn")
+        smpl_change_loc_btn.pressed.connect(self.change_location)
         smpl_grid_layout.addWidget(smpl_change_loc_btn, 2, 2, 1, 1)
         self.smpl_change_loc_btn = smpl_change_loc_btn
 
@@ -234,6 +238,7 @@ class MainWindow(QMainWindow):
         adv_clen_ledit = QLineEdit(adv_tab)
         adv_clen_ledit.setObjectName("adv_clen_ledit")
         adv_clen_ledit.setValidator(QIntValidator())
+        adv_clen_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clen_ledit, 1, 1, 1, 1)
         self.adv_clen_ledit = adv_clen_ledit
 
@@ -286,6 +291,7 @@ class MainWindow(QMainWindow):
 
         adv_change_loc_btn = QPushButton(adv_tab)
         adv_change_loc_btn.setObjectName("adv_change_loc_btn")
+        adv_change_loc_btn.pressed.connect(self.change_location)
         adv_grid_layout.addWidget(adv_change_loc_btn, 5, 2, 1, 1)
         self.adv_change_loc_btn = adv_change_loc_btn
 
@@ -328,12 +334,14 @@ class MainWindow(QMainWindow):
         adv_clk_events_ledit = QLineEdit(adv_tab)
         adv_clk_events_ledit.setObjectName("adv_clk_events_ledit")
         adv_clk_events_ledit.setValidator(QIntValidator())
+        adv_clk_events_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_events_ledit, 2, 1, 1, 2)
         self.adv_clk_events_ledit = adv_clk_events_ledit
 
         adv_clicks_per_event_ledit = QLineEdit(adv_tab)
         adv_clicks_per_event_ledit.setObjectName("adv_clicks_per_event_ledit")
         adv_clicks_per_event_ledit.setValidator(QIntValidator())
+        adv_clicks_per_event_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clicks_per_event_ledit, 3, 1, 1, 2)
         self.adv_clicks_per_event_ledit = adv_clicks_per_event_ledit
 
@@ -403,21 +411,17 @@ class MainWindow(QMainWindow):
         self.smpl_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
         self.smpl_change_loc_btn.setText(translate("main_window", "Change"))
         self.smpl_mb_lbl.setText(translate("main_window", "Mouse Button"))
-        self.smpl_clk_intvl_ledit.setPlaceholderText(
-            translate("main_window", "e.g. 100")
-        )
+        self.smpl_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
         self.smpl_loc_lbl.setText(translate("main_window", "Location"))
         self.tab_wgt.setTabText(
             self.tab_wgt.indexOf(self.smpl_tab), translate("main_window", "Simple")
         )
         self.adv_loc_lbl.setText(translate("main_window", "Location"))
-        self.adv_clen_ledit.setPlaceholderText(translate("main_window", "e.g. 50"))
+        self.adv_clen_ledit.setPlaceholderText(translate("main_window", "0"))
         self.adv_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
         self.adv_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
         self.adv_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
-        self.adv_clk_intvl_ledit.setPlaceholderText(
-            translate("main_window", "e.g. 100")
-        )
+        self.adv_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
         self.adv_clen_lbl.setText(translate("main_window", "Click Length"))
         self.adv_clen_scale_cbox.setItemText(
             0, translate("main_window", "Milliseconds")
@@ -443,9 +447,9 @@ class MainWindow(QMainWindow):
         self.adv_clicks_per_event_lbl.setText(
             translate("main_window", "Clicks per Event")
         )
-        self.adv_clk_events_ledit.setPlaceholderText(translate("main_window", "e.g. 0"))
+        self.adv_clk_events_ledit.setPlaceholderText(translate("main_window", "∞"))
         self.adv_clicks_per_event_ledit.setPlaceholderText(
-            translate("main_window", "e.g. 1")
+            translate("main_window", "1")
         )
         self.tab_wgt.setTabText(
             self.tab_wgt.indexOf(self.adv_tab),
@@ -488,15 +492,25 @@ class MainWindow(QMainWindow):
             )
             inputs.click_location = self.simple_location
             inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
-        pprint(inputs)
         return inputs
 
     @pyqtSlot()
     def terminate_processes(self):
         ClickProcess.terminate_all()
 
+    @property
+    def hotkey_with_location(self) -> bool:
+        if self.in_advanced_tab and self.advanced_location is not None:
+            return not self.adv_hkey_keyseq.keySequence().isEmpty()
+        elif not self.in_advanced_tab and self.simple_location is not None:
+            return not self.smpl_hkey_keyseq.keySequence().isEmpty()
+        return False
+
     @pyqtSlot()
     def start_button_clicked(self):
+        if not self.hotkey_with_location:
+            print("there is not hotkey and location")
+            return
         self.active_process = True
         self.stop_btn.setDisabled(False)
         self.start_btn.setDisabled(True)
@@ -522,15 +536,26 @@ class MainWindow(QMainWindow):
     def update_hotkey(self):
         if self.sender() == self.adv_hkey_keyseq:
             self.smpl_hkey_keyseq.setKeySequence(self.adv_hkey_keyseq.keySequence())
-            key_sequence = self.adv_hkey_keyseq.keySequence()
+            key_sequence = self.adv_hkey_keyseq.keySequence().toString()
         else:
             self.adv_hkey_keyseq.setKeySequence(self.smpl_hkey_keyseq.keySequence())
-            key_sequence = self.smpl_hkey_keyseq.keySequence()
+            key_sequence = self.smpl_hkey_keyseq.keySequence().toString()
 
-        if self.hotkey_shortcut:
-            del self.hotkey_shortcut
-        self.hotkey_shortcut = QShortcut(key_sequence, self)
-        self.hotkey_shortcut.activated.connect(self.hotkey_toggle)
+        key_sequence = key_sequence.replace("+", " + ").lower()
+
+        if self.current_hotkey:
+            keyboard.unhook(self.current_hotkey)
+        self.current_hotkey = key_sequence
+        keyboard.add_hotkey(self.current_hotkey, self.hotkey_toggle)
+
+    def closeEvent(self, event):
+        keyboard.unhook_all()
+        mouse.unhook_all()
+        event.accept()
+
+    def __del__(self):
+        keyboard.unhook_all()
+        mouse.unhook_all()
 
     def hotkey_toggle(self):
         (
@@ -538,3 +563,35 @@ class MainWindow(QMainWindow):
             if self.active_process
             else self.start_button_clicked()
         )
+
+    def change_location(self):
+        advanced_tab = self.in_advanced_tab
+
+        def set_location():
+            x, y = mouse.get_position()
+            if advanced_tab:
+                self.advanced_location = (x, y)
+                self.adv_change_loc_btn.setEnabled(True)
+            else:
+                self.simple_location = (x, y)
+                self.smpl_change_loc_btn.setEnabled(True)
+            self.update_location_displays()
+            mouse.unhook_all()
+
+        (
+            self.adv_change_loc_btn.setEnabled(False)
+            if advanced_tab
+            else self.smpl_change_loc_btn.setEnabled(False)
+        )
+        sleep(0.1)
+        mouse.on_click(set_location)
+
+    def update_location_displays(self):
+        if self.advanced_location is not None:
+            self.adv_loc_display_ledit.setText(
+                f"({self.advanced_location[0]}, {self.advanced_location[1]})"
+            )
+        if self.simple_location is not None:
+            self.smpl_loc_display_ledit.setText(
+                f"({self.simple_location[0]}, {self.simple_location[1]})"
+            )

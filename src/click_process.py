@@ -10,8 +10,8 @@ import pyautogui
 
 def log_setup() -> logging.Logger:
     logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(message)s",
         handlers=[logging.StreamHandler()],
     )
     return logging.getLogger(__name__)
@@ -117,6 +117,25 @@ class ClickProcess:
         LOGGER.info("Terminated all click processes")
         cls._active_processes.clear()
 
+    def start_process_str(self, pid: int):
+        if isinstance(self, AdvancedClickProcess):
+            return (
+                f"Started advanced click process with PID {pid}:"
+                f" click_interval={self.click_interval}s"
+                f" mouse_button={self.mouse_button}"
+                f" location={f"({self.location_x}, {self.location_y})" if self.location_x is not None and self.location_y is not None else None}"
+                f" click_length={self.click_length}"
+                f" clicks_per_event={self.clicks_per_event}"
+                f" click_events={self.click_events}"
+            )
+        else:
+            return (
+                f"Started click process with PID {pid}:"
+                f" click_interval={self.click_interval}s"
+                f" mouse_button={self.mouse_button}"
+                f" location={f"({self.location_x}, {self.location_y})" if self.location_x is not None and self.location_y is not None else None}"
+            )
+
     def start(self) -> Process:
         process_type = (
             self.location_click_process
@@ -126,9 +145,7 @@ class ClickProcess:
         process = Process(target=process_type, daemon=True)
         self.__class__._active_processes.append(process)
         process.start()
-        LOGGER.info(
-            f"Started {"advanced " if isinstance(self, AdvancedClickProcess) else ""}click process with PID {process.pid}"
-        )
+        LOGGER.info(self.start_process_str(process.pid))
         return process
 
     def click_process(self) -> None:
