@@ -509,7 +509,6 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def start_button_clicked(self):
         if not self.hotkey_with_location:
-            print("there is not hotkey and location")
             return
         self.active_process = True
         self.stop_btn.setDisabled(False)
