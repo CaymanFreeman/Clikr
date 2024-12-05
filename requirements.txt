@@ -2,3 +2,4 @@ mouse~=0.7.1
 keyboard~=0.13.5
 PyAutoGUI~=0.9.54
 PyQt5~=5.15.11
+pyinstaller~=6.11.1

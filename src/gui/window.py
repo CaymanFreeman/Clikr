@@ -1,9 +1,8 @@
+import os.path
 from pathlib import Path
-from pprint import pprint
 from time import sleep
 
 import mouse
-import pyautogui
 import keyboard
 from PyQt5.QtCore import Qt, QSize, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QIcon, QIntValidator
@@ -24,7 +23,7 @@ from PyQt5.QtWidgets import (
     QApplication,
 )
 
-from src.click_process import ClickProcessInputs, ClickProcess
+from click_process import ClickProcessInputs, ClickProcess
 
 
 class MainWindow(QMainWindow):
@@ -82,7 +81,8 @@ class MainWindow(QMainWindow):
     def initialize_window(self):
         self.setObjectName("main_window")
         self.resize(425, 0)
-        self.setWindowIcon(QIcon(str(Path("assets/icon.png"))))
+        icon_path = Path(os.path.dirname(__file__)).parent.joinpath("icon.png")
+        self.setWindowIcon(QIcon(str(icon_path)))
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.initialize_central_wgt()
 
@@ -551,10 +551,6 @@ class MainWindow(QMainWindow):
         keyboard.unhook_all()
         mouse.unhook_all()
         event.accept()
-
-    def __del__(self):
-        keyboard.unhook_all()
-        mouse.unhook_all()
 
     def hotkey_toggle(self):
         (

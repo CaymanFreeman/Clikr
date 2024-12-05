@@ -1,4 +1,6 @@
+import os
 import sys
+from pathlib import Path
 
 import pyautogui
 from PyQt5.QtWidgets import QApplication
