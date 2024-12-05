@@ -1,0 +1,86 @@
+name: PyInstaller Build
+
+on:
+  workflow_call:
+    inputs:
+      beta:
+        description: 'Beta Version'
+        required: true
+        type: boolean
+        default: false
+    outputs:
+      windows_version:
+        value: Windows ${{jobs.pyinstaller-windows.outputs.version_major}} (${{jobs.pyinstaller-windows.outputs.version}})
+      ubuntu_version:
+        value: ${{jobs.pyinstaller-ubuntu.outputs.version}}
+
+permissions:
+  contents: read
+
+jobs:
+  pyinstaller-ubuntu:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{steps.get-version.outputs.version}}
+    strategy:
+      matrix:
+        python-version: [ 3.12 ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Version
+        id: get-version
+        run: |
+          version=$(lsb_release -ds)
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./requirements.txt
+          pip install pyinstaller
+          pip install argcomplete
+          sudo apt-get update -y
+          sudo apt-get install python3-dev -y
+
+      - name: PyInstaller Build
+        run: |
+          PYINSTALLER=".github/workflows/scripts/ubuntu/pyinstaller.sh"
+          sudo chmod +x $PYINSTALLER
+          sudo $PYINSTALLER
+
+  pyinstaller-windows:
+    runs-on: windows-latest
+    outputs:
+      version: ${{steps.get-version.outputs.version}}
+      version_major: ${{steps.get-version.outputs.version_major}}
+    strategy:
+      matrix:
+        python-version: [3.12]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Version
+        id: get-version
+        shell: pwsh
+        run: |
+          $ver = (Get-WmiObject Win32_OperatingSystem).Version
+          $verMajor = if ([Environment]::OSVersion.Version.Major -eq 10) {
+              if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
+          } else { "10" }
+          "version=$ver" >> $env:GITHUB_OUTPUT
+          "version_major=$verMajor" >> $env:GITHUB_OUTPUT
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./requirements.txt
+
+      - name: PyInstaller Build
+        run: .github\workflows\scripts\windows\pyinstaller.bat
