@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
 
     def initialize_window(self):
         self.setObjectName("main_window")
-        self.resize(425, 0)
+        self.resize(400, 300)
         icon_path = Path(os.path.dirname(__file__)).parent.joinpath("icon.png")
         self.setWindowIcon(QIcon(str(icon_path)))
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
 
         smpl_hkey_keyseq = QKeySequenceEdit(smpl_tab)
         smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
-        smpl_hkey_keyseq.editingFinished.connect(self.update_hotkey)
+        smpl_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -271,7 +271,7 @@ class MainWindow(QMainWindow):
 
         adv_hkey_keyseq = QKeySequenceEdit(adv_tab)
         adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
-        adv_hkey_keyseq.editingFinished.connect(self.update_hotkey)
+        adv_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -409,6 +409,7 @@ class MainWindow(QMainWindow):
         self.smpl_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
         self.smpl_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
         self.smpl_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
+        self.smpl_loc_display_ledit.setPlaceholderText(translate("main_window", "None"))
         self.smpl_change_loc_btn.setText(translate("main_window", "Change"))
         self.smpl_mb_lbl.setText(translate("main_window", "Mouse Button"))
         self.smpl_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
@@ -421,6 +422,7 @@ class MainWindow(QMainWindow):
         self.adv_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
         self.adv_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
         self.adv_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
+        self.adv_loc_display_ledit.setPlaceholderText(translate("main_window", "None"))
         self.adv_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
         self.adv_clen_lbl.setText(translate("main_window", "Click Length"))
         self.adv_clen_scale_cbox.setItemText(
@@ -457,6 +459,16 @@ class MainWindow(QMainWindow):
         )
         self.start_btn.setText(translate("main_window", "Start"))
         self.stop_btn.setText(translate("main_window", "Stop"))
+
+    def keyPressEvent(self, event):
+        focused_widget = QApplication.focusWidget()
+        if isinstance(focused_widget, QKeySequenceEdit):
+            if event.key() == Qt.Key_Escape:
+                focused_widget.clearFocus()
+                focused_widget.clear()
+                self.current_hotkey = None
+                return
+        super().keyPressEvent(event)
 
     @property
     def in_advanced_tab(self):
@@ -532,20 +544,18 @@ class MainWindow(QMainWindow):
         self.terminate_processes()
 
     @pyqtSlot()
-    def update_hotkey(self):
-        if self.sender() == self.adv_hkey_keyseq:
-            self.smpl_hkey_keyseq.setKeySequence(self.adv_hkey_keyseq.keySequence())
-            key_sequence = self.adv_hkey_keyseq.keySequence().toString()
-        else:
+    def hotkey_changed(self):
+        sender = self.sender()
+        if sender == self.smpl_hkey_keyseq:
             self.adv_hkey_keyseq.setKeySequence(self.smpl_hkey_keyseq.keySequence())
-            key_sequence = self.smpl_hkey_keyseq.keySequence().toString()
-
-        key_sequence = key_sequence.replace("+", " + ").lower()
-
-        if self.current_hotkey:
-            keyboard.unhook(self.current_hotkey)
-        self.current_hotkey = key_sequence
-        keyboard.add_hotkey(self.current_hotkey, self.hotkey_toggle)
+        elif sender == self.adv_hkey_keyseq:
+            self.smpl_hkey_keyseq.setKeySequence(self.adv_hkey_keyseq.keySequence())
+        key_sequence = sender.keySequence().toString()
+        if key_sequence:
+            key_sequence = str(key_sequence).replace(" ", "").lower()
+            if self.current_hotkey:
+                keyboard.unhook_all_hotkeys()
+            self.current_hotkey = keyboard.add_hotkey(key_sequence, self.hotkey_toggle)
 
     def closeEvent(self, event):
         keyboard.unhook_all()
