@@ -16,7 +16,7 @@ The click interval determines the amount of time between clicks. Setting this to
 ### Click Length
 
 ##### Default: 0
-The click length determines how long to hold the click. For example, if the click length is set to 50 milliseconds, the mouse will be pressed down, wait for 50 milliseconds, then release. A click length of 0 will not perform a held click. Setting this to any value greater than 0 will assume the clicks per event to be 0.
+The click length determines how long to hold the click. For example, if the click length is set to 50 milliseconds, the mouse will be pressed down, wait for 50 milliseconds, then release. A click length of 0 will not perform a held click.
 
 ### Click Events
 
