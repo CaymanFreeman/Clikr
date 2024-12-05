@@ -512,11 +512,17 @@ class MainWindow(QMainWindow):
 
     @property
     def hotkey_with_location(self) -> bool:
-        if self.in_advanced_tab and self.advanced_location is not None:
-            return not self.adv_hkey_keyseq.keySequence().isEmpty()
-        elif not self.in_advanced_tab and self.simple_location is not None:
-            return not self.smpl_hkey_keyseq.keySequence().isEmpty()
-        return False
+        return (
+            (
+                self.advanced_location is None
+                or not self.adv_hkey_keyseq.keySequence().isEmpty()
+            )
+            if self.in_advanced_tab
+            else (
+                self.simple_location is None
+                or not self.smpl_hkey_keyseq.keySequence().isEmpty()
+            )
+        )
 
     @pyqtSlot()
     def start_button_clicked(self):
