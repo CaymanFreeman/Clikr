@@ -42,9 +42,7 @@ jobs:
 
       - name: PyInstaller Build
         run: |
-          PYINSTALLER=".github/workflows/scripts/ubuntu/pyinstaller.sh"
-          sudo chmod +x $PYINSTALLER
-          sudo $PYINSTALLER
+          python -m PyInstaller .github/workflows/scripts/ubuntu/pyinstaller.sh
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
@@ -84,7 +82,7 @@ jobs:
           pip install -r ./requirements.txt
 
       - name: PyInstaller Build
-        run: .github\workflows\scripts\windows\pyinstaller.bat
+        run: python -m PyInstaller .github\workflows\scripts\windows\pyinstaller.bat
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
