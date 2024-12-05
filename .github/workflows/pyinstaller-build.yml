@@ -2,17 +2,11 @@ name: PyInstaller Build
 
 on:
   workflow_call:
-    inputs:
-      beta:
-        description: 'Beta Version'
-        required: true
-        type: boolean
-        default: false
     outputs:
       windows_version:
-        value: Windows ${{jobs.pyinstaller-windows.outputs.version_major}} (${{jobs.pyinstaller-windows.outputs.version}})
+        value: Windows ${{ jobs.pyinstaller-windows.outputs.version_major}} (${{jobs.pyinstaller-windows.outputs.version }})
       ubuntu_version:
-        value: ${{jobs.pyinstaller-ubuntu.outputs.version}}
+        value: ${{ jobs.pyinstaller-ubuntu.outputs.version }}
 
 permissions:
   contents: read
@@ -21,7 +15,7 @@ jobs:
   pyinstaller-ubuntu:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{steps.get-version.outputs.version}}
+      version: ${{ steps.get-version.outputs.version }}
     strategy:
       matrix:
         python-version: [ 3.12 ]
@@ -52,11 +46,18 @@ jobs:
           sudo chmod +x $PYINSTALLER
           sudo $PYINSTALLER
 
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-build
+          path: builds
+          retention-days: 1
+
   pyinstaller-windows:
     runs-on: windows-latest
     outputs:
-      version: ${{steps.get-version.outputs.version}}
-      version_major: ${{steps.get-version.outputs.version_major}}
+      version: ${{ steps.get-version.outputs.version }}
+      version_major: ${{ steps.get-version.outputs.version_major }}
     strategy:
       matrix:
         python-version: [3.12]
@@ -84,3 +85,10 @@ jobs:
 
       - name: PyInstaller Build
         run: .github\workflows\scripts\windows\pyinstaller.bat
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: builds
+          retention-days: 1

@@ -1,0 +1,107 @@
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release Type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      beta:
+        description: 'Beta Version'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  pyinstaller-build:
+    uses: ./.github/workflows/pyinstaller-build.yml
+
+  determine-version:
+    runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.version.outputs.release_version }}
+
+    steps:
+      - name: Determine Version
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_VERSION=$(gh release list --limit 1 --json tagName | jq -r '.[] | .tagName' | sed 's/^v//')
+
+          if [[ -z "$LATEST_VERSION" ]]; then
+          LATEST_VERSION="0.1.0"
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
+
+          case "${{ inputs.release_type }}" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+          if [[ "${{ inputs.beta }}" == "true" ]]; then
+            VERSION="${VERSION}b"
+          fi
+
+          echo "release_version=$VERSION" >> $GITHUB_OUTPUT
+
+  create-release:
+    needs: [ pyinstaller-build, determine-version ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Ubuntu Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: ubuntu-build
+          path: builds
+
+      - name: Download Windows Executable
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: builds
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ needs.determine-version.outputs.release_version }}
+          tag_name: v${{ needs.determine-version.outputs.release_version }}
+          body: |
+            
+            ### Build Environments
+            **EasyAutoClicker.exe:** ${{ needs.pyinstaller-build.outputs.windows_version }}
+            **easyautoclicker:** ${{ needs.pyinstaller-build.outputs.ubuntu_version }}
+            
+            ### Changes
+            
+            - Changed lorem ipsum
+          generate_release_notes: true
+          prerelease: ${{ inputs.beta }}
+          draft: true
+          files: |
+            builds/EasyAutoClicker.exe
+            builds/easyautoclicker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
