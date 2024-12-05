@@ -1,6 +1,5 @@
-import os
+import multiprocessing
 import sys
-from pathlib import Path
 
 import pyautogui
 from PyQt5.QtWidgets import QApplication
@@ -18,4 +17,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if sys.platform.startswith("win"):
+        multiprocessing.freeze_support()
     main()
