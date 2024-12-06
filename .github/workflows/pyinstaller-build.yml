@@ -52,7 +52,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-build
-          path: builds
+          path: dist/easyautoclicker
+          if-no-files-found: error
           retention-days: 1
 
   pyinstaller-windows:
@@ -101,5 +102,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: builds
+          path: dist\EasyAutoClicker.exe
+          if-no-files-found: error
           retention-days: 1
