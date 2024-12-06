@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QHBoxLayout,
     QApplication,
+    QMessageBox,
 )
 
 from click_process import ClickProcessInputs, ClickProcess
@@ -66,6 +67,7 @@ class MainWindow(QMainWindow):
         self.btn_layout = QHBoxLayout
         self.start_btn = QPushButton
         self.stop_btn = QPushButton
+        self.hloc_warning_msgb = QMessageBox
 
         self.current_hotkey = None
 
@@ -102,6 +104,7 @@ class MainWindow(QMainWindow):
 
         self.initialize_tabs()
         self.initialize_btn_controls()
+        self.initialize_hotkey_location_warning()
 
     def initialize_tabs(self):
         tab_wgt = QTabWidget(self.central_wgt)
@@ -391,10 +394,21 @@ class MainWindow(QMainWindow):
         self.central_wgt_layout.addLayout(btn_layout)
         self.btn_layout = btn_layout
 
+    def initialize_hotkey_location_warning(self):
+        hloc_warning_msgb = QMessageBox(self)
+        hloc_warning_msgb.setIcon(QMessageBox.Icon.Information)
+        hloc_warning_msgb.setText("")
+        hloc_warning_msgb.setWindowTitle("")
+        hloc_warning_msgb.setStandardButtons(QMessageBox.StandardButton.Ok)
+        self.hloc_warning_msgb = hloc_warning_msgb
+
     def translate_ui(self):
         translate = QCoreApplication.translate
         self.setWindowTitle(translate("main_window", "Easy Auto Clicker"))
-        self.smpl_clk_intvl_lbl.setText(translate("main_window", "Click Interval"))
+        self.smpl_clk_intvl_lbl.setText(translate("main_window", "Interval"))
+        self.smpl_clk_intvl_lbl.setToolTip(
+            translate("main_window", "The time between each click event")
+        )
         self.smpl_clk_intvl_scale_cbox.setItemText(
             0, translate("main_window", "Milliseconds")
         )
@@ -406,25 +420,40 @@ class MainWindow(QMainWindow):
         )
         self.smpl_clk_intvl_scale_cbox.setItemText(3, translate("main_window", "Hours"))
         self.smpl_hkey_lbl.setText(translate("main_window", "Hotkey"))
+        self.smpl_hkey_lbl.setToolTip(
+            translate("main_window", "The hotkey to toggle the click process")
+        )
         self.smpl_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
         self.smpl_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
         self.smpl_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
         self.smpl_loc_display_ledit.setPlaceholderText(translate("main_window", "None"))
         self.smpl_change_loc_btn.setText(translate("main_window", "Change"))
         self.smpl_mb_lbl.setText(translate("main_window", "Mouse Button"))
+        self.smpl_mb_lbl.setToolTip(
+            translate("main_window", "The mouse button to use for each click")
+        )
         self.smpl_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
         self.smpl_loc_lbl.setText(translate("main_window", "Location"))
+        self.smpl_loc_lbl.setToolTip(
+            translate("main_window", "The (x, y) location on the screen to click")
+        )
         self.tab_wgt.setTabText(
             self.tab_wgt.indexOf(self.smpl_tab), translate("main_window", "Simple")
         )
         self.adv_loc_lbl.setText(translate("main_window", "Location"))
+        self.adv_loc_lbl.setToolTip(
+            translate("main_window", "The (x, y) location on the screen to click")
+        )
         self.adv_clen_ledit.setPlaceholderText(translate("main_window", "0"))
         self.adv_mb_cbox.setItemText(0, translate("main_window", "Left (M1)"))
         self.adv_mb_cbox.setItemText(1, translate("main_window", "Right (M2)"))
         self.adv_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
         self.adv_loc_display_ledit.setPlaceholderText(translate("main_window", "None"))
         self.adv_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
-        self.adv_clen_lbl.setText(translate("main_window", "Click Length"))
+        self.adv_clen_lbl.setText(translate("main_window", "Length"))
+        self.adv_clen_lbl.setToolTip(
+            translate("main_window", "The amount of time to hold each click")
+        )
         self.adv_clen_scale_cbox.setItemText(
             0, translate("main_window", "Milliseconds")
         )
@@ -432,8 +461,11 @@ class MainWindow(QMainWindow):
         self.adv_clen_scale_cbox.setItemText(2, translate("main_window", "Minutes"))
         self.adv_clen_scale_cbox.setItemText(3, translate("main_window", "Hours"))
         self.adv_change_loc_btn.setText(translate("main_window", "Change"))
-        self.adv_clk_intvl_lbl.setText(translate("main_window", "Click Interval"))
-        self.adv_clk_events_lbl.setText(translate("main_window", "Click Events"))
+        self.adv_clk_intvl_lbl.setText(translate("main_window", "Interval"))
+        self.adv_clk_intvl_lbl.setToolTip(
+            translate("main_window", "The time between each click event")
+        )
+        self.adv_clk_events_lbl.setText(translate("main_window", "Event Count"))
         self.adv_clk_intvl_scale_cbox.setItemText(
             0, translate("main_window", "Milliseconds")
         )
@@ -445,9 +477,18 @@ class MainWindow(QMainWindow):
         )
         self.adv_clk_intvl_scale_cbox.setItemText(3, translate("main_window", "Hours"))
         self.adv_hkey_lbl.setText(translate("main_window", "Hotkey"))
+        self.adv_hkey_lbl.setToolTip(
+            translate("main_window", "The hotkey to toggle the click process")
+        )
         self.adv_mb_lbl.setText(translate("main_window", "Mouse Button"))
+        self.adv_mb_lbl.setToolTip(
+            translate("main_window", "The mouse button to use for each click")
+        )
         self.adv_clicks_per_event_lbl.setText(
             translate("main_window", "Clicks per Event")
+        )
+        self.adv_clicks_per_event_lbl.setToolTip(
+            translate("main_window", "The amount of clicks to run for each click event")
         )
         self.adv_clk_events_ledit.setPlaceholderText(translate("main_window", "∞"))
         self.adv_clicks_per_event_ledit.setPlaceholderText(
@@ -459,15 +500,21 @@ class MainWindow(QMainWindow):
         )
         self.start_btn.setText(translate("main_window", "Start"))
         self.stop_btn.setText(translate("main_window", "Stop"))
+        self.hloc_warning_msgb.setWindowTitle("Softlock Prevention")
+        self.hloc_warning_msgb.setText(
+            "You must set a hotkey if you are using a location.\nThis prevents you from softlocking your mouse."
+        )
 
     def keyPressEvent(self, event):
-        focused_widget = QApplication.focusWidget()
-        if isinstance(focused_widget, QKeySequenceEdit):
-            if event.key() == Qt.Key_Escape:
-                focused_widget.clearFocus()
-                focused_widget.clear()
-                self.current_hotkey = None
-                return
+        focused_widget = self.focusWidget()
+        if (
+            isinstance(focused_widget, QKeySequenceEdit)
+            and event.key() == Qt.Key_Escape
+        ):
+            focused_widget.clearFocus()
+            focused_widget.clear()
+            self.current_hotkey = None
+            return
         super().keyPressEvent(event)
 
     @property
@@ -511,8 +558,8 @@ class MainWindow(QMainWindow):
         ClickProcess.terminate_all()
 
     @property
-    def hotkey_with_location(self) -> bool:
-        return (
+    def softlock_capable(self) -> bool:
+        return not (
             (
                 self.advanced_location is None
                 or not self.adv_hkey_keyseq.keySequence().isEmpty()
@@ -526,7 +573,8 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def start_button_clicked(self):
-        if not self.hotkey_with_location:
+        if self.softlock_capable:
+            self.hloc_warning_msgb.exec()
             return
         self.active_process = True
         self.stop_btn.setDisabled(False)
