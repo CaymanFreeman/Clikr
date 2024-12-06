@@ -2,11 +2,19 @@ name: PyInstaller Build
 
 on:
   workflow_call:
+    inputs:
+      release-version:
+        required: true
+        type: string
     outputs:
       windows_version:
         value: Windows ${{ jobs.pyinstaller-windows.outputs.version_major}} (${{jobs.pyinstaller-windows.outputs.version }})
       ubuntu_version:
         value: ${{ jobs.pyinstaller-ubuntu.outputs.version }}
+      windows_build_name:
+        value: ${{ jobs.pyinstaller-windows.outputs.build_name }}
+      ubuntu_build_name:
+        value: ${{ jobs.pyinstaller-ubuntu.outputs.build_name }}
 
 permissions:
   contents: read
@@ -16,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get-version.outputs.version }}
+      build_name: ${{ steps.zip.outputs.ubuntu_build_name }}
     strategy:
       matrix:
         python-version: [ 3.12 ]
@@ -49,11 +58,18 @@ jobs:
           sudo chmod +x .github/workflows/scripts/ubuntu/pyinstaller.sh
           .github/workflows/scripts/ubuntu/pyinstaller.sh
 
+      - name: Compress & Zip Build
+        id: zip
+        run: |
+          ubuntu_build_name=EasyAutoClicker-${{ inputs.release-version }}-Linux-x64.gz
+          gzip -c dist/easyautoclicker > $ubuntu_build_name
+          echo "ubuntu_build_name=$ubuntu_build_name" >> $GITHUB_OUTPUT
+
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-build
-          path: dist/easyautoclicker
+          path: ${{ steps.zip.outputs.ubuntu_build_name }}
           if-no-files-found: error
           retention-days: 1
 
@@ -62,6 +78,7 @@ jobs:
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       version_major: ${{ steps.get-version.outputs.version_major }}
+      build_name: ${{ steps.zip.outputs.windows_build_name }}
     strategy:
       matrix:
         python-version: [3.12]
@@ -96,13 +113,19 @@ jobs:
           pip install pyinstaller
 
       - name: PyInstaller Build
+        run: .github\workflows\scripts\windows\pyinstaller.bat
+
+      - name: Compress & Zip Build
+        id: zip
         run: |
-          .github\workflows\scripts\windows\pyinstaller.bat
+          $windowsBuildName = "EasyAutoClicker-${{ inputs.release-version }}-Win-x64.zip"
+          Compress-Archive -Path "dist\EasyAutoClicker.exe" -DestinationPath "${windowsBuildName}"
+          "windows_build_name=$windowsBuildName" >> $env:GITHUB_OUTPUT
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: dist\EasyAutoClicker.exe
+          path: ${{ steps.zip.outputs.windows_build_name }}
           if-no-files-found: error
           retention-days: 1

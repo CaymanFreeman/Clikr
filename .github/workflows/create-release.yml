@@ -21,80 +21,45 @@ permissions:
   contents: write
 
 jobs:
+
+  release-version:
+    uses: ./.github/workflows/release-version.yml
+    with:
+      release_type: ${{ inputs.release_type }}
+      beta: ${{ inputs.beta }}
+
   pyinstaller-build:
+    needs: release-version
     uses: ./.github/workflows/pyinstaller-build.yml
-
-  determine-version:
-    runs-on: ubuntu-latest
-    outputs:
-      release_version: ${{ steps.version.outputs.release_version }}
-
-    steps:
-      - name: Determine Version
-        id: version
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          LATEST_VERSION=$(gh release list --limit 1 --json tagName | jq -r '.[] | .tagName' | sed 's/^v//')
-
-          if [[ -z "$LATEST_VERSION" ]]; then
-          LATEST_VERSION="0.1.0"
-          fi
-
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
-
-          case "${{ inputs.release_type }}" in
-            "Major (x.0.0)")
-              MAJOR=$((MAJOR + 1))
-              MINOR=0
-              PATCH=0
-              ;;
-            "Minor (0.x.0)")
-              MINOR=$((MINOR + 1))
-              PATCH=0
-              ;;
-            "Patch (0.0.x)")
-              PATCH=$((PATCH + 1))
-              ;;
-          esac
-
-          VERSION="${MAJOR}.${MINOR}.${PATCH}"
-
-          if [[ "${{ inputs.beta }}" == "true" ]]; then
-            VERSION="${VERSION}b"
-          fi
-
-          echo "release_version=$VERSION" >> $GITHUB_OUTPUT
+    with:
+      release-version: ${{ needs.release-version.outputs.release_version }}
 
   create-release:
-    needs: [ pyinstaller-build, determine-version ]
+    needs: [ pyinstaller-build, release-version ]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Ubuntu Binary
+      - name: Download Ubuntu gZip
         uses: actions/download-artifact@v4
         with:
           name: ubuntu-build
-          path: builds
 
-      - name: Download Windows Executable
+      - name: Download Windows Zip
         uses: actions/download-artifact@v4
         with:
           name: windows-build
-          path: builds
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ needs.determine-version.outputs.release_version }}
-          tag_name: v${{ needs.determine-version.outputs.release_version }}
+          name: Release ${{ needs.release-version.outputs.release_version }}
+          tag_name: v${{ needs.release-version.outputs.release_version }}
           body: |
-            
             ### Build Environments
-            **EasyAutoClicker.exe:** ${{ needs.pyinstaller-build.outputs.windows_version }}
-            **easyautoclicker:** ${{ needs.pyinstaller-build.outputs.ubuntu_version }}
+            **${{ needs.pyinstaller-build.outputs.windows_build_name }}:** ${{ needs.pyinstaller-build.outputs.windows_version }}
+            **${{ needs.pyinstaller-build.outputs.ubuntu_build_name }}:** ${{ needs.pyinstaller-build.outputs.ubuntu_version }}
             
             ### Changes
             
@@ -103,7 +68,7 @@ jobs:
           prerelease: ${{ inputs.beta }}
           draft: true
           files: |
-            builds/EasyAutoClicker.exe
-            builds/easyautoclicker
+            ${{ needs.pyinstaller-build.outputs.windows_build_name }}
+            ${{ needs.pyinstaller-build.outputs.ubuntu_build_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

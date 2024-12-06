@@ -1,0 +1,57 @@
+name: Release Version
+
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        required: true
+        type: string
+      beta:
+        required: true
+        type: boolean
+    outputs:
+      release_version:
+        value: ${{ jobs.determine-version.outputs.release_version }}
+
+jobs:
+  determine-version:
+    runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.version.outputs.release_version }}
+
+    steps:
+      - name: Determine Release Version
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_VERSION=$(gh release list --limit 1 --json tagName | jq -r '.[] | .tagName' | sed 's/^v//')
+
+          if [[ -z "$LATEST_VERSION" ]]; then
+          LATEST_VERSION="0.1.0"
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
+
+          case "${{ inputs.release_type }}" in
+            "Major (x.0.0)")
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            "Minor (0.x.0)")
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            "Patch (0.0.x)")
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+          if [[ "${{ inputs.beta }}" == "true" ]]; then
+            VERSION="${VERSION}b"
+          fi
+
+          echo "release_version=$VERSION" >> $GITHUB_OUTPUT
