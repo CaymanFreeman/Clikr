@@ -4,10 +4,6 @@
 
 ## Settings
 
-![View of EasyAutoClicker's simple settings in Windows 10](.github/assets/simple_settings.png) ![View of EasyAutoClicker's advanced settings in Windows 10](.github/assets/advanced_settings.png)
-
-(Images taken in Windows 10)
-
 ### Click Interval
 
 ##### Default: 100 Milliseconds
@@ -36,7 +32,7 @@ The mouse button determines which button on the mouse will be used for each clic
 ### Location
 
 ##### Default: None
-The location determines where each click event will occur. A location can be picked by pressing the "Change" button and clicking the desired location on the screen. The location can be reset to "None" by clicking the "Change" button and pressing Esc. If a location is not specified, the user-controlled mouse position will be used instead. If using a specific location, a hotkey must be set as well to prevent soft-locking.
+The location determines where each click event will occur. A location can be picked by pressing the "Change" button and clicking the desired location on the screen. The location can be reset to "None" by clicking the "Change" button and pressing Esc. If a location is not specified, the user-controlled mouse position will be used instead. If using a specific location, a hotkey must be set as well to prevent softlocking.
 
 ### Hotkey
 
