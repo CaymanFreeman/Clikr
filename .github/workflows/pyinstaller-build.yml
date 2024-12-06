@@ -46,6 +46,7 @@ jobs:
 
       - name: PyInstaller Build
         run: |
+          sudo chmod +x .github/workflows/scripts/ubuntu/pyinstaller.sh
           .github/workflows/scripts/ubuntu/pyinstaller.sh
 
       - name: Upload Build
