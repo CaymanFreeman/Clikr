@@ -30,19 +30,23 @@ jobs:
 
       - name: Set Up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set Up Environment
+        run: |
+          python -m venv .venv
+          .venv/bin/activate
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
           pip install pyinstaller
-          pip install argcomplete
-          sudo apt-get update -y
-          sudo apt-get install python3-dev -y
 
       - name: PyInstaller Build
         run: |
-          python -m PyInstaller .github/workflows/scripts/ubuntu/pyinstaller.sh
+          .github/workflows/scripts/ubuntu/pyinstaller.sh
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
@@ -75,14 +79,23 @@ jobs:
 
       - name: Set Up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set Up Environment
+        run: |
+          python -m venv .venv
+          .venv\Scripts\activate.bat
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
+          pip install pyinstaller
 
       - name: PyInstaller Build
-        run: python -m PyInstaller .github\workflows\scripts\windows\pyinstaller.bat
+        run: |
+          .github\workflows\scripts\windows\pyinstaller.bat
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
