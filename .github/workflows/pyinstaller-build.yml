@@ -8,7 +8,7 @@ on:
         type: string
     outputs:
       windows_version:
-        value: Windows ${{ jobs.pyinstaller-windows.outputs.version_major}} (${{jobs.pyinstaller-windows.outputs.version }})
+        value: Windows ${{ jobs.pyinstaller-windows.outputs.version_major }} (${{ jobs.pyinstaller-windows.outputs.version }})
       ubuntu_version:
         value: ${{ jobs.pyinstaller-ubuntu.outputs.version }}
       windows_build_name:

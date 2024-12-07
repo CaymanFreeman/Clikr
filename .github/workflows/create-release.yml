@@ -3,50 +3,29 @@ name: Create Release
 on:
   workflow_dispatch:
     inputs:
-      release_type:
-        description: "Release Type"
+      release_version:
+        description: "Release Version"
         required: true
-        type: choice
-        options:
-          - Patch (0.0.x)
-          - Minor (0.x.0)
-          - Major (x.0.0)
-      beta:
-        description: "Beta Version"
+        type: string
+        default: "0.0.0"
+      pre-release:
+        description: "Pre-release"
         required: true
         type: boolean
         default: false
-      version_override:
-        description: "Version Override"
-        required: false
-        type: string
-        default: ""
-      release_changes:
-        description: "Release Changes"
-        required: false
-        type: string
-        default: "- Changed lorem ipsum"
 
 permissions:
   contents: write
 
 jobs:
 
-  release-version:
-    uses: ./.github/workflows/release-version.yml
-    with:
-      release_type: ${{ inputs.release_type }}
-      beta: ${{ inputs.beta }}
-      version_override: ${{ inputs.version_override }}
-
   pyinstaller-build:
-    needs: release-version
     uses: ./.github/workflows/pyinstaller-build.yml
     with:
-      release-version: ${{ needs.release-version.outputs.release_version }}
+      release-version: ${{ inputs.release_version }}
 
   create-release:
-    needs: [ pyinstaller-build, release-version ]
+    needs: pyinstaller-build
     runs-on: ubuntu-latest
 
     steps:
@@ -65,8 +44,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ needs.release-version.outputs.release_version }}
-          tag_name: v${{ needs.release-version.outputs.release_version }}
+          name: Release ${{ inputs.release_version }}
+          tag_name: v${{ inputs.release_version }}
           body: |
             ### Build Environments
             **${{ needs.pyinstaller-build.outputs.windows_build_name }}:** ${{ needs.pyinstaller-build.outputs.windows_version }}
@@ -74,9 +53,9 @@ jobs:
             
             ### Changes
             
-            ${{ inputs.release_changes }}
+            - Changed lorem ipsum
           generate_release_notes: true
-          prerelease: ${{ inputs.beta }}
+          prerelease: ${{ inputs.pre-release }}
           draft: true
           files: |
             ${{ needs.pyinstaller-build.outputs.windows_build_name }}
