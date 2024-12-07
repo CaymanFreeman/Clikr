@@ -9,6 +9,9 @@ on:
       beta:
         required: true
         type: boolean
+      version_override:
+        required: true
+        type: string
     outputs:
       release_version:
         value: ${{ jobs.determine-version.outputs.release_version }}
@@ -20,38 +23,12 @@ jobs:
       release_version: ${{ steps.version.outputs.release_version }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Determine Release Version
         id: version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_VERSION=$(gh release list --limit 1 --json tagName | jq -r '.[] | .tagName' | sed 's/^v//')
-
-          if [[ -z "$LATEST_VERSION" ]]; then
-          LATEST_VERSION="0.1.0"
-          fi
-
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
-
-          case "${{ inputs.release_type }}" in
-            "Major (x.0.0)")
-              MAJOR=$((MAJOR + 1))
-              MINOR=0
-              PATCH=0
-              ;;
-            "Minor (0.x.0)")
-              MINOR=$((MINOR + 1))
-              PATCH=0
-              ;;
-            "Patch (0.0.x)")
-              PATCH=$((PATCH + 1))
-              ;;
-          esac
-
-          VERSION="${MAJOR}.${MINOR}.${PATCH}"
-
-          if [[ "${{ inputs.beta }}" == "true" ]]; then
-            VERSION="${VERSION}b"
-          fi
-
-          echo "release_version=$VERSION" >> $GITHUB_OUTPUT
+          sudo chmod +x .github/workflows/scripts/ubuntu/release_version.sh
+          .github/workflows/scripts/ubuntu/release_version.sh "${{ inputs.release_type }}" "${{ inputs.version_override }}" "${{ inputs.beta }}"
