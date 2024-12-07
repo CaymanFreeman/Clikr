@@ -4,14 +4,14 @@ import sys
 import pyautogui
 from PyQt5.QtWidgets import QApplication
 
-from gui.window import MainWindow
+from gui.window_logic import AppWindow
 
 
 def main():
     pyautogui.MINIMUM_DURATION = 0.0
     pyautogui.PAUSE = 0.0
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = AppWindow()
     window.show()
     sys.exit(app.exec_())
 

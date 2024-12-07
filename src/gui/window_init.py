@@ -1,33 +1,29 @@
-import os.path
+import os
 from pathlib import Path
-from time import sleep
 
-import mouse
-import keyboard
-from PyQt5.QtCore import Qt, QSize, QCoreApplication, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QCoreApplication
 from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
     QVBoxLayout,
     QTabWidget,
-    QSizePolicy,
     QGridLayout,
-    QLayout,
     QLabel,
     QComboBox,
     QLineEdit,
     QKeySequenceEdit,
     QPushButton,
     QHBoxLayout,
-    QApplication,
     QMessageBox,
+    QSizePolicy,
+    QLayout,
+    QApplication,
 )
-
-from click_process import ClickProcessInputs, ClickProcess
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.central_wgt = QWidget
@@ -179,6 +175,7 @@ class MainWindow(QMainWindow):
         smpl_hkey_keyseq = QKeySequenceEdit(smpl_tab)
         smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
         smpl_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
+        smpl_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -275,6 +272,7 @@ class MainWindow(QMainWindow):
         adv_hkey_keyseq = QKeySequenceEdit(adv_tab)
         adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
         adv_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
+        adv_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -504,153 +502,3 @@ class MainWindow(QMainWindow):
         self.hloc_warning_msgb.setText(
             "You must set a hotkey if you are using a location.\nThis prevents you from softlocking your mouse."
         )
-
-    def keyPressEvent(self, event):
-        focused_widget = self.focusWidget()
-        if (
-            isinstance(focused_widget, QKeySequenceEdit)
-            and event.key() == Qt.Key_Escape
-        ):
-            focused_widget.clearFocus()
-            focused_widget.clear()
-            self.current_hotkey = None
-            return
-        super().keyPressEvent(event)
-
-    @property
-    def in_advanced_tab(self):
-        return self.tab_wgt.currentIndex() == 1
-
-    @property
-    def inputs(self) -> ClickProcessInputs:
-        inputs = ClickProcessInputs()
-        inputs.is_advanced = self.in_advanced_tab
-        if inputs.is_advanced:
-            if self.adv_clk_intvl_ledit.text() != "":
-                inputs.click_interval = self.adv_clk_intvl_ledit.text()
-            inputs.click_interval_scale_index = (
-                self.adv_clk_intvl_scale_cbox.currentIndex()
-            )
-            if self.adv_clen_ledit.text() != "":
-                inputs.click_length = self.adv_clen_ledit.text()
-            inputs.click_length_scale_index = self.adv_clen_scale_cbox.currentIndex()
-            if self.adv_clicks_per_event_ledit.text() != "":
-                inputs.clicks_per_event = self.adv_clicks_per_event_ledit.text()
-            inputs.click_events = (
-                self.adv_clk_events_ledit.text()
-                if self.adv_clk_events_ledit.text() != ""
-                else None
-            )
-            inputs.click_location = self.advanced_location
-            inputs.mouse_button_index = self.adv_mb_cbox.currentIndex()
-        else:
-            if self.smpl_clk_intvl_ledit.text() != "":
-                inputs.click_interval = self.smpl_clk_intvl_ledit.text()
-            inputs.click_interval_scale_index = (
-                self.smpl_clk_intvl_scale_cbox.currentIndex()
-            )
-            inputs.click_location = self.simple_location
-            inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
-        return inputs
-
-    @pyqtSlot()
-    def terminate_processes(self):
-        ClickProcess.terminate_all()
-
-    @property
-    def softlock_capable(self) -> bool:
-        return not (
-            (
-                self.advanced_location is None
-                or not self.adv_hkey_keyseq.keySequence().isEmpty()
-            )
-            if self.in_advanced_tab
-            else (
-                self.simple_location is None
-                or not self.smpl_hkey_keyseq.keySequence().isEmpty()
-            )
-        )
-
-    @pyqtSlot()
-    def start_button_clicked(self):
-        if self.softlock_capable:
-            self.hloc_warning_msgb.exec()
-            return
-        self.active_process = True
-        self.stop_btn.setDisabled(False)
-        self.start_btn.setDisabled(True)
-        ClickProcess.terminate_all()
-        click_process = ClickProcess.get_appropriate(self.inputs)
-        click_process.start()
-
-    @pyqtSlot()
-    def stop_button_clicked(self):
-        self.active_process = False
-        self.stop_btn.setDisabled(True)
-        self.start_btn.setDisabled(False)
-        self.terminate_processes()
-
-    @pyqtSlot()
-    def switched_tabs(self):
-        if self.first_tab_switch:
-            self.first_tab_switch = False
-            return
-        self.terminate_processes()
-
-    @pyqtSlot()
-    def hotkey_changed(self):
-        sender = self.sender()
-        if sender == self.smpl_hkey_keyseq:
-            self.adv_hkey_keyseq.setKeySequence(self.smpl_hkey_keyseq.keySequence())
-        elif sender == self.adv_hkey_keyseq:
-            self.smpl_hkey_keyseq.setKeySequence(self.adv_hkey_keyseq.keySequence())
-        key_sequence = sender.keySequence().toString()
-        if key_sequence:
-            key_sequence = str(key_sequence).replace(" ", "").lower()
-            if self.current_hotkey:
-                keyboard.unhook_all_hotkeys()
-            self.current_hotkey = keyboard.add_hotkey(key_sequence, self.hotkey_toggle)
-
-    def closeEvent(self, event):
-        keyboard.unhook_all()
-        mouse.unhook_all()
-        event.accept()
-
-    def hotkey_toggle(self):
-        (
-            self.stop_button_clicked()
-            if self.active_process
-            else self.start_button_clicked()
-        )
-
-    def change_location(self):
-        advanced_tab = self.in_advanced_tab
-
-        def set_location():
-            x, y = mouse.get_position()
-            if advanced_tab:
-                self.advanced_location = (x, y)
-                self.adv_change_loc_btn.setEnabled(True)
-            else:
-                self.simple_location = (x, y)
-                self.smpl_change_loc_btn.setEnabled(True)
-            self.update_location_displays()
-            mouse.unhook_all()
-
-        (
-            self.adv_change_loc_btn.setEnabled(False)
-            if advanced_tab
-            else self.smpl_change_loc_btn.setEnabled(False)
-        )
-        sleep(0.1)
-        mouse.on_click(set_location)
-
-    def update_location_displays(self):
-        if self.advanced_location is not None:
-            self.adv_loc_display_ledit.setText(
-                f"({self.advanced_location[0]}, {self.advanced_location[1]})"
-            )
-        if self.simple_location is not None:
-            self.smpl_loc_display_ledit.setText(
-                f"({self.simple_location[0]}, {self.simple_location[1]})"
-            )
