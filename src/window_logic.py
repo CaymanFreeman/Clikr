@@ -5,7 +5,7 @@ import keyboard
 from PyQt5.QtCore import pyqtSlot
 
 from click_process import ClickProcessInputs, ClickProcess
-from gui.window_init import MainWindow
+from window_init import MainWindow
 
 
 class AppWindow(MainWindow):

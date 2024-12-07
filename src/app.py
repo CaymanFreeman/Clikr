@@ -4,7 +4,7 @@ import sys
 import pyautogui
 from PyQt5.QtWidgets import QApplication
 
-from gui.window_logic import AppWindow
+from window_logic import AppWindow
 
 
 def main():
