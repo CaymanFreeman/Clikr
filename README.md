@@ -22,8 +22,12 @@
 
 
 <h3 align="center">
-  Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.
+  Starting automatic clicking processes via a simple GUI.
 </h3>
+
+## Releases
+
+Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.
 
 ## Settings
 
