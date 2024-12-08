@@ -16,7 +16,7 @@
   <a href="https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/LICENSE.md"><img alt="MIT License" src="https://img.shields.io/github/license/CaymanFreeman/EasyAutoClicker?style=flat&color=%23B20D35"></a>
   <a href="https://www.python.org/"><img alt="Built With Python" src="https://img.shields.io/badge/built_with-Python-brightgreen&style=flat"></a>
   <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/EasyAutoClicker?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>
-  <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/LinkedIn-Connect_with_me-%230072b1?style=flat"></a>
+  <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
 
 
