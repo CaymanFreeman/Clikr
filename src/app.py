@@ -1,15 +1,12 @@
 import multiprocessing
 import sys
 
-import pyautogui
 from PyQt5.QtWidgets import QApplication
 
 from window_logic import AppWindow
 
 
 def main():
-    pyautogui.MINIMUM_DURATION = 0.0
-    pyautogui.PAUSE = 0.0
     app = QApplication(sys.argv)
     window = AppWindow()
     window.show()

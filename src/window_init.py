@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.btn_layout = QHBoxLayout
         self.start_btn = QPushButton
         self.stop_btn = QPushButton
-        self.hloc_warning_msgb = QMessageBox
+        self.softlock_warning_msgb = QMessageBox
 
         self.current_hotkey = None
 
@@ -394,11 +394,11 @@ class MainWindow(QMainWindow):
 
     def initialize_hotkey_location_warning(self):
         hloc_warning_msgb = QMessageBox(self)
-        hloc_warning_msgb.setIcon(QMessageBox.Icon.Information)
+        hloc_warning_msgb.setIcon(QMessageBox.Icon.Warning)
         hloc_warning_msgb.setText("")
         hloc_warning_msgb.setWindowTitle("")
         hloc_warning_msgb.setStandardButtons(QMessageBox.StandardButton.Ok)
-        self.hloc_warning_msgb = hloc_warning_msgb
+        self.softlock_warning_msgb = hloc_warning_msgb
 
     def translate_ui(self):
         translate = QCoreApplication.translate
@@ -498,7 +498,7 @@ class MainWindow(QMainWindow):
         )
         self.start_btn.setText(translate("main_window", "Start"))
         self.stop_btn.setText(translate("main_window", "Stop"))
-        self.hloc_warning_msgb.setWindowTitle("Softlock Prevention")
-        self.hloc_warning_msgb.setText(
+        self.softlock_warning_msgb.setWindowTitle("Softlock Prevention")
+        self.softlock_warning_msgb.setText(
             "You must set a hotkey if you are using a location.\nThis prevents you from softlocking your mouse."
         )

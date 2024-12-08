@@ -2,15 +2,22 @@ from time import sleep
 
 import mouse
 import keyboard
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QObject, pyqtSignal, QThread
 
-from click_process import ClickProcessInputs, ClickProcess
+from click_process import ClickProcessInputs, ClickProcess, AdvancedClickProcess
 from window_init import MainWindow
+
+
+class FinishedSignalEmitter(QObject):
+    finished_signal = pyqtSignal()
 
 
 class AppWindow(MainWindow):
     def __init__(self):
         super().__init__()
+        self._finished_emitter = FinishedSignalEmitter()
+        self._finished_emitter.finished_signal.connect(self.stop_button_clicked)
+        self._current_click_process = None
 
     def clear_hotkey(self):
         key_sequence_edit = self.sender()
@@ -32,17 +39,17 @@ class AppWindow(MainWindow):
         inputs.is_advanced = self.in_advanced_tab
         if inputs.is_advanced:
             if self.adv_clk_intvl_ledit.text() != "":
-                inputs.click_interval = self.adv_clk_intvl_ledit.text()
+                inputs.click_interval = int(self.adv_clk_intvl_ledit.text())
             inputs.click_interval_scale_index = (
                 self.adv_clk_intvl_scale_cbox.currentIndex()
             )
             if self.adv_clen_ledit.text() != "":
-                inputs.click_length = self.adv_clen_ledit.text()
+                inputs.click_length = int(self.adv_clen_ledit.text())
             inputs.click_length_scale_index = self.adv_clen_scale_cbox.currentIndex()
             if self.adv_clicks_per_event_ledit.text() != "":
-                inputs.clicks_per_event = self.adv_clicks_per_event_ledit.text()
+                inputs.clicks_per_event = int(self.adv_clicks_per_event_ledit.text())
             inputs.click_events = (
-                self.adv_clk_events_ledit.text()
+                int(self.adv_clk_events_ledit.text())
                 if self.adv_clk_events_ledit.text() != ""
                 else None
             )
@@ -50,7 +57,7 @@ class AppWindow(MainWindow):
             inputs.mouse_button_index = self.adv_mb_cbox.currentIndex()
         else:
             if self.smpl_clk_intvl_ledit.text() != "":
-                inputs.click_interval = self.smpl_clk_intvl_ledit.text()
+                inputs.click_interval = int(self.smpl_clk_intvl_ledit.text())
             inputs.click_interval_scale_index = (
                 self.smpl_clk_intvl_scale_cbox.currentIndex()
             )
@@ -58,49 +65,59 @@ class AppWindow(MainWindow):
             inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
         return inputs
 
-    @pyqtSlot()
-    def terminate_processes(self):
-        ClickProcess.terminate_all()
-
     @property
     def softlock_capable(self) -> bool:
-        return not (
-            (
-                self.advanced_location is None
-                or not self.adv_hkey_keyseq.keySequence().isEmpty()
-            )
-            if self.in_advanced_tab
-            else (
-                self.simple_location is None
-                or not self.smpl_hkey_keyseq.keySequence().isEmpty()
-            )
+        return (
+            not self.in_advanced_tab
+            and self.simple_location is not None
+            and self.smpl_hkey_keyseq.keySequence().isEmpty()
+        ) or (
+            self.in_advanced_tab
+            and self.advanced_location is not None
+            and self.adv_clk_events_ledit.text() == ""
+            and self.adv_hkey_keyseq.keySequence().isEmpty()
         )
 
     @pyqtSlot()
     def start_button_clicked(self):
         if self.softlock_capable:
-            self.hloc_warning_msgb.exec()
+            self.softlock_warning_msgb.exec()
             return
         self.active_process = True
         self.stop_btn.setDisabled(False)
         self.start_btn.setDisabled(True)
         ClickProcess.terminate_all()
         click_process = ClickProcess.get_appropriate(self.inputs)
+        if (
+            isinstance(click_process, AdvancedClickProcess)
+            and click_process.click_events is not None
+        ):
+            self._start_finished_event_watcher(click_process)
         click_process.start()
+        self._current_click_process = click_process
 
     @pyqtSlot()
     def stop_button_clicked(self):
         self.active_process = False
         self.stop_btn.setDisabled(True)
         self.start_btn.setDisabled(False)
-        self.terminate_processes()
+        ClickProcess.terminate_all()
+
+    def _start_finished_event_watcher(self, click_process):
+        def wait_for_finished():
+            click_process.finished.wait()
+            self._finished_emitter.finished_signal.emit()
+
+        thread = QThread()
+        thread.run = wait_for_finished
+        thread.start()
 
     @pyqtSlot()
     def switched_tabs(self):
         if self.first_tab_switch:
             self.first_tab_switch = False
             return
-        self.terminate_processes()
+        ClickProcess.terminate_all()
 
     @pyqtSlot()
     def hotkey_changed(self):
@@ -147,7 +164,7 @@ class AppWindow(MainWindow):
             if advanced_tab
             else self.smpl_change_loc_btn.setEnabled(False)
         )
-        sleep(0.1)
+        sleep(0.2)
         mouse.on_click(set_location)
 
     def update_location_displays(self):

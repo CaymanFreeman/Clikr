@@ -1,11 +1,14 @@
 import logging
 import time
 from dataclasses import dataclass
-from multiprocessing import Process
+from multiprocessing import Process, Event
 from typing import Optional, Tuple, List
 
 import mouse
 import pyautogui
+
+pyautogui.MINIMUM_DURATION = 0.0
+pyautogui.PAUSE = 0.0
 
 
 def log_setup() -> logging.Logger:
@@ -84,12 +87,6 @@ class ClickProcessInputs:
 
 
 class ClickProcess:
-    __slots__ = [
-        "click_interval",
-        "mouse_button",
-        "location_x",
-        "location_y",
-    ]
 
     _active_processes: List[Process] = []
 
@@ -98,6 +95,7 @@ class ClickProcess:
         self.mouse_button = inputs.mouse_button_str
         self.location_x = inputs.location_x
         self.location_y = inputs.location_y
+        self.finished = Event()
 
     @classmethod
     def get_appropriate(cls, inputs: ClickProcessInputs):
@@ -154,7 +152,7 @@ class ClickProcess:
 
     def location_click_process(self) -> None:
         while True:
-            pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
+            mouse.move(self.location_x, self.location_y)
             self.run_click_event()
 
     def run_click_event(self) -> None:
@@ -167,12 +165,6 @@ class ClickProcess:
 
 
 class AdvancedClickProcess(ClickProcess):
-
-    __slots__ = ClickProcess.__slots__ + [
-        "click_length",
-        "clicks_per_event",
-        "click_events",
-    ]
 
     def __init__(self, inputs: ClickProcessInputs):
         super().__init__(inputs)
@@ -191,6 +183,7 @@ class AdvancedClickProcess(ClickProcess):
         else:
             for _ in range(self.click_events):
                 click_event()
+            self.finished.set()
 
     def location_click_process(self) -> None:
         click_event = (
@@ -205,6 +198,7 @@ class AdvancedClickProcess(ClickProcess):
             for _ in range(self.click_events):
                 pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
                 click_event()
+            self.finished.set()
 
     def run_click_event(self) -> None:
         start_time = time.perf_counter()
