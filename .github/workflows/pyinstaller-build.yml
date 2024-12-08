@@ -9,10 +9,12 @@ on:
     outputs:
       windows_version:
         value: Windows ${{ jobs.pyinstaller-windows.outputs.version_major }} (${{ jobs.pyinstaller-windows.outputs.version }})
-      ubuntu_version:
-        value: ${{ jobs.pyinstaller-ubuntu.outputs.version }}
       windows_build_name:
         value: ${{ jobs.pyinstaller-windows.outputs.build_name }}
+      windows_installer_name:
+        value: ${{ jobs.pyinstaller-windows.outputs.installer_name }}
+      ubuntu_version:
+        value: ${{ jobs.pyinstaller-ubuntu.outputs.version }}
       ubuntu_build_name:
         value: ${{ jobs.pyinstaller-ubuntu.outputs.build_name }}
 
@@ -79,6 +81,7 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
       version_major: ${{ steps.get-version.outputs.version_major }}
       build_name: ${{ steps.zip.outputs.windows_build_name }}
+      installer_name: ${{ steps.installer.outputs.installer_name }}
     strategy:
       matrix:
         python-version: [3.12]
@@ -91,7 +94,7 @@ jobs:
         run: |
           $ver = (Get-WmiObject Win32_OperatingSystem).Version
           $verMajor = if ([Environment]::OSVersion.Version.Major -eq 10) {
-              if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
+            if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
           } else { "10" }
           "version=$ver" >> $env:GITHUB_OUTPUT
           "version_major=$verMajor" >> $env:GITHUB_OUTPUT
@@ -109,11 +112,30 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r ./requirements.txt
+          pip install -r .\requirements.txt
           pip install pyinstaller
 
       - name: PyInstaller Build
         run: .github\workflows\scripts\windows\pyinstaller.bat
+
+      - name: Compile Installer
+        id: installer
+        shell: pwsh
+        run: |
+          $version = "${{ inputs.release-version }}"
+          $exeName = "EasyAutoClicker.exe"
+          $exePath = "$(Get-Location)\dist\$exeName"
+          $iconPath = "$(Get-Location)\assets\icon.ico"
+          $licensePath = "$(Get-Location)\LICENSE.md"
+
+          iscc installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
+          
+          Get-ChildItem -Recurse -Directory | Where-Object { $_.FullName -notmatch '\\\.venv|\\\.github' } | Select-Object FullName
+
+          $installerName = "EasyAutoClicker-Setup-x64.exe"
+          Move-Item -Path "Output\EasyAutoClicker.exe" -Destination "$installerName" -ErrorAction Stop
+
+          echo "installer_name=$installerName" >> $env:GITHUB_OUTPUT
 
       - name: Compress & Zip Build
         id: zip
@@ -127,5 +149,13 @@ jobs:
         with:
           name: windows-build
           path: ${{ steps.zip.outputs.windows_build_name }}
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: ${{ steps.installer.outputs.installer_name }}
           if-no-files-found: error
           retention-days: 1

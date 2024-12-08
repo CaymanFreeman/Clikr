@@ -58,6 +58,7 @@ jobs:
           prerelease: ${{ inputs.pre-release }}
           draft: true
           files: |
+            ${{ needs.pyinstaller-build.outputs.windows_installer_name }}
             ${{ needs.pyinstaller-build.outputs.windows_build_name }}
             ${{ needs.pyinstaller-build.outputs.ubuntu_build_name }}
         env:
