@@ -79,7 +79,13 @@ class MainWindow(QMainWindow):
     def initialize_window(self):
         self.setObjectName("main_window")
         self.resize(400, 300)
-        icon_path = Path(os.path.dirname(__file__)).parent.joinpath("icon.png")
+        built_icon_path = Path(os.path.dirname(__file__)).parent.joinpath("icon.png")
+        source_icon_path = (
+            Path(os.path.dirname(__file__))
+            .parent.joinpath("assets")
+            .joinpath("icon.png")
+        )
+        icon_path = built_icon_path if built_icon_path.exists() else source_icon_path
         self.setWindowIcon(QIcon(str(icon_path)))
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.initialize_central_wgt()
