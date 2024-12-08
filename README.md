@@ -1,6 +1,29 @@
-<p align="center"><img src="assets/icon.png" width="256" height="256" alt="EasyAutoClicker Logo"></p> <p align="center">Icon via Flaticon.com</p>
+<p align="center">
+  <img src="assets/icon.png" width="256" height="256" alt="EasyAutoClicker Logo">
+</p>
 
-<h1 align="center">Easy Auto Clicker</h1> <h3 align="center">Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.</h3>
+<div id="toc" align="center">
+  <ul style="list-style: none;">
+    <summary>
+      <h1 align="center">
+        Easy Auto Clicker
+      </h1>
+    </summary>
+  </ul>
+</div>
+
+<p align="center">
+  <a href="https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/LICENSE.md"><img alt="MIT License" src="https://img.shields.io/github/license/CaymanFreeman/EasyAutoClicker?style=flat&color=%23B20D35"></a>
+  <a href="https://www.python.org/"><img alt="Built With Python" src="https://img.shields.io/badge/built_with-Python-brightgreen&style=flat"></a>
+  <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/EasyAutoClicker?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>
+  <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-Connect_with_me-%230072b1?style=flat"></a>
+</p>
+
+
+
+<h3 align="center">
+  Easy Auto Clicker is an application for starting automatic clicking processes via a simple GUI. Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.
+</h3>
 
 ## Settings
 
