@@ -37,3 +37,7 @@ The location determines where each click event will occur. A location can be pic
 ### Hotkey
 
 The hotkey sequence determines which keys will toggle the click process. To change the hotkey, click into the field and begin typing. Click out of the field to stop editing the sequence or press Esc to clear it. A hotkey must be set if a specific location is provided.
+
+## Build From Source
+
+To build from source, a recipe for Windows and Linux can be found [here](https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/.github/assets/build_recipes.md).
