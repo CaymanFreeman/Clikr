@@ -19,8 +19,6 @@
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
 
-
-
 <h3 align="center">
   Starting automatic clicking processes via a simple GUI.
 </h3>
