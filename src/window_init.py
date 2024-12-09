@@ -80,23 +80,36 @@ class MainWindow(QMainWindow):
     def initialize_window(self):
         self.setObjectName("main_window")
         self.resize(400, 300)
-        built_icon_path = Path(os.path.dirname(__file__)).parent.joinpath("icon.png")
+
         source_icon_path = (
             Path(os.path.dirname(__file__))
             .parent.joinpath("assets")
             .joinpath("icon.png")
         )
 
-        def icon_not_found() -> Path:
-            self.logger.warning("Icon path was not found")
-            return Path()
-
-        icon_path = (
-            built_icon_path
-            if built_icon_path.exists()
-            else source_icon_path if source_icon_path.exists() else icon_not_found()
+        build_icon_path = (
+            Path(os.path.dirname(__file__)).joinpath("assets").joinpath("icon.png")
         )
-        self.setWindowIcon(QIcon(str(icon_path)))
+
+        def build_icon() -> QIcon:
+            self.logger.info("Icon set to %s", build_icon_path)
+            return QIcon(str(build_icon_path))
+
+        def source_icon() -> QIcon:
+            self.logger.info("Icon set to %s", source_icon_path)
+            return QIcon(str(source_icon_path))
+
+        (
+            self.setWindowIcon(source_icon())
+            if source_icon_path.exists()
+            else (
+                self.setWindowIcon(build_icon())
+                if build_icon_path.exists()
+                else self.logger.warning(
+                    "Icon was not found at %s or %s", source_icon_path, build_icon_path
+                )
+            )
+        )
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.initialize_central_wgt()
 
