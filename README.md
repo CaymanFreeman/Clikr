@@ -67,9 +67,9 @@ The hotkey sequence determines which keys will toggle the click process. To chan
 
 ## Build From Source
 
-### Requirements
+### Prerequisites
 
-Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed.
+Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed. For Linux, the following packages will also need to be installed: `python3-pyqt5 python3-dev scrot python3-tk python3-xlib`.
 
 ## Windows
 
@@ -93,7 +93,7 @@ pip install pyinstaller
 
 ### PyInstaller Build
 ```batch
-pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md:." --icon="assets\icon.ico" --add-data="assets\icon.png:." src\app.py
+pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\app.py
 ```
 
 ### Run Executable
@@ -110,7 +110,7 @@ git clone https://github.com/CaymanFreeman/EasyAutoClicker && cd EasyAutoClicker
 ### Virtual Environment Setup
 ```bash
 python -m venv .venv
-.venv/bin/activate
+source .venv/bin/activate
 ```
 
 ### Install Dependencies
@@ -122,7 +122,7 @@ pip install pyinstaller
 
 ### PyInstaller Build
 ```bash
-pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --add-data="assets/icon.png:." src/app.py
+pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." src/app.py
 ```
 
 ### Run Binary
