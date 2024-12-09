@@ -227,12 +227,6 @@ class AppWindow(MainWindow):
             )
         self.logger.info("Hotkey set to %s", self.current_hotkey)
 
-    def closeEvent(self, event):
-        self.logger.info("Closing and stopping input listeners")
-        self.clear_hotkey()
-        self.join_mouse_listener()
-        event.accept()
-
     def hotkey_toggle(self):
         (
             self.stop_button_clicked()
