@@ -1,4 +1,4 @@
-<p align="center">
+p align="center">
   <img src="assets/icon.png" width="256" height="256" alt="EasyAutoClicker Logo">
 </p>
 
@@ -13,7 +13,7 @@
 </div>
 
 <h3 align="center">
-  Starting automatic clicking processes via a simple GUI.
+  Start automatic clicking processes via a simple GUI.
 </h3>
 
 <p align="center">
