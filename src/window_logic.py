@@ -176,7 +176,7 @@ class AppWindow(MainWindow):
         self.active_process = True
         self.stop_btn.setDisabled(False)
         self.start_btn.setDisabled(True)
-        ClickProcess.terminate_all()
+        ClickProcess.terminate_all(self.logger)
         click_process = ClickProcess.get_appropriate(self.inputs, self.logger)
         if (
             isinstance(click_process, AdvancedClickProcess)
@@ -191,7 +191,7 @@ class AppWindow(MainWindow):
         self.active_process = False
         self.stop_btn.setDisabled(True)
         self.start_btn.setDisabled(False)
-        ClickProcess.terminate_all()
+        ClickProcess.terminate_all(self.logger)
 
     def _start_finished_event_watcher(self, click_process):
         def wait_for_finished():
@@ -207,7 +207,7 @@ class AppWindow(MainWindow):
         if self.first_tab_switch:
             self.first_tab_switch = False
             return
-        ClickProcess.terminate_all()
+        ClickProcess.terminate_all(self.logger)
 
     @pyqtSlot()
     def hotkey_changed(self):

@@ -74,11 +74,10 @@ class ClickProcessInputs:
 
 class ClickProcess:
 
-    _logger = None
     _active_processes: List[Process] = []
 
-    def __init__(self, inputs: ClickProcessInputs):
-        self._logger = self.__class__._logger
+    def __init__(self, inputs: ClickProcessInputs, logger):
+        self.logger = logger
         self.click_interval = inputs.scaled_click_interval
         self.mouse_button = inputs.mouse_button_str
         self.location_x = inputs.location_x
@@ -87,21 +86,24 @@ class ClickProcess:
 
     @classmethod
     def get_appropriate(cls, inputs: ClickProcessInputs, logger):
-        cls._logger = logger
-        return AdvancedClickProcess(inputs) if inputs.is_advanced else cls(inputs)
+        return (
+            AdvancedClickProcess(inputs, logger)
+            if inputs.is_advanced
+            else cls(inputs, logger)
+        )
 
     @classmethod
-    def terminate_all(cls):
+    def terminate_all(cls, logger):
         if len(cls._active_processes) == 0:
             return
         for process in cls._active_processes:
             try:
                 if process.is_alive():
-                    cls._logger.info(f"Terminating process {process.pid}")
+                    logger.info(f"Terminating process {process.pid}")
                     process.terminate()
             except Exception as e:
-                cls._logger.error("Error while terminating process: %s", e)
-        cls._logger.info("Terminated all click processes")
+                logger.error("Error while terminating process: %s", e)
+        logger.info("Terminated all click processes")
         cls._active_processes.clear()
 
     def start_process_str(self, pid: int):
@@ -132,7 +134,7 @@ class ClickProcess:
         process = Process(target=process_type, daemon=True)
         self.__class__._active_processes.append(process)
         process.start()
-        self._logger.info(self.start_process_str(process.pid))
+        self.logger.info(self.start_process_str(process.pid))
         return process
 
     def click_process(self) -> None:
@@ -155,9 +157,8 @@ class ClickProcess:
 
 class AdvancedClickProcess(ClickProcess):
 
-    def __init__(self, inputs: ClickProcessInputs):
-        super().__init__(inputs)
-        self.logger = super().__class__._logger
+    def __init__(self, inputs: ClickProcessInputs, logger):
+        super().__init__(inputs, logger)
         self.click_length = inputs.scaled_click_length
         self.clicks_per_event = inputs.clicks_per_event
         self.click_events = inputs.click_events
