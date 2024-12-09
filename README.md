@@ -134,7 +134,7 @@ From this point, EasyAutoClicker can be ran from the source scripts with `python
 
 ### PyInstaller Build
 ```bash
-pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." src/app.py
+pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/app.py
 ```
 
 ### Run Binary
