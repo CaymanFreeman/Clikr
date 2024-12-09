@@ -29,6 +29,8 @@ Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAu
 
 ## Settings
 
+If any fields are left empty, the default value will be used.
+
 ### Interval
 
 ##### Default: 100 Milliseconds
