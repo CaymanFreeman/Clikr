@@ -41,6 +41,11 @@ jobs:
         with:
           name: windows-build
 
+      - name: Download Windows Installer
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -48,6 +53,7 @@ jobs:
           tag_name: v${{ inputs.release_version }}
           body: |
             ### Build Environments
+            **${{ needs.pyinstaller-build.outputs.windows_installer_name }}:** ${{ needs.pyinstaller-build.outputs.windows_version }}
             **${{ needs.pyinstaller-build.outputs.windows_build_name }}:** ${{ needs.pyinstaller-build.outputs.windows_version }}
             **${{ needs.pyinstaller-build.outputs.ubuntu_build_name }}:** ${{ needs.pyinstaller-build.outputs.ubuntu_version }}
             

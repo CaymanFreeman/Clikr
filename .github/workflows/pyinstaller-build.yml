@@ -51,6 +51,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          sudo apt-get install python3-dev -y
+          sudo apt-get install python3-tk -y
+          sudo apt-get install scrot -y
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
           pip install pyinstaller
@@ -128,12 +131,12 @@ jobs:
           $iconPath = "$(Get-Location)\assets\icon.ico"
           $licensePath = "$(Get-Location)\LICENSE.md"
 
-          iscc installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
+          iscc .github\workflows\scripts\windows\installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
           
           Get-ChildItem -Recurse -Directory | Where-Object { $_.FullName -notmatch '\\\.venv|\\\.github' } | Select-Object FullName
 
           $installerName = "EasyAutoClicker-Setup-x64.exe"
-          Move-Item -Path "Output\EasyAutoClicker.exe" -Destination "$installerName" -ErrorAction Stop
+          Move-Item -Path ".github\workflows\scripts\windows\Output\EasyAutoClicker.exe" -Destination "$installerName" -ErrorAction Stop
 
           echo "installer_name=$installerName" >> $env:GITHUB_OUTPUT
 
