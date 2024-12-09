@@ -29,7 +29,7 @@ Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAu
 
 ## Compatibility
 
-EasyAutoClicker is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for hotkeys and input callbacks, Wayland support will be provided under Xwayland as described [here](https://pynput.readthedocs.io/en/latest/limitations.html).
+EasyAutoClicker is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for hotkeys and input callbacks, Wayland support will be provided under Xwayland as described [here](https://pynput.readthedocs.io/en/latest/limitations.html). However, this results in very limited functionality due to its isolation from the rest of the system, making Wayland not well-supported.
 
 ## Settings
 
