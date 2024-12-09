@@ -1,4 +1,4 @@
-p align="center">
+<p align="center">
   <img src="assets/icon.png" width="256" height="256" alt="EasyAutoClicker Logo">
 </p>
 
