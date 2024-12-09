@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 from PyQt5.QtCore import Qt, QSize, QCoreApplication
@@ -81,35 +82,38 @@ class MainWindow(QMainWindow):
         self.setObjectName("main_window")
         self.resize(400, 300)
 
-        source_icon_path = (
-            Path(os.path.dirname(__file__))
-            .parent.joinpath("assets")
-            .joinpath("icon.png")
-        )
+        if sys.platform.startswith("win"):
+            source_icon_path = (
+                Path(os.path.dirname(__file__))
+                .parent.joinpath("assets")
+                .joinpath("icon.png")
+            )
 
-        build_icon_path = (
-            Path(os.path.dirname(__file__)).joinpath("assets").joinpath("icon.png")
-        )
+            build_icon_path = (
+                Path(os.path.dirname(__file__)).joinpath("assets").joinpath("icon.png")
+            )
 
-        def build_icon() -> QIcon:
-            self.logger.info("Icon set to %s", build_icon_path)
-            return QIcon(str(build_icon_path))
+            def build_icon() -> QIcon:
+                self.logger.info("Icon set to %s", build_icon_path)
+                return QIcon(str(build_icon_path))
 
-        def source_icon() -> QIcon:
-            self.logger.info("Icon set to %s", source_icon_path)
-            return QIcon(str(source_icon_path))
+            def source_icon() -> QIcon:
+                self.logger.info("Icon set to %s", source_icon_path)
+                return QIcon(str(source_icon_path))
 
-        (
-            self.setWindowIcon(source_icon())
-            if source_icon_path.exists()
-            else (
-                self.setWindowIcon(build_icon())
-                if build_icon_path.exists()
-                else self.logger.warning(
-                    "Icon was not found at %s or %s", source_icon_path, build_icon_path
+            (
+                self.setWindowIcon(source_icon())
+                if source_icon_path.exists()
+                else (
+                    self.setWindowIcon(build_icon())
+                    if build_icon_path.exists()
+                    else self.logger.warning(
+                        "Icon was not found at %s or %s",
+                        source_icon_path,
+                        build_icon_path,
+                    )
                 )
             )
-        )
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.initialize_central_wgt()
 
