@@ -24,8 +24,9 @@ from PyQt5.QtWidgets import (
 
 class MainWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, logger):
         super().__init__()
+        self.logger = logger
         self.central_wgt = QWidget
         self.central_wgt_layout = QVBoxLayout
         self.tab_wgt = QTabWidget
@@ -85,7 +86,16 @@ class MainWindow(QMainWindow):
             .parent.joinpath("assets")
             .joinpath("icon.png")
         )
-        icon_path = built_icon_path if built_icon_path.exists() else source_icon_path
+
+        def icon_not_found() -> Path:
+            self.logger.warning("Icon path was not found")
+            return Path()
+
+        icon_path = (
+            built_icon_path
+            if built_icon_path.exists()
+            else source_icon_path if source_icon_path.exists() else icon_not_found()
+        )
         self.setWindowIcon(QIcon(str(icon_path)))
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.initialize_central_wgt()

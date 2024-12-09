@@ -1,4 +1,3 @@
-import logging
 import time
 from dataclasses import dataclass
 from multiprocessing import Process, Event
@@ -8,18 +7,6 @@ import pyautogui
 
 pyautogui.MINIMUM_DURATION = 0.0
 pyautogui.PAUSE = 0.0
-
-
-def log_setup() -> logging.Logger:
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s %(levelname)s %(message)s",
-        handlers=[logging.StreamHandler()],
-    )
-    return logging.getLogger(__name__)
-
-
-LOGGER = log_setup()
 
 
 @dataclass
@@ -87,9 +74,11 @@ class ClickProcessInputs:
 
 class ClickProcess:
 
+    _logger = None
     _active_processes: List[Process] = []
 
     def __init__(self, inputs: ClickProcessInputs):
+        self._logger = self.__class__._logger
         self.click_interval = inputs.scaled_click_interval
         self.mouse_button = inputs.mouse_button_str
         self.location_x = inputs.location_x
@@ -97,7 +86,8 @@ class ClickProcess:
         self.finished = Event()
 
     @classmethod
-    def get_appropriate(cls, inputs: ClickProcessInputs):
+    def get_appropriate(cls, inputs: ClickProcessInputs, logger):
+        cls._logger = logger
         return AdvancedClickProcess(inputs) if inputs.is_advanced else cls(inputs)
 
     @classmethod
@@ -107,11 +97,11 @@ class ClickProcess:
         for process in cls._active_processes:
             try:
                 if process.is_alive():
-                    LOGGER.info(f"Terminating process {process.pid}")
+                    cls._logger.info(f"Terminating process {process.pid}")
                     process.terminate()
             except Exception as e:
-                LOGGER.error("Error while terminating process: %s", e)
-        LOGGER.info("Terminated all click processes")
+                cls._logger.error("Error while terminating process: %s", e)
+        cls._logger.info("Terminated all click processes")
         cls._active_processes.clear()
 
     def start_process_str(self, pid: int):
@@ -142,7 +132,7 @@ class ClickProcess:
         process = Process(target=process_type, daemon=True)
         self.__class__._active_processes.append(process)
         process.start()
-        LOGGER.info(self.start_process_str(process.pid))
+        self._logger.info(self.start_process_str(process.pid))
         return process
 
     def click_process(self) -> None:
@@ -167,6 +157,7 @@ class AdvancedClickProcess(ClickProcess):
 
     def __init__(self, inputs: ClickProcessInputs):
         super().__init__(inputs)
+        self.logger = super().__class__._logger
         self.click_length = inputs.scaled_click_length
         self.clicks_per_event = inputs.clicks_per_event
         self.click_events = inputs.click_events
