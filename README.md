@@ -6,7 +6,7 @@
   <ul style="list-style: none;">
     <summary>
       <h1 align="center">
-        Easy Auto Clicker
+        EasyAutoClicker
       </h1>
     </summary>
   </ul>
@@ -26,6 +26,10 @@
 ## Releases
 
 Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.
+
+## Compatibility
+
+EasyAutoClicker is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for hotkeys and input callbacks, Wayland support will be provided under Xwayland as described [here](https://pynput.readthedocs.io/en/latest/limitations.html).
 
 ## Settings
 
@@ -69,7 +73,7 @@ The hotkey sequence determines which keys will toggle the click process. To chan
 
 ### Prerequisites
 
-Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed. For Linux, the following packages will also need to be installed: `python3-pyqt5 python3-dev scrot python3-tk python3-xlib`.
+Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed. For Linux, the following packages may also need to be installed: `python3-pyqt5 python3-dev python3.12-venv scrot python3-tk python3-xlib binutils build-essential`.
 
 ## Windows
 
@@ -91,6 +95,10 @@ pip install -r ./requirements.txt
 pip install pyinstaller
 ```
 
+### Run From Source
+
+From this point, EasyAutoClicker can be ran from the source scripts with `python src\app.py`.
+
 ### PyInstaller Build
 ```batch
 pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\app.py
@@ -109,7 +117,7 @@ git clone https://github.com/CaymanFreeman/EasyAutoClicker && cd EasyAutoClicker
 
 ### Virtual Environment Setup
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -119,6 +127,10 @@ python -m pip install --upgrade pip
 pip install -r ./requirements.txt
 pip install pyinstaller
 ```
+
+### Run From Source
+
+From this point, EasyAutoClicker can be ran from the source scripts with `python src/app.py`.
 
 ### PyInstaller Build
 ```bash
