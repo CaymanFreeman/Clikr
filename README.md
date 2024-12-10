@@ -23,9 +23,15 @@
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
 
-## Releases
+<div align="center" style="color: red;"><p align="center">The current Linux version is broken due to an issue with the combination of pyautogui, xlib, and multiprocessing. <br> A fix is currently being worked on.</p></div>
 
-Each release can be found found <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases">here</a>.
+## Download
+
+You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/EasyAutoClicker/releases).
+
+**Windows:** An executable and installer are available to download with each release.
+
+**Linux:** A binary is included in each release, however official packages are planned.
 
 ## Compatibility
 
@@ -73,7 +79,7 @@ The hotkey sequence determines which keys will toggle the click process. To chan
 
 ### Prerequisites
 
-Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed. For Linux, the following packages may also need to be installed: `python3-pyqt5 python3-dev python3.12-venv scrot python3-tk python3-xlib binutils build-essential`.
+Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed.
 
 ## Windows
 
@@ -109,6 +115,11 @@ pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data
 The executable will be located at `dist/EasyAutoClicker.exe`.
 
 ## Linux
+
+The following packages may need to be installed: 
+```batch
+python3-pyqt5 python3-dev python3.12-venv scrot python3-tk python3-xlib binutils build-essential
+```
 
 ### Clone Repository
 ```bash
