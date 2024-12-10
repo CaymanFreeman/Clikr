@@ -1,7 +1,6 @@
 from time import sleep
 from typing import Optional
 
-import pyautogui
 from PyQt5.QtCore import pyqtSlot, QObject, pyqtSignal, QThread
 
 from pynput import keyboard, mouse
@@ -24,6 +23,7 @@ class AppWindow(MainWindow):
         self._current_click_process = None
         self.keyboard_listener = None
         self.mouse_listener = None
+        self.mouse_controller = mouse.Controller()
 
     def pynput_key_sequence(self, key_sequence: str) -> str:
         bracketed_keys = {
@@ -177,7 +177,9 @@ class AppWindow(MainWindow):
         self.stop_btn.setDisabled(False)
         self.start_btn.setDisabled(True)
         ClickProcess.terminate_all(self.logger)
-        click_process = ClickProcess.get_appropriate(self.inputs, self.logger)
+        click_process = ClickProcess.get_appropriate(
+            self.inputs, self.logger, self.mouse_controller
+        )
         if (
             isinstance(click_process, AdvancedClickProcess)
             and click_process.click_events is not None
@@ -238,7 +240,7 @@ class AppWindow(MainWindow):
         advanced_tab = self.in_advanced_tab
 
         def set_location():
-            x, y = pyautogui.position()
+            x, y = self.mouse_controller.position
             if advanced_tab:
                 self.advanced_location = (x, y)
                 self.adv_change_loc_btn.setEnabled(True)

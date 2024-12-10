@@ -3,10 +3,7 @@ from dataclasses import dataclass
 from multiprocessing import Process, Event
 from typing import Optional, Tuple, List
 
-import pyautogui
-
-pyautogui.MINIMUM_DURATION = 0.0
-pyautogui.PAUSE = 0.0
+from pynput.mouse import Button
 
 
 @dataclass
@@ -65,19 +62,20 @@ class ClickProcessInputs:
     def mouse_button_str(self):
         match self.mouse_button_index:
             case 0:
-                return pyautogui.LEFT
+                return Button.left
             case 1:
-                return pyautogui.RIGHT
+                return Button.right
             case 2:
-                return pyautogui.MIDDLE
+                return Button.middle
 
 
 class ClickProcess:
 
     _active_processes: List[Process] = []
 
-    def __init__(self, inputs: ClickProcessInputs, logger):
+    def __init__(self, inputs: ClickProcessInputs, logger, mouse_controller):
         self.logger = logger
+        self.mouse_controller = mouse_controller
         self.click_interval = inputs.scaled_click_interval
         self.mouse_button = inputs.mouse_button_str
         self.location_x = inputs.location_x
@@ -85,11 +83,11 @@ class ClickProcess:
         self.finished = Event()
 
     @classmethod
-    def get_appropriate(cls, inputs: ClickProcessInputs, logger):
+    def get_appropriate(cls, inputs: ClickProcessInputs, logger, mouse_controller):
         return (
-            AdvancedClickProcess(inputs, logger)
+            AdvancedClickProcess(inputs, logger, mouse_controller)
             if inputs.is_advanced
-            else cls(inputs, logger)
+            else cls(inputs, logger, mouse_controller)
         )
 
     @classmethod
@@ -143,13 +141,13 @@ class ClickProcess:
 
     def location_click_process(self) -> None:
         while True:
-            pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
+            self.mouse_controller.position = (self.location_x, self.location_y)
             self.run_click_event()
 
     def run_click_event(self) -> None:
         start_time = time.perf_counter()
         next_click_time = start_time + self.click_interval
-        pyautogui.click(button=self.mouse_button)
+        self.mouse_controller.click(self.mouse_button)
         remaining_time = max(0.0, next_click_time - time.perf_counter())
         if remaining_time > 0:
             time.sleep(remaining_time)
@@ -157,8 +155,8 @@ class ClickProcess:
 
 class AdvancedClickProcess(ClickProcess):
 
-    def __init__(self, inputs: ClickProcessInputs, logger):
-        super().__init__(inputs, logger)
+    def __init__(self, inputs: ClickProcessInputs, logger, mouse_controller):
+        super().__init__(inputs, logger, mouse_controller)
         self.click_length = inputs.scaled_click_length
         self.clicks_per_event = inputs.clicks_per_event
         self.click_events = inputs.click_events
@@ -183,11 +181,11 @@ class AdvancedClickProcess(ClickProcess):
 
         if self.click_events is None:
             while True:
-                pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
+                self.mouse_controller.position = (self.location_x, self.location_y)
                 click_event()
         else:
             for _ in range(self.click_events):
-                pyautogui.moveTo(self.location_x, self.location_y, _pause=False)
+                self.mouse_controller.position = (self.location_x, self.location_y)
                 click_event()
             self.finished.set()
 
@@ -195,7 +193,7 @@ class AdvancedClickProcess(ClickProcess):
         start_time = time.perf_counter()
         next_click_time = start_time + self.click_interval
         for _ in range(self.clicks_per_event):
-            pyautogui.click(button=self.mouse_button)
+            self.mouse_controller.click(self.mouse_button)
         remaining_time = max(0.0, next_click_time - time.perf_counter())
         if remaining_time > 0:
             time.sleep(remaining_time)
@@ -203,9 +201,9 @@ class AdvancedClickProcess(ClickProcess):
     def run_held_click_event(self) -> None:
         start_time = time.perf_counter()
         next_click_time = start_time + self.click_interval
-        pyautogui.mouseDown(button=self.mouse_button)
+        self.mouse_controller.press(self.mouse_button)
         time.sleep(self.click_length)
-        pyautogui.mouseUp(button=self.mouse_button)
+        self.mouse_controller.release(self.mouse_button)
         remaining_time = max(0.0, next_click_time - time.perf_counter())
         if remaining_time > 0:
             time.sleep(remaining_time)
