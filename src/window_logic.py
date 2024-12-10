@@ -4,7 +4,6 @@ from typing import Optional
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QThread
 
 from pynput import keyboard, mouse
-from pynput.keyboard import KeyCode
 
 from click_worker import WorkerInputs, ClickWorker
 from window_init import MainWindow
@@ -32,13 +31,21 @@ class AppWindow(MainWindow):
         self.worker_thread = QThread
         self.initialize_click_worker()
 
+    def clear_simple_location(self):
+        self.simple_location = None
+
+    def clear_advanced_location(self):
+        self.advanced_location = None
+
     def initialize_ui_connections(self):
         self.tab_wgt.currentChanged.connect(self.switched_tabs)
         self.smpl_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
+        self.smpl_hkey_keyseq.clear_callback = self.clear_simple_location
         self.smpl_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
         self.smpl_change_loc_btn.pressed.connect(self.change_location)
         self.adv_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
         self.adv_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
+        self.adv_hkey_keyseq.clear_callback = self.clear_advanced_location
         self.adv_change_loc_btn.pressed.connect(self.change_location)
         self.start_btn.clicked.connect(self.start_button_clicked)
         self.stop_btn.clicked.connect(self.stop_button_clicked)

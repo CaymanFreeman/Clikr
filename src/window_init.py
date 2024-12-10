@@ -31,6 +31,11 @@ class PositiveIntValidator(QIntValidator):
 
 
 class SingleKeySequenceEdit(QKeySequenceEdit):
+
+    def __init__(self, widget):
+        super().__init__(widget)
+        self.clear_callback = None
+
     def keyPressEvent(self, event: QKeyEvent):
         if event.isAutoRepeat():
             return
@@ -40,6 +45,8 @@ class SingleKeySequenceEdit(QKeySequenceEdit):
         if key == Qt.Key_Escape:
             self.clear()
             self.clearFocus()
+            if self.clear_callback:
+                self.clear_callback()
         if key in (Qt.Key_Control, Qt.Key_Shift, Qt.Key_Alt, Qt.Key_Meta):
             super().keyPressEvent(event)
             return
