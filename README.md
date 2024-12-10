@@ -23,7 +23,7 @@
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
 
-<div align="center" style="color: red;"><p align="center">The current Linux version is broken due to an issue with the combination of Xlib and multiprocessing.</p></div>
+<div align="center" style="color: red;"><p align="center">The current Linux version is broken due to a (personally) unknown issue with pyqt threading.</p></div>
 
 ## Download
 
