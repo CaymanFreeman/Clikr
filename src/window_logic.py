@@ -1,29 +1,55 @@
 from time import sleep
 from typing import Optional
 
-from PyQt5.QtCore import pyqtSlot, QObject, pyqtSignal, QThread
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QThread
 
 from pynput import keyboard, mouse
+from pynput.keyboard import KeyCode
 
-from click_process import ClickProcessInputs, ClickProcess, AdvancedClickProcess
+from click_worker import WorkerInputs, ClickWorker
 from window_init import MainWindow
 
-
-class FinishedSignalEmitter(QObject):
-    finished_signal = pyqtSignal()
+ESC_KEY = 16777216
 
 
 class AppWindow(MainWindow):
 
+    worker_requested = pyqtSignal()
+    change_inputs = pyqtSignal(WorkerInputs)
+
     def __init__(self, logger):
         super().__init__(logger)
+
+        self.initialize_ui_connections()
+
         self.logger = logger
-        self._finished_emitter = FinishedSignalEmitter()
-        self._finished_emitter.finished_signal.connect(self.stop_button_clicked)
-        self._current_click_process = None
-        self.keyboard_listener = None
-        self.mouse_listener = None
+        self.esc_key_listener = None
+        self.hotkey_listener = None
+        self.location_click_listener = None
         self.mouse_controller = mouse.Controller()
+
+        self.click_worker = ClickWorker
+        self.worker_thread = QThread
+        self.initialize_click_worker()
+
+    def initialize_ui_connections(self):
+        self.tab_wgt.currentChanged.connect(self.switched_tabs)
+        self.smpl_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
+        self.smpl_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
+        self.smpl_change_loc_btn.pressed.connect(self.change_location)
+        self.adv_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
+        self.adv_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
+        self.adv_change_loc_btn.pressed.connect(self.change_location)
+        self.start_btn.clicked.connect(self.start_button_clicked)
+        self.stop_btn.clicked.connect(self.stop_button_clicked)
+
+    def initialize_click_worker(self):
+        self.click_worker = ClickWorker(self.inputs, self.logger, self.mouse_controller)
+        self.worker_thread = QThread()
+        self.click_worker.finished.connect(self.stop_button_clicked)
+        self.change_inputs.connect(self.click_worker.change_inputs)
+        self.worker_requested.connect(self.click_worker.start)
+        self.click_worker.moveToThread(self.worker_thread)
 
     def pynput_key_sequence(self, key_sequence: str) -> str:
         bracketed_keys = {
@@ -61,6 +87,12 @@ class AppWindow(MainWindow):
         )
         return pynput_key_sequence
 
+    def clear_hotkey_focus(self):
+        if self.in_advanced_tab:
+            self.adv_hkey_keyseq.clearFocus()
+        else:
+            self.smpl_hkey_keyseq.clearFocus()
+
     def add_hotkey(self, key_sequence: str, callback) -> Optional[str]:
         def for_canonical(f):
             return lambda k: f(listener.canonical(k))
@@ -76,81 +108,87 @@ class AppWindow(MainWindow):
                 on_release=for_canonical(hotkey.release),
             )
             listener.start()
-            self.keyboard_listener = listener
+            self.hotkey_listener = listener
+            self.clear_hotkey_focus()
             return key_sequence
         except ValueError as value:
             self.logger.error(f"Failed to set hotkey: {value}")
+            self.clear_hotkey_focus()
             return None
 
-    def on_click(self, callback):
+    def on_location_click(self, callback):
         def click_handler(x, y, button, pressed):
             if pressed:
                 callback()
 
-        self.mouse_listener = mouse.Listener(on_click=click_handler)
-        self.mouse_listener.start()
+        self.location_click_listener = mouse.Listener(on_click=click_handler)
+        self.location_click_listener.start()
 
-    def join_mouse_listener(self):
-        if self.mouse_listener:
-            self.mouse_listener.stop()
+    def on_press_esc(self, callback):
+        def key_handler(key):
+            if key == keyboard.Key.esc:
+                callback()
+
+        self.esc_key_listener = keyboard.Listener(on_press=key_handler)
+        self.esc_key_listener.start()
+
+    def stop_location_click_listener(self):
+        if self.location_click_listener:
+            self.location_click_listener.stop()
             try:
-                self.mouse_listener.join()
+                self.location_click_listener.join()
             except RuntimeError:
                 pass
-            self.mouse_listener = None
+            self.location_click_listener = None
+
+    def stop_esc_key_listener(self):
+        if self.esc_key_listener:
+            self.esc_key_listener.stop()
+            try:
+                self.esc_key_listener.join()
+            except RuntimeError:
+                pass
+            self.esc_key_listener = None
 
     def clear_hotkey(self):
         if self.current_hotkey:
             self.current_hotkey = None
-        if self.keyboard_listener:
-            self.keyboard_listener.stop()
+        if self.hotkey_listener:
+            self.hotkey_listener.stop()
             try:
-                self.keyboard_listener.join()
+                self.hotkey_listener.join()
             except RuntimeError:
                 pass
-            self.keyboard_listener = None
-
-    def clear_hotkey_field(self):
-        key_sequence_edit = self.sender()
-        if 16777216 in list(key_sequence_edit.keySequence()):
-            key_sequence_edit.clearFocus()
-            self.smpl_hkey_keyseq.clear()
-            self.adv_hkey_keyseq.clear()
-        self.clear_hotkey()
+            self.hotkey_listener = None
 
     @property
     def in_advanced_tab(self):
         return self.tab_wgt.currentIndex() == 1
 
     @property
-    def inputs(self) -> ClickProcessInputs:
-        inputs = ClickProcessInputs()
-        inputs.is_advanced = self.in_advanced_tab
-        if inputs.is_advanced:
+    def inputs(self) -> WorkerInputs:
+        inputs = WorkerInputs()
+        if self.in_advanced_tab:
             if self.adv_clk_intvl_ledit.text() != "":
-                inputs.click_interval = int(self.adv_clk_intvl_ledit.text())
-            inputs.click_interval_scale_index = (
-                self.adv_clk_intvl_scale_cbox.currentIndex()
-            )
+                inputs.interval = int(self.adv_clk_intvl_ledit.text())
+            inputs.interval_scale_index = self.adv_clk_intvl_scale_cbox.currentIndex()
             if self.adv_clen_ledit.text() != "":
-                inputs.click_length = int(self.adv_clen_ledit.text())
-            inputs.click_length_scale_index = self.adv_clen_scale_cbox.currentIndex()
+                inputs.hold_length = int(self.adv_clen_ledit.text())
+            inputs.hold_length_scale_index = self.adv_clen_scale_cbox.currentIndex()
             if self.adv_clicks_per_event_ledit.text() != "":
                 inputs.clicks_per_event = int(self.adv_clicks_per_event_ledit.text())
-            inputs.click_events = (
+            inputs.event_count = (
                 int(self.adv_clk_events_ledit.text())
                 if self.adv_clk_events_ledit.text() != ""
                 else None
             )
-            inputs.click_location = self.advanced_location
+            inputs.location = self.advanced_location
             inputs.mouse_button_index = self.adv_mb_cbox.currentIndex()
         else:
             if self.smpl_clk_intvl_ledit.text() != "":
-                inputs.click_interval = int(self.smpl_clk_intvl_ledit.text())
-            inputs.click_interval_scale_index = (
-                self.smpl_clk_intvl_scale_cbox.currentIndex()
-            )
-            inputs.click_location = self.simple_location
+                inputs.interval = int(self.smpl_clk_intvl_ledit.text())
+            inputs.interval_scale_index = self.smpl_clk_intvl_scale_cbox.currentIndex()
+            inputs.location = self.simple_location
             inputs.mouse_button_index = self.smpl_mb_cbox.currentIndex()
         return inputs
 
@@ -167,49 +205,36 @@ class AppWindow(MainWindow):
             and self.adv_hkey_keyseq.keySequence().isEmpty()
         )
 
+    def stop_click_worker(self):
+        if self.worker_thread.isRunning():
+            self.logger.info("Terminating worker thread")
+            self.worker_thread.terminate()
+            self.worker_thread.wait()
+
     @pyqtSlot()
     def start_button_clicked(self):
         if self.softlock_capable:
             self.logger.info("Displaying softlock prevention message")
             self.softlock_warning_msgb.exec()
             return
-        self.active_process = True
         self.stop_btn.setDisabled(False)
         self.start_btn.setDisabled(True)
-        ClickProcess.terminate_all(self.logger)
-        click_process = ClickProcess.get_appropriate(
-            self.inputs, self.logger, self.mouse_controller
-        )
-        if (
-            isinstance(click_process, AdvancedClickProcess)
-            and click_process.click_events is not None
-        ):
-            self._start_finished_event_watcher(click_process)
-        click_process.start()
-        self._current_click_process = click_process
+        self.change_inputs.emit(self.inputs)
+        self.worker_thread.start()
+        self.worker_requested.emit()
 
     @pyqtSlot()
     def stop_button_clicked(self):
-        self.active_process = False
         self.stop_btn.setDisabled(True)
         self.start_btn.setDisabled(False)
-        ClickProcess.terminate_all(self.logger)
-
-    def _start_finished_event_watcher(self, click_process):
-        def wait_for_finished():
-            click_process.finished.wait()
-            self._finished_emitter.finished_signal.emit()
-
-        thread = QThread()
-        thread.run = wait_for_finished
-        thread.start()
+        self.stop_click_worker()
 
     @pyqtSlot()
     def switched_tabs(self):
         if self.first_tab_switch:
             self.first_tab_switch = False
             return
-        ClickProcess.terminate_all(self.logger)
+        self.stop_click_worker()
 
     @pyqtSlot()
     def hotkey_changed(self):
@@ -232,9 +257,22 @@ class AppWindow(MainWindow):
     def hotkey_toggle(self):
         (
             self.stop_button_clicked()
-            if self.active_process
+            if self.worker_thread.isRunning()
             else self.start_button_clicked()
         )
+
+    def clear_location_and_listener(self):
+        self.logger.info("Clearing location value")
+        self.stop_location_click_listener()
+        self.stop_esc_key_listener()
+        if self.in_advanced_tab:
+            self.adv_loc_display_ledit.clear()
+            self.advanced_location = None
+            self.adv_change_loc_btn.setEnabled(True)
+        else:
+            self.smpl_loc_display_ledit.clear()
+            self.simple_location = None
+            self.smpl_change_loc_btn.setEnabled(True)
 
     def change_location(self):
         advanced_tab = self.in_advanced_tab
@@ -250,7 +288,8 @@ class AppWindow(MainWindow):
                 self.smpl_change_loc_btn.setEnabled(True)
                 self.logger.info("Set simple location to %s", self.simple_location)
             self.update_location_displays()
-            self.join_mouse_listener()
+            self.stop_location_click_listener()
+            self.stop_esc_key_listener()
 
         (
             self.adv_change_loc_btn.setEnabled(False)
@@ -260,16 +299,17 @@ class AppWindow(MainWindow):
 
         (
             self.logger.info(
-                "Hooked mouse to set advanced location; waiting for location click"
+                "Listening for advanced location, waiting for click or esc press"
             )
             if advanced_tab
             else self.logger.info(
-                "Hooked mouse to set simple location; waiting for location click"
+                "Listening for simple location, waiting for click or esc press"
             )
         )
 
+        self.on_press_esc(self.clear_location_and_listener)
         sleep(0.2)
-        self.on_click(set_location)
+        self.on_location_click(set_location)
 
     def update_location_displays(self):
         if self.advanced_location is not None:

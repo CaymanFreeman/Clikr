@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from PyQt5.QtCore import Qt, QSize, QCoreApplication
-from PyQt5.QtGui import QIcon, QIntValidator
+from PyQt5.QtGui import QIcon, QIntValidator, QKeyEvent
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -23,6 +23,35 @@ from PyQt5.QtWidgets import (
 )
 
 
+class PositiveIntValidator(QIntValidator):
+    def validate(self, input_text: str, pos: int) -> tuple:
+        if "-" in input_text:
+            return (QIntValidator.Invalid, input_text, pos)
+        return super().validate(input_text, pos)
+
+
+class SingleKeySequenceEdit(QKeySequenceEdit):
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.isAutoRepeat():
+            return
+
+        modifiers = event.modifiers()
+        key = event.key()
+        if key == Qt.Key_Escape:
+            self.clear()
+            self.clearFocus()
+        if key in (Qt.Key_Control, Qt.Key_Shift, Qt.Key_Alt, Qt.Key_Meta):
+            super().keyPressEvent(event)
+            return
+        if (
+            modifiers
+            & (Qt.ControlModifier | Qt.ShiftModifier | Qt.AltModifier | Qt.MetaModifier)
+        ) and not (key in (Qt.Key_Control, Qt.Key_Shift, Qt.Key_Alt, Qt.Key_Meta)):
+            super().keyPressEvent(event)
+        else:
+            event.ignore()
+
+
 class MainWindow(QMainWindow):
 
     def __init__(self, logger):
@@ -38,7 +67,7 @@ class MainWindow(QMainWindow):
         self.smpl_hkey_lbl = QLabel
         self.smpl_loc_display_ledit = QLineEdit
         self.smpl_mb_cbox = QComboBox
-        self.smpl_hkey_keyseq = QKeySequenceEdit
+        self.smpl_hkey_keyseq = SingleKeySequenceEdit
         self.smpl_change_loc_btn = QPushButton
         self.smpl_mb_lbl = QLabel
         self.smpl_clk_intvl_ledit = QLineEdit
@@ -55,7 +84,7 @@ class MainWindow(QMainWindow):
         self.adv_clk_intvl_lbl = QLabel
         self.adv_change_loc_btn = QPushButton
         self.adv_clen_scale_cbox = QComboBox
-        self.adv_hkey_keyseq = QKeySequenceEdit
+        self.adv_hkey_keyseq = SingleKeySequenceEdit
         self.adv_clen_lbl = QLabel
         self.adv_clk_intvl_ledit = QLineEdit
         self.adv_mb_cbox = QComboBox
@@ -77,6 +106,15 @@ class MainWindow(QMainWindow):
         QApplication.processEvents()
         self.initialize_window()
         self.translate_ui()
+        self.initialize_validators()
+
+    def initialize_validators(self):
+        positive_validator = PositiveIntValidator()
+        self.smpl_clk_intvl_ledit.setValidator(positive_validator)
+        self.adv_clk_intvl_ledit.setValidator(positive_validator)
+        self.adv_clen_ledit.setValidator(positive_validator)
+        self.adv_clicks_per_event_ledit.setValidator(positive_validator)
+        self.adv_clk_events_ledit.setValidator(positive_validator)
 
     def initialize_window(self):
         self.setObjectName("main_window")
@@ -138,7 +176,6 @@ class MainWindow(QMainWindow):
     def initialize_tabs(self):
         tab_wgt = QTabWidget(self.central_wgt)
         tab_wgt.setObjectName("tab_wgt")
-        tab_wgt.currentChanged.connect(self.switched_tabs)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -205,10 +242,8 @@ class MainWindow(QMainWindow):
         smpl_grid_layout.addWidget(smpl_mb_cbox, 1, 1, 1, 2)
         self.smpl_mb_cbox = smpl_mb_cbox
 
-        smpl_hkey_keyseq = QKeySequenceEdit(smpl_tab)
+        smpl_hkey_keyseq = SingleKeySequenceEdit(smpl_tab)
         smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
-        smpl_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
-        smpl_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -219,7 +254,6 @@ class MainWindow(QMainWindow):
 
         smpl_change_loc_btn = QPushButton(smpl_tab)
         smpl_change_loc_btn.setObjectName("smpl_change_loc_btn")
-        smpl_change_loc_btn.pressed.connect(self.change_location)
         smpl_grid_layout.addWidget(smpl_change_loc_btn, 2, 2, 1, 1)
         self.smpl_change_loc_btn = smpl_change_loc_btn
 
@@ -230,7 +264,6 @@ class MainWindow(QMainWindow):
 
         smpl_clk_intvl_ledit = QLineEdit(smpl_tab)
         smpl_clk_intvl_ledit.setObjectName("smpl_clk_intvl_ledit")
-        smpl_clk_intvl_ledit.setValidator(QIntValidator())
         smpl_clk_intvl_ledit.setMaxLength(7)
         smpl_grid_layout.addWidget(smpl_clk_intvl_ledit, 0, 1, 1, 1)
         self.smpl_clk_intvl_ledit = smpl_clk_intvl_ledit
@@ -270,7 +303,6 @@ class MainWindow(QMainWindow):
 
         adv_clen_ledit = QLineEdit(adv_tab)
         adv_clen_ledit.setObjectName("adv_clen_ledit")
-        adv_clen_ledit.setValidator(QIntValidator())
         adv_clen_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clen_ledit, 1, 1, 1, 1)
         self.adv_clen_ledit = adv_clen_ledit
@@ -292,7 +324,6 @@ class MainWindow(QMainWindow):
 
         adv_clk_intvl_ledit = QLineEdit(adv_tab)
         adv_clk_intvl_ledit.setObjectName("adv_clk_intvl_ledit")
-        adv_clk_intvl_ledit.setValidator(QIntValidator())
         adv_clk_intvl_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_intvl_ledit, 0, 1, 1, 1)
         self.adv_clk_intvl_ledit = adv_clk_intvl_ledit
@@ -302,10 +333,8 @@ class MainWindow(QMainWindow):
         adv_grid_layout.addWidget(adv_clen_lbl, 1, 0, 1, 1, Qt.AlignRight)
         self.adv_clen_lbl = adv_clen_lbl
 
-        adv_hkey_keyseq = QKeySequenceEdit(adv_tab)
+        adv_hkey_keyseq = SingleKeySequenceEdit(adv_tab)
         adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
-        adv_hkey_keyseq.editingFinished.connect(self.hotkey_changed)
-        adv_hkey_keyseq.keySequenceChanged.connect(self.clear_hotkey)
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -325,7 +354,6 @@ class MainWindow(QMainWindow):
 
         adv_change_loc_btn = QPushButton(adv_tab)
         adv_change_loc_btn.setObjectName("adv_change_loc_btn")
-        adv_change_loc_btn.pressed.connect(self.change_location)
         adv_grid_layout.addWidget(adv_change_loc_btn, 5, 2, 1, 1)
         self.adv_change_loc_btn = adv_change_loc_btn
 
@@ -367,14 +395,12 @@ class MainWindow(QMainWindow):
 
         adv_clk_events_ledit = QLineEdit(adv_tab)
         adv_clk_events_ledit.setObjectName("adv_clk_events_ledit")
-        adv_clk_events_ledit.setValidator(QIntValidator())
         adv_clk_events_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_events_ledit, 2, 1, 1, 2)
         self.adv_clk_events_ledit = adv_clk_events_ledit
 
         adv_clicks_per_event_ledit = QLineEdit(adv_tab)
         adv_clicks_per_event_ledit.setObjectName("adv_clicks_per_event_ledit")
-        adv_clicks_per_event_ledit.setValidator(QIntValidator())
         adv_clicks_per_event_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clicks_per_event_ledit, 3, 1, 1, 2)
         self.adv_clicks_per_event_ledit = adv_clicks_per_event_ledit
@@ -396,7 +422,6 @@ class MainWindow(QMainWindow):
 
         start_btn = QPushButton(self.central_wgt)
         start_btn.setObjectName("start_btn")
-        start_btn.clicked.connect(self.start_button_clicked)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
@@ -408,7 +433,6 @@ class MainWindow(QMainWindow):
 
         stop_btn = QPushButton(self.central_wgt)
         stop_btn.setObjectName("stop_btn")
-        stop_btn.clicked.connect(self.stop_button_clicked)
         stop_btn.setDisabled(True)
         size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         size_policy.setHorizontalStretch(0)
@@ -481,7 +505,7 @@ class MainWindow(QMainWindow):
         self.adv_mb_cbox.setItemText(2, translate("main_window", "Middle (M3)"))
         self.adv_loc_display_ledit.setPlaceholderText(translate("main_window", "None"))
         self.adv_clk_intvl_ledit.setPlaceholderText(translate("main_window", "100"))
-        self.adv_clen_lbl.setText(translate("main_window", "Length"))
+        self.adv_clen_lbl.setText(translate("main_window", "Hold Length"))
         self.adv_clen_lbl.setToolTip(
             translate("main_window", "The amount of time to hold each click")
         )
