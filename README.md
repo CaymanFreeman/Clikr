@@ -118,7 +118,7 @@ The executable will be located at `dist/EasyAutoClicker.exe`.
 
 The following packages may need to be installed: 
 ```batch
-python3-pyqt5 python3-dev python3.12-venv scrot python3-tk python3-xlib binutils build-essential
+python3-pyqt5 python3-dev python3.12-venv python3-xlib binutils build-essential
 ```
 
 ### Clone Repository
