@@ -30,7 +30,7 @@ class PositiveIntValidator(QIntValidator):
         return super().validate(input_text, pos)
 
 
-class HotkeyEdit(QKeySequenceEdit):
+class SingleKeySequenceEdit(QKeySequenceEdit):
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -59,17 +59,6 @@ class HotkeyEdit(QKeySequenceEdit):
             event.ignore()
 
 
-class InputEdit(QLineEdit):
-    def keyPressEvent(self, event: QKeyEvent):
-        if event.isAutoRepeat():
-            return
-
-        key = event.key()
-        if key in (Qt.Key_Return, Qt.Key_Enter):
-            self.clearFocus()
-        super().keyPressEvent(event)
-
-
 class MainWindow(QMainWindow):
 
     def __init__(self, logger):
@@ -83,17 +72,17 @@ class MainWindow(QMainWindow):
         self.smpl_clk_intvl_lbl = QLabel
         self.smpl_clk_intvl_scale_cbox = QComboBox
         self.smpl_hkey_lbl = QLabel
-        self.smpl_loc_display_ledit = InputEdit
+        self.smpl_loc_display_ledit = QLineEdit
         self.smpl_mb_cbox = QComboBox
-        self.smpl_hkey_keyseq = HotkeyEdit
+        self.smpl_hkey_keyseq = SingleKeySequenceEdit
         self.smpl_change_loc_btn = QPushButton
         self.smpl_mb_lbl = QLabel
-        self.smpl_clk_intvl_ledit = InputEdit
+        self.smpl_clk_intvl_ledit = QLineEdit
         self.smpl_loc_lbl = QLabel
         self.adv_tab = QWidget
         self.adv_grid_layout = QGridLayout
-        self.adv_clicks_per_event_ledit = InputEdit
-        self.adv_clk_events_ledit = InputEdit
+        self.adv_clicks_per_event_ledit = QLineEdit
+        self.adv_clk_events_ledit = QLineEdit
         self.adv_clicks_per_event_lbl = QLabel
         self.adv_mb_lbl = QLabel
         self.adv_hkey_lbl = QLabel
@@ -102,12 +91,12 @@ class MainWindow(QMainWindow):
         self.adv_clk_intvl_lbl = QLabel
         self.adv_change_loc_btn = QPushButton
         self.adv_clen_scale_cbox = QComboBox
-        self.adv_hkey_keyseq = HotkeyEdit
+        self.adv_hkey_keyseq = SingleKeySequenceEdit
         self.adv_clen_lbl = QLabel
-        self.adv_clk_intvl_ledit = InputEdit
+        self.adv_clk_intvl_ledit = QLineEdit
         self.adv_mb_cbox = QComboBox
-        self.adv_clen_ledit = InputEdit
-        self.adv_loc_display_ledit = InputEdit
+        self.adv_clen_ledit = QLineEdit
+        self.adv_loc_display_ledit = QLineEdit
         self.adv_loc_lbl = QLabel
         self.btn_layout = QHBoxLayout
         self.start_btn = QPushButton
@@ -238,7 +227,7 @@ class MainWindow(QMainWindow):
         smpl_grid_layout.addWidget(smpl_hkey_lbl, 3, 0, 1, 1, Qt.AlignRight)
         self.smpl_hkey_lbl = smpl_hkey_lbl
 
-        smpl_loc_display_ledit = InputEdit(smpl_tab)
+        smpl_loc_display_ledit = QLineEdit(smpl_tab)
         smpl_loc_display_ledit.setObjectName("smpl_loc_display_ledit")
         smpl_loc_display_ledit.setReadOnly(True)
         smpl_loc_display_ledit.setPlaceholderText("")
@@ -260,7 +249,7 @@ class MainWindow(QMainWindow):
         smpl_grid_layout.addWidget(smpl_mb_cbox, 1, 1, 1, 2)
         self.smpl_mb_cbox = smpl_mb_cbox
 
-        smpl_hkey_keyseq = HotkeyEdit(smpl_tab)
+        smpl_hkey_keyseq = SingleKeySequenceEdit(smpl_tab)
         smpl_hkey_keyseq.setObjectName("smpl_hkey_keyseq")
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
@@ -280,7 +269,7 @@ class MainWindow(QMainWindow):
         smpl_grid_layout.addWidget(smpl_mb_lbl, 1, 0, 1, 1, Qt.AlignRight)
         self.smpl_mb_lbl = smpl_mb_lbl
 
-        smpl_clk_intvl_ledit = InputEdit(smpl_tab)
+        smpl_clk_intvl_ledit = QLineEdit(smpl_tab)
         smpl_clk_intvl_ledit.setObjectName("smpl_clk_intvl_ledit")
         smpl_clk_intvl_ledit.setMaxLength(7)
         smpl_grid_layout.addWidget(smpl_clk_intvl_ledit, 0, 1, 1, 1)
@@ -312,14 +301,14 @@ class MainWindow(QMainWindow):
         adv_grid_layout.addWidget(adv_loc_lbl, 5, 0, 1, 1, Qt.AlignRight)
         self.adv_loc_lbl = adv_loc_lbl
 
-        adv_loc_display_ledit = InputEdit(adv_tab)
+        adv_loc_display_ledit = QLineEdit(adv_tab)
         adv_loc_display_ledit.setObjectName("adv_loc_display_ledit")
         adv_loc_display_ledit.setReadOnly(True)
         adv_loc_display_ledit.setPlaceholderText("")
         adv_grid_layout.addWidget(adv_loc_display_ledit, 5, 1, 1, 1)
         self.adv_loc_display_ledit = adv_loc_display_ledit
 
-        adv_clen_ledit = InputEdit(adv_tab)
+        adv_clen_ledit = QLineEdit(adv_tab)
         adv_clen_ledit.setObjectName("adv_clen_ledit")
         adv_clen_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clen_ledit, 1, 1, 1, 1)
@@ -340,7 +329,7 @@ class MainWindow(QMainWindow):
         adv_grid_layout.addWidget(adv_mb_cbox, 4, 1, 1, 2)
         self.adv_mb_cbox = adv_mb_cbox
 
-        adv_clk_intvl_ledit = InputEdit(adv_tab)
+        adv_clk_intvl_ledit = QLineEdit(adv_tab)
         adv_clk_intvl_ledit.setObjectName("adv_clk_intvl_ledit")
         adv_clk_intvl_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_intvl_ledit, 0, 1, 1, 1)
@@ -351,7 +340,7 @@ class MainWindow(QMainWindow):
         adv_grid_layout.addWidget(adv_clen_lbl, 1, 0, 1, 1, Qt.AlignRight)
         self.adv_clen_lbl = adv_clen_lbl
 
-        adv_hkey_keyseq = HotkeyEdit(adv_tab)
+        adv_hkey_keyseq = SingleKeySequenceEdit(adv_tab)
         adv_hkey_keyseq.setObjectName("adv_hkey_keyseq")
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
@@ -411,13 +400,13 @@ class MainWindow(QMainWindow):
         adv_grid_layout.addWidget(adv_clicks_per_event_lbl, 3, 0, 1, 1, Qt.AlignRight)
         self.adv_clicks_per_event_lbl = adv_clicks_per_event_lbl
 
-        adv_clk_events_ledit = InputEdit(adv_tab)
+        adv_clk_events_ledit = QLineEdit(adv_tab)
         adv_clk_events_ledit.setObjectName("adv_clk_events_ledit")
         adv_clk_events_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clk_events_ledit, 2, 1, 1, 2)
         self.adv_clk_events_ledit = adv_clk_events_ledit
 
-        adv_clicks_per_event_ledit = InputEdit(adv_tab)
+        adv_clicks_per_event_ledit = QLineEdit(adv_tab)
         adv_clicks_per_event_ledit.setObjectName("adv_clicks_per_event_ledit")
         adv_clicks_per_event_ledit.setMaxLength(7)
         adv_grid_layout.addWidget(adv_clicks_per_event_ledit, 3, 1, 1, 2)
