@@ -29,7 +29,7 @@ You can find appropriate downloads for each release [here](https://github.com/Ca
 
 **Windows:** An executable and installer are available to download with each release.
 
-**Linux:** A binary is included in each release, however official packages are planned.
+**Linux:** A binary is included in each release.
 
 ## Compatibility
 
@@ -44,7 +44,7 @@ If any fields are left empty, the default value will be used.
 ##### Default: 100 Milliseconds
 The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. **Note:** Click interval accuracy begins to diminish with smaller intervals (~100ms to ~22ms depending on the system).
 
-### Length
+### Hold Length
 
 ##### Default: 0
 The click length determines how long to hold the click. For example, if the click length is set to 50 milliseconds, the mouse will be pressed down, wait for 50 milliseconds, then release. A click length of 0 will not perform a held click.
