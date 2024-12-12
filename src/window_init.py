@@ -477,7 +477,7 @@ class MainWindow(QMainWindow):
 
     def translate_ui(self):
         translate = QCoreApplication.translate
-        self.setWindowTitle(translate("main_window", "Easy Auto Clicker"))
+        self.setWindowTitle(translate("main_window", "EasyAutoClicker"))
         self.smpl_clk_intvl_lbl.setText(translate("main_window", "Interval"))
         self.smpl_clk_intvl_lbl.setToolTip(
             translate("main_window", "The time between each click event")
