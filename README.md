@@ -29,7 +29,7 @@ You can find appropriate downloads for each release [here](https://github.com/Ca
 
 **Windows:** An executable and installer are available to download with each release.
 
-**Linux:** A binary is included in each release, however official packages are planned.
+**Linux:** A binary is included in each release.
 
 ## Compatibility
 
