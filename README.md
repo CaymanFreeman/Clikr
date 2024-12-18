@@ -153,3 +153,7 @@ pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.m
 ### Run Binary
 
 The binary will be located at `dist/easyautoclicker`.
+
+‎
+
+hi :)
