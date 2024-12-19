@@ -13,7 +13,7 @@
 </div>
 
 <h3 align="center">
-  Start automatic clicking processes via a simple GUI.
+  Start automatic clicking processes via a simple GUI
 </h3>
 
 <p align="center">
