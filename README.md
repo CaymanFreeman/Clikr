@@ -25,7 +25,7 @@
 
 ## Download
 
-You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/EasyAutoClicker/releases). There is also the option to run the main script, [app.py](https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/src/app.py), directly from source.
+You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/EasyAutoClicker/releases). There is also the option to run the main script, [main.py](https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/src/main.py), directly from source.
 
 **Windows:** An executable and installer are available to download with each release.
 
@@ -105,11 +105,11 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, EasyAutoClicker can be ran from the source scripts with `python src\app.py`.
+From this point, EasyAutoClicker can be ran from the source scripts with `python src\main.py`.
 
 ### PyInstaller Build
 ```batch
-pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\app.py
+pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\main.py
 ```
 
 ### Run Executable
@@ -143,11 +143,11 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, EasyAutoClicker can be ran from the source scripts with `python src/app.py`.
+From this point, EasyAutoClicker can be ran from the source scripts with `python src/main.py`.
 
 ### PyInstaller Build
 ```bash
-pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/app.py
+pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
 ```
 
 ### Run Binary
