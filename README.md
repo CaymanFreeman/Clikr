@@ -77,7 +77,7 @@ The click events determine how many times to cause a click event. For example, i
 ##### Default: 1
 The clicks per event determine how many times to click each time a click event occurs. For example, setting this to 2 will cause each event to be a double click, 3 to be a triple click, etc.
 
-## Build Executable
+## Bundle Executable or Binary
 
 ### Prerequisites
 
@@ -107,7 +107,7 @@ pip install pyinstaller
 
 From this point, EasyAutoClicker can be ran from the source scripts with `python src\main.py`.
 
-### PyInstaller Build
+### PyInstaller Bundle
 ```batch
 pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\main.py
 ```
@@ -120,7 +120,7 @@ The executable will be located at `dist/EasyAutoClicker.exe`.
 
 The following packages may need to be installed: 
 ```batch
-python3-pyqt5 python3-dev python3.12-venv python3-xlib binutils build-essential
+python3-pyqt6 python3-dev python3.12-venv python3-xlib binutils build-essential
 ```
 
 ### Clone Repository
@@ -145,7 +145,7 @@ pip install pyinstaller
 
 From this point, EasyAutoClicker can be ran from the source scripts with `python src/main.py`.
 
-### PyInstaller Build
+### PyInstaller Bundle
 ```bash
 pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
 ```
