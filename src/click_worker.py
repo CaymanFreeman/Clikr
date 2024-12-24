@@ -2,7 +2,7 @@ import time
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from pynput.mouse import Button
 
 

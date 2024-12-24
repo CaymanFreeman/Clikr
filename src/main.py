@@ -2,9 +2,9 @@ import logging
 
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
-from window_logic import AppWindow
+from window import Window
 
 
 def log_setup() -> logging.Logger:
@@ -19,9 +19,8 @@ def log_setup() -> logging.Logger:
 def main():
     logger = log_setup()
     app = QApplication(sys.argv)
-    window = AppWindow(logger)
-    window.show()
-    sys.exit(app.exec_())
+    window = Window(logger)
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

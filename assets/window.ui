@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main_window</class>
+ <widget class="QMainWindow" name="main_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>350</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>EasyAutoClicker</string>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <layout class="QVBoxLayout" name="central_layout">
+    <property name="leftMargin">
+     <number>7</number>
+    </property>
+    <property name="topMargin">
+     <number>7</number>
+    </property>
+    <property name="rightMargin">
+     <number>7</number>
+    </property>
+    <property name="bottomMargin">
+     <number>7</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tab_widget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>false</bool>
+      </property>
+      <widget class="QWidget" name="simple_tab">
+       <attribute name="title">
+        <string>Simple</string>
+       </attribute>
+       <layout class="QGridLayout" name="simple_tab_layout" columnstretch="0,3,4">
+        <item row="0" column="0" colspan="3">
+         <spacer name="simple_top_spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="simple_interval_label">
+          <property name="text">
+           <string>Interval</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="simple_interval_input">
+          <property name="maxLength">
+           <number>7</number>
+          </property>
+          <property name="placeholderText">
+           <string>100</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="simple_interval_scale_input">
+          <property name="currentText">
+           <string>Milliseconds</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Milliseconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Seconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Minutes</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Hours</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="simple_mouse_button_label">
+          <property name="text">
+           <string>Mouse Button</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="simple_mouse_button_input">
+          <item>
+           <property name="text">
+            <string>Left (M1)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Right (M2)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Middle (M3)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="simple_location_label">
+          <property name="text">
+           <string>Location</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="simple_location_display">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QPushButton" name="simple_change_location_button">
+          <property name="text">
+           <string>Change</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="simple_hotkey_label">
+          <property name="text">
+           <string>Hotkey</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" colspan="2">
+         <widget class="QKeySequenceEdit" name="simple_hotkey_input"/>
+        </item>
+        <item row="5" column="0" colspan="3">
+         <spacer name="simple_bottom_spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="advanced_tab">
+       <attribute name="title">
+        <string>Advanced</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout" columnstretch="0,3,4">
+        <item row="0" column="0" colspan="3">
+         <spacer name="advanced_top_spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="advanced_interval_label">
+          <property name="text">
+           <string>Interval</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="advanced_interval_input">
+          <property name="maxLength">
+           <number>7</number>
+          </property>
+          <property name="placeholderText">
+           <string>100</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="advanced_interval_scale_input">
+          <item>
+           <property name="text">
+            <string>Milliseconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Seconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Minutes</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Hours</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="advanced_hold_length_label">
+          <property name="text">
+           <string>Hold Length</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="advanced_hold_length_input">
+          <property name="maxLength">
+           <number>7</number>
+          </property>
+          <property name="placeholderText">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QComboBox" name="advanced_hold_length_scale_input">
+          <item>
+           <property name="text">
+            <string>Milliseconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Seconds</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Minutes</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Hours</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="advanced_event_count_label">
+          <property name="text">
+           <string>Event Count</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QLineEdit" name="advanced_event_count_input">
+          <property name="maxLength">
+           <number>7</number>
+          </property>
+          <property name="placeholderText">
+           <string>∞</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="advanced_clicks_per_event_label">
+          <property name="text">
+           <string>Clicks per Event</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" colspan="2">
+         <widget class="QLineEdit" name="advanced_clicks_per_event_input">
+          <property name="maxLength">
+           <number>7</number>
+          </property>
+          <property name="placeholderText">
+           <string>1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="advanced_mouse_button_label">
+          <property name="text">
+           <string>Mouse Button</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QComboBox" name="advanced_mouse_button_input">
+          <item>
+           <property name="text">
+            <string>Left (M1)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Right (M2)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Middle (M3)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="advanced_location_label">
+          <property name="text">
+           <string>Location</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="advanced_location_display">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QPushButton" name="advanced_change_location_button">
+          <property name="text">
+           <string>Change</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="advanced_hotkey_label">
+          <property name="text">
+           <string>Hotkey</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="2">
+         <widget class="QKeySequenceEdit" name="advanced_hotkey_input"/>
+        </item>
+        <item row="8" column="0" colspan="3">
+         <spacer name="advanced_bottom_spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="main_buttons_layout">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="start_button">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stop_button">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
