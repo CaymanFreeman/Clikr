@@ -18,16 +18,30 @@ permissions:
   contents: write
 
 jobs:
+  
+  get-app-name:
+    runs-on: ubuntu-latest
+    outputs:
+      app_name: ${{ steps.get-app-name.outputs.app_name }}
+      app_name_lower: ${{ steps.get-app-name.outputs.app_name_lower }}
+    steps:
+      - name: Get App Name
+        id: get-app-name
+        run: |
+          echo "app_name=$(basename ${{ github.repository }})" >> $GITHUB_OUTPUT
+          echo "app_name_lower=$(basename ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
   pyinstaller-build:
+    needs: get-app-name
     uses: ./.github/workflows/pyinstaller-build.yml
     with:
-      release-version: ${{ inputs.release_version }}
+      release_version: ${{ inputs.release_version }}
+      app_name: ${{ needs.get-app-name.outputs.app_name }}
+      app_name_lower: ${{ needs.get-app-name.outputs.app_name_lower }}
 
   create-release:
     needs: pyinstaller-build
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 

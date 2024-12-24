@@ -3,7 +3,13 @@ name: PyInstaller Build
 on:
   workflow_call:
     inputs:
-      release-version:
+      app_name:
+        required: true
+        type: string
+      app_name_lower:
+        required: true
+        type: string
+      release_version:
         required: true
         type: string
     outputs:
@@ -51,21 +57,19 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get install python3-pyqt5 python3-dev python3-xlib binutils build-essential -y
+          sudo apt-get install python3-dev python3-xlib binutils build-essential -y
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
           pip install pyinstaller
 
       - name: PyInstaller Build
-        run: |
-          sudo chmod +x .github/workflows/scripts/ubuntu/pyinstaller.sh
-          .github/workflows/scripts/ubuntu/pyinstaller.sh
+        run: pyinstaller --noconfirm --onefile --name ${{ inputs.app_name_lower }} --add-data="LICENSE.md:." --add-data="assets/window.ui:assets" --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
 
       - name: Compress & Zip Build
         id: zip
         run: |
-          ubuntu_build_name=EasyAutoClicker-${{ inputs.release-version }}-Linux-x64.gz
-          gzip -c dist/easyautoclicker > $ubuntu_build_name
+          ubuntu_build_name=${{ inputs.app_name }}-${{ inputs.release_version }}-Linux-x64.gz
+          gzip -c dist/${{ inputs.app_name_lower }} > $ubuntu_build_name
           echo "ubuntu_build_name=$ubuntu_build_name" >> $GITHUB_OUTPUT
 
       - name: Upload Build
@@ -117,32 +121,32 @@ jobs:
           pip install pyinstaller
 
       - name: PyInstaller Build
-        run: .github\workflows\scripts\windows\pyinstaller.bat
+        run: pyinstaller --noconfirm --onefile --name ${{ inputs.app_name }} --windowed --add-data="LICENSE.md:." --icon="assets\icon.ico" --add-data="assets\icon.png:assets" --add-data="assets\window.ui:assets" src\main.py
 
       - name: Compile Installer
         id: installer
         shell: pwsh
         run: |
-          $version = "${{ inputs.release-version }}"
-          $exeName = "EasyAutoClicker.exe"
+          $version = "${{ inputs.release_version }}"
+          $exeName = "${{ inputs.app_name }}.exe"
           $exePath = "$(Get-Location)\dist\$exeName"
           $iconPath = "$(Get-Location)\assets\icon.ico"
           $licensePath = "$(Get-Location)\LICENSE.md"
 
-          iscc .github\workflows\scripts\windows\installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
+          iscc .github\workflows\installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
           
           Get-ChildItem -Recurse -Directory | Where-Object { $_.FullName -notmatch '\\\.venv|\\\.github' } | Select-Object FullName
 
-          $installerName = "EasyAutoClicker-Setup-x64.exe"
-          Move-Item -Path ".github\workflows\scripts\windows\Output\EasyAutoClicker.exe" -Destination "$installerName" -ErrorAction Stop
+          $installerName = "${{ inputs.app_name }}-Setup-x64.exe"
+          Move-Item -Path ".github\workflows\Output\${{ inputs.app_name }}.exe" -Destination "$installerName" -ErrorAction Stop
 
           echo "installer_name=$installerName" >> $env:GITHUB_OUTPUT
 
       - name: Compress & Zip Build
         id: zip
         run: |
-          $windowsBuildName = "EasyAutoClicker-${{ inputs.release-version }}-Win-x64.zip"
-          Compress-Archive -Path "dist\EasyAutoClicker.exe" -DestinationPath "${windowsBuildName}"
+          $windowsBuildName = "${{ inputs.app_name }}-${{ inputs.release_version }}-Win-x64.zip"
+          Compress-Archive -Path "dist\${{ inputs.app_name }}.exe" -DestinationPath "${windowsBuildName}"
           "windows_build_name=$windowsBuildName" >> $env:GITHUB_OUTPUT
 
       - name: Upload Build
