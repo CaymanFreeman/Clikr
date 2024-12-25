@@ -101,8 +101,8 @@ jobs:
           $verMajor = if ([Environment]::OSVersion.Version.Major -eq 10) {
             if ([Environment]::OSVersion.Version.Build -ge 22000) { "11" } else { "10" }
           } else { "10" }
-          "version=$ver" >> $env:GITHUB_OUTPUT
-          "version_major=$verMajor" >> $env:GITHUB_OUTPUT
+          echo "version=$ver" >> $env:GITHUB_OUTPUT
+          echo "version_major=$verMajor" >> $env:GITHUB_OUTPUT
 
       - name: Set Up Python
         uses: actions/setup-python@v5
@@ -150,7 +150,7 @@ jobs:
         run: |
           $windowsBuildName = "${{ inputs.app_name }}-${{ inputs.release_version }}-Win-x64.zip"
           Compress-Archive -Path "dist\${{ inputs.app_name }}.exe" -DestinationPath "${windowsBuildName}"
-          "windows_build_name=$windowsBuildName" >> $env:GITHUB_OUTPUT
+          echo "windows_build_name=$windowsBuildName" >> $env:GITHUB_OUTPUT
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
