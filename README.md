@@ -43,6 +43,11 @@ Each executable/binary simply acts as a bundle for the source files and an inter
 
 The following are the available settings and what they do. If any input fields are left empty, the default value will be used.
 
+<div display="inline-block">
+  <img src="assets/simple_tab.png" width="256" height="256" alt="Clikr simple tab settings">
+  <img src="assets/advanced_tab.png" width="256" height="256" alt="Clikr advanced tab settings">
+</div>
+
 ### Interval
 
 ##### Default: 100 Milliseconds
