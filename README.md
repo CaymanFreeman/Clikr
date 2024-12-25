@@ -119,12 +119,12 @@ pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.
 
 ### Run Executable
 
-The executable will be located at `dist/Clikr.exe`.
+The executable will be located at `dist\Clikr.exe`.
 
 ## Linux
 
 The following packages may need to be installed: 
-```batch
+```
 python3-dev python3.12-venv python3-xlib binutils build-essential
 ```
 
