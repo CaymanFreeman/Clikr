@@ -1,7 +1,3 @@
-#define Name "Clikr"
-#define Publisher "Cayman Freeman"
-#define GitHub "https://github.com/CaymanFreeman/Clikr"
-
 [Setup]
 AppId={{7E7A6696-22AF-4B60-BA60-C68A8EEB0BBA}
 AppName={#Name}

@@ -132,8 +132,11 @@ jobs:
           $exePath = "$(Get-Location)\dist\$exeName"
           $iconPath = "$(Get-Location)\assets\icon.ico"
           $licensePath = "$(Get-Location)\LICENSE.md"
+          $github = "https://github.com/${{ github.repository }}"
+          $name = "${{ inputs.app_name }}"
+          $publisher = "Cayman Freeman"
 
-          iscc .github\workflows\installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath"
+          iscc .github\workflows\installer.iss /V3 /DVersion="$version" /DExePath="$exePath" /DExeName="$exeName" /DIconPath="$iconPath" /DLicensePath="$licensePath" /DGitHub="$github" /DPublisher="$publisher" /DName="$name"
           
           Get-ChildItem -Recurse -Directory | Where-Object { $_.FullName -notmatch '\\\.venv|\\\.github' } | Select-Object FullName
 
