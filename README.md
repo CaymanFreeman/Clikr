@@ -110,7 +110,7 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, Clikr can be ran from the source scripts with `python src\main.py`.
+From this point, Clikr can be run from the source scripts with `python src\main.py`.
 
 ### PyInstaller Bundle
 ```batch
@@ -119,12 +119,12 @@ pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.
 
 ### Run Executable
 
-The executable will be located at `dist/Clikr.exe`.
+The executable will be located at `dist\Clikr.exe`.
 
 ## Linux
 
 The following packages may need to be installed: 
-```batch
+```
 python3-dev python3.12-venv python3-xlib binutils build-essential
 ```
 
@@ -148,7 +148,7 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, Clikr can be ran from the source scripts with `python3 src/main.py`.
+From this point, Clikr can be run from the source scripts with `python3 src/main.py`.
 
 ### PyInstaller Bundle
 ```bash
