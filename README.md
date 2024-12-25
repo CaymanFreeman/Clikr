@@ -110,7 +110,7 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, Clikr can be ran from the source scripts with `python src\main.py`.
+From this point, Clikr can be run from the source scripts with `python src\main.py`.
 
 ### PyInstaller Bundle
 ```batch
@@ -148,7 +148,7 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, Clikr can be ran from the source scripts with `python3 src/main.py`.
+From this point, Clikr can be run from the source scripts with `python3 src/main.py`.
 
 ### PyInstaller Bundle
 ```bash
