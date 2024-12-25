@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="assets/icon.png" width="256" height="256" alt="EasyAutoClicker Logo">
+  <img src="assets/icon.png" width="256" height="256" alt="Clikr Logo">
 </p>
 
 <div id="toc" align="center">
   <ul style="list-style: none;">
     <summary>
       <h1 align="center">
-        EasyAutoClicker
+        Clikr
       </h1>
     </summary>
   </ul>
@@ -17,15 +17,15 @@
 </h3>
 
 <p align="center">
-  <a href="https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/LICENSE.md"><img alt="MIT License" src="https://img.shields.io/github/license/CaymanFreeman/EasyAutoClicker?style=flat&color=%23B20D35"></a>&nbsp;
+  <a href="https://github.com/CaymanFreeman/Clikr/blob/main/LICENSE.md"><img alt="MIT License" src="https://img.shields.io/github/license/CaymanFreeman/Clikr?style=flat&color=%23B20D35"></a>&nbsp;
   <a href="https://www.python.org/"><img alt="Built With Python" src="https://img.shields.io/badge/built_with-Python-brightgreen&style=flat"></a>&nbsp;
-  <a href="https://github.com/CaymanFreeman/EasyAutoClicker/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/EasyAutoClicker?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>&nbsp;
+  <a href="https://github.com/CaymanFreeman/Clikr/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/Clikr?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>&nbsp;
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
 
 ## Download
 
-You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/EasyAutoClicker/releases). There is also the option to run the main script, [main.py](https://github.com/CaymanFreeman/EasyAutoClicker/blob/main/src/main.py), directly from source.
+You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/Clikr/releases). There is also the option to run the main script, [main.py](https://github.com/CaymanFreeman/Clikr/blob/main/src/main.py), directly from source.
 
 **Windows:** An executable and installer are available to download with each release.
 
@@ -33,7 +33,7 @@ You can find appropriate downloads for each release [here](https://github.com/Ca
 
 ## Compatibility
 
-EasyAutoClicker is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for input callbacks and controls, Wayland support will be provided under Xwayland with limited functionality as described [here](https://pynput.readthedocs.io/en/latest/limitations.html).
+Clikr is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for input callbacks and controls, Wayland support will be provided under Xwayland with limited functionality as described [here](https://pynput.readthedocs.io/en/latest/limitations.html).
 
 ## Executables & Binaries
 
@@ -87,7 +87,7 @@ Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](
 
 ### Clone Repository
 ```batch
-git clone https://github.com/CaymanFreeman/EasyAutoClicker && cd EasyAutoClicker
+git clone https://github.com/CaymanFreeman/Clikr && cd Clikr
 ```
 
 ### Virtual Environment Setup
@@ -105,27 +105,27 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, EasyAutoClicker can be ran from the source scripts with `python src\main.py`.
+From this point, Clikr can be ran from the source scripts with `python src\main.py`.
 
 ### PyInstaller Bundle
 ```batch
-pyinstaller --noconfirm --onefile --name "EasyAutoClicker" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\main.py
+pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\main.py
 ```
 
 ### Run Executable
 
-The executable will be located at `dist/EasyAutoClicker.exe`.
+The executable will be located at `dist/Clikr.exe`.
 
 ## Linux
 
 The following packages may need to be installed: 
 ```batch
-python3-pyqt6 python3-dev python3.12-venv python3-xlib binutils build-essential
+python3-dev python3.12-venv python3-xlib binutils build-essential
 ```
 
 ### Clone Repository
 ```bash
-git clone https://github.com/CaymanFreeman/EasyAutoClicker && cd EasyAutoClicker
+git clone https://github.com/CaymanFreeman/Clikr && cd Clikr
 ```
 
 ### Virtual Environment Setup
@@ -143,16 +143,16 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, EasyAutoClicker can be ran from the source scripts with `python src/main.py`.
+From this point, Clikr can be ran from the source scripts with `python src/main.py`.
 
 ### PyInstaller Bundle
 ```bash
-pyinstaller --noconfirm --onefile --name "easyautoclicker" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
+pyinstaller --noconfirm --onefile --name "clikr" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
 ```
 
 ### Run Binary
 
-The binary will be located at `dist/easyautoclicker`.
+The binary will be located at `dist/clikr`.
 
 ‎
 
