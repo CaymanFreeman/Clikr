@@ -44,8 +44,8 @@ Each executable/binary simply acts as a bundle for the source files and an inter
 The following are the available settings and what they do. If any input fields are left empty, the default value will be used.
 
 <div display="inline-block">
-  <img src="assets/simple_tab.png" width="256" height="256" alt="Clikr simple tab settings">
-  <img src="assets/advanced_tab.png" width="256" height="256" alt="Clikr advanced tab settings">
+  <img src="assets/simple_tab.png" width="312" height="293" alt="Clikr simple tab settings">
+  <img src="assets/advanced_tab.png" width="312" height="293" alt="Clikr advanced tab settings">
 </div>
 
 ### Interval
@@ -114,7 +114,7 @@ From this point, Clikr can be ran from the source scripts with `python src\main.
 
 ### PyInstaller Bundle
 ```batch
-pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.md;." --icon="assets\icon.ico" --add-data="assets\icon.png;assets" src\main.py
+pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.md:." --icon="assets\icon.ico" --add-data="assets\icon.png:assets" --add-data="assets\window.ui:assets" src\main.py
 ```
 
 ### Run Executable
@@ -148,11 +148,11 @@ pip install pyinstaller
 
 ### Run From Source
 
-From this point, Clikr can be ran from the source scripts with `python src/main.py`.
+From this point, Clikr can be ran from the source scripts with `python3 src/main.py`.
 
 ### PyInstaller Bundle
 ```bash
-pyinstaller --noconfirm --onefile --name "clikr" --add-data="LICENSE.md:." --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
+pyinstaller --noconfirm --onefile --name "clikr" --add-data="LICENSE.md:." --add-data="assets/window.ui:assets" --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg src/main.py
 ```
 
 ### Run Binary
