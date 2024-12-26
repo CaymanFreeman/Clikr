@@ -13,7 +13,7 @@
 </div>
 
 <h3 align="center">
-  Start automatic clicking processes via a simple GUI
+  Auto-clicking with a simple GUI
 </h3>
 
 <p align="center">
@@ -22,6 +22,12 @@
   <a href="https://github.com/CaymanFreeman/Clikr/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/Clikr?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>&nbsp;
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
 </p>
+
+## Overview
+
+Clikr is a simple auto-clicking application designed to cover most use cases. It is intended for tasks that require a bit more than a basic clicking loop without the need to delve into scripting. Clikr allows you to customize actions such as the interval between clicks, the number of clicks to perform, the duration to hold each click, and more. For a description of each available setting, refer to the [settings](#settings) section.
+
+If you are looking for an in-depth macro system for specific purposes, consider using tools like [AutoHotkey](https://www.autohotkey.com/) instead.
 
 ## Download
 
