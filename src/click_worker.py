@@ -1,3 +1,4 @@
+import logging
 import time
 from dataclasses import dataclass
 from typing import Optional, Tuple
@@ -90,10 +91,9 @@ class ClickWorker(QObject):
 
     finished = pyqtSignal()
 
-    def __init__(self, inputs: WorkerInputs, logger, mouse_controller):
+    def __init__(self, inputs: WorkerInputs, mouse_controller):
         super().__init__()
         self.inputs = inputs
-        self.logger = logger
         self.mouse_controller = mouse_controller
 
     @pyqtSlot(WorkerInputs)
@@ -112,7 +112,7 @@ class ClickWorker(QObject):
 
                 self.interval_wrapper(self.inputs.scaled_interval)
 
-            self.logger.info("Starting click worker: %s", str(self.inputs))
+            logging.info(f"Starting click worker: {str(self.inputs)}")
             if self.inputs.is_infinite:
                 while True:
                     click_event()
@@ -122,7 +122,7 @@ class ClickWorker(QObject):
 
             self.finished.emit()
         except Exception as e:
-            self.logger.error("Error with click worker: %s", e)
+            logging.error(f"Error with click worker: {e}")
             self.finished.emit()
 
     def move_to_location(self, x: int, y: int) -> None:

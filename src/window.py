@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from pathlib import Path
@@ -96,9 +97,8 @@ class Window(QMainWindow):
     worker_requested = pyqtSignal()
     change_inputs = pyqtSignal(WorkerInputs)
 
-    def __init__(self, logger):
+    def __init__(self):
         super().__init__()
-        self.logger = logger
         self.current_hotkey = None
         self.advanced_location = None
         self.simple_location = None
@@ -229,7 +229,7 @@ class Window(QMainWindow):
         self.softlock_message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
 
     def initialize_click_worker(self):
-        self.click_worker = ClickWorker(self.inputs, self.logger, self.mouse_controller)
+        self.click_worker = ClickWorker(self.inputs, self.mouse_controller)
         self.worker_thread = QThread()
         self.click_worker.finished.connect(self.stop_button_clicked)
         self.change_inputs.connect(self.click_worker.change_inputs)
@@ -352,9 +352,7 @@ class Window(QMainWindow):
         ]
 
         pynput_key_sequence = "+".join(converted_parts)
-        self.logger.info(
-            "Converting pyqt %s to pynput %s", key_sequence, pynput_key_sequence
-        )
+        logging.info(f"Converting pyqt {key_sequence} to pynput {pynput_key_sequence}")
         return pynput_key_sequence
 
     def clear_hotkey_focus(self):
@@ -383,7 +381,7 @@ class Window(QMainWindow):
             self.clear_hotkey_focus()
             return key_sequence
         except ValueError as value:
-            self.logger.error(f"Failed to set hotkey: {value}")
+            logging.error(f"Failed to set hotkey: {value}")
             self.clear_hotkey_focus()
             return None
 
@@ -434,14 +432,14 @@ class Window(QMainWindow):
 
     def stop_click_worker(self):
         if self.worker_thread.isRunning():
-            self.logger.info("Terminating worker thread")
+            logging.info("Terminating worker thread")
             self.worker_thread.terminate()
             self.worker_thread.wait()
 
     @pyqtSlot()
     def start_button_clicked(self):
         if self.softlock_capable:
-            self.logger.info("Displaying softlock prevention message")
+            logging.info("Displaying softlock prevention message")
             self.softlock_message_box.exec()
             return
         self.stop_button.setDisabled(False)
@@ -481,7 +479,7 @@ class Window(QMainWindow):
             self.current_hotkey = self.add_hotkey(
                 self.pynput_key_sequence(key_sequence), self.hotkey_toggle
             )
-        self.logger.info("Hotkey set to %s", self.current_hotkey)
+        logging.info(f"Hotkey set to {self.current_hotkey}")
 
     def hotkey_toggle(self):
         (
@@ -491,7 +489,7 @@ class Window(QMainWindow):
         )
 
     def clear_location_and_listener(self):
-        self.logger.info("Clearing location value")
+        logging.info("Clearing location value")
         self.stop_location_click_listener()
         self.stop_esc_key_listener()
         if self.viewing_advanced_tab:
@@ -511,11 +509,11 @@ class Window(QMainWindow):
             if advanced_tab:
                 self.advanced_location = (x, y)
                 self.advanced_change_location_button.setEnabled(True)
-                self.logger.info("Set advanced location to %s", self.advanced_location)
+                logging.info(f"Set advanced location to {self.advanced_location}")
             else:
                 self.simple_location = (x, y)
                 self.simple_change_location_button.setEnabled(True)
-                self.logger.info("Set simple location to %s", self.simple_location)
+                logging.info(f"Set simple location to {self.simple_location}")
             self.update_location_displays()
             self.stop_location_click_listener()
             self.stop_esc_key_listener()
@@ -527,11 +525,11 @@ class Window(QMainWindow):
         )
 
         (
-            self.logger.info(
+            logging.info(
                 "Listening for advanced location, waiting for click or esc press"
             )
             if advanced_tab
-            else self.logger.info(
+            else logging.info(
                 "Listening for simple location, waiting for click or esc press"
             )
         )

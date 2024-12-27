@@ -6,20 +6,23 @@ from PyQt6.QtWidgets import QApplication
 
 from window import Window
 
+LOG_FORMAT: str = "%(asctime)s %(levelname)s %(message)s"
+DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
-def log_setup() -> logging.Logger:
+
+def setup_logging():
     logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s %(levelname)s %(message)s",
-        handlers=[logging.StreamHandler()],
+        level=logging.INFO,
+        format=LOG_FORMAT,
+        datefmt=DATETIME_FORMAT,
     )
-    return logging.getLogger(__name__)
 
 
 def main():
-    logger = log_setup()
+    setup_logging()
+
     app = QApplication(sys.argv)
-    window = Window(logger)
+    window = Window()
     sys.exit(app.exec())
 
 
