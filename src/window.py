@@ -165,7 +165,7 @@ class Window(QMainWindow):
             QComboBox, "advanced_mouse_button_input"
         )
         self.softlock_message_box: Optional[QMessageBox] = None
-        self.define_message_box()
+        self.define_softlock_message_box()
 
         self.initialize_validators()
         self.connect_callbacks()
@@ -176,6 +176,8 @@ class Window(QMainWindow):
 
         self.adjustSize()
         self.show()
+
+        logging.info("Successfully loaded UI")
 
     def load_ui(self):
         source_ui_path = (
@@ -218,7 +220,7 @@ class Window(QMainWindow):
             self.setWindowIcon(QIcon(str(bundled_icon_path)))
             return
 
-    def define_message_box(self):
+    def define_softlock_message_box(self):
         self.softlock_message_box = QMessageBox(self)
         self.softlock_message_box.setIcon(QMessageBox.Icon.Warning)
         self.softlock_message_box.setWindowTitle("Softlock Prevention")
@@ -236,10 +238,6 @@ class Window(QMainWindow):
         self.worker_requested.connect(self.click_worker.start)
         self.click_worker.moveToThread(self.worker_thread)
 
-    @staticmethod
-    def connect_return_clear_focus(line_edit: QLineEdit):
-        line_edit.returnPressed.connect(line_edit.clearFocus)
-
     def connect_callbacks(self):
         self.tab_widget.currentChanged.connect(self.switched_tabs)
         self.simple_hotkey_input.editingFinished.connect(self.hotkey_changed)
@@ -256,11 +254,8 @@ class Window(QMainWindow):
         self.advanced_change_location_button.pressed.connect(self.change_location)
         self.start_button.clicked.connect(self.start_button_clicked)
         self.stop_button.clicked.connect(self.stop_button_clicked)
-        self.connect_return_clear_focus(self.simple_interval_input)
-        self.connect_return_clear_focus(self.advanced_interval_input)
-        self.connect_return_clear_focus(self.advanced_hold_length_input)
-        self.connect_return_clear_focus(self.advanced_event_count_input)
-        self.connect_return_clear_focus(self.advanced_clicks_per_event_input)
+        for line_edit in self.findChildren(QLineEdit):
+            line_edit.returnPressed.connect(line_edit.clearFocus)
 
     def initialize_validators(self):
         self.simple_interval_input.setValidator(PositiveIntValidator())
