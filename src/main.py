@@ -4,7 +4,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from window import Window
+from src.ui.window import Window
 
 LOG_FORMAT: str = "%(asctime)s %(levelname)s %(message)s"
 DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
@@ -12,7 +12,7 @@ DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
 def setup_logging():
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format=LOG_FORMAT,
         datefmt=DATETIME_FORMAT,
     )
