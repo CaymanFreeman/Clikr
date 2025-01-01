@@ -9,17 +9,6 @@ from pynput.mouse import Controller as MouseController
 from pynput.mouse import Button
 
 
-# Decorator by Martijn Pieters
-# https://stackoverflow.com/questions/17576009/python-class-property-use-setter-but-evade-getter
-class SetterProperty(object):
-    def __init__(self, func, doc=None):
-        self.func = func
-        self.__doc__ = doc if doc is not None else func.__doc__
-
-    def __set__(self, obj, value):
-        return self.func(obj, value)
-
-
 class InputTimescale(IntEnum):
     Milliseconds = 0
     Seconds = 1
@@ -52,7 +41,7 @@ class ChangeLocationListener:
         )
         self.__change_location_listener.start()
         self.__change_location_escape_listener.start()
-        logging.info("Started change location listeners")
+        logging.debug("Started change location listeners")
 
     def stop(self):
         if self.__change_location_listener:
@@ -62,7 +51,7 @@ class ChangeLocationListener:
             self.__change_location_escape_listener.stop()
             self.__change_location_escape_listener = None
         self.__change_location_button().setEnabled(True)
-        logging.info("Stopped change location listeners")
+        logging.debug("Stopped change location listeners")
 
     def __on_change_location(self, x: int, y: int, button: Button, pressed: bool):
         if pressed:
@@ -179,18 +168,26 @@ class InputManager:
     def __interval(self) -> float:
         return self.__scale_seconds(self.__interval_timescale, self.__interval_seconds)
 
-    @SetterProperty
+    @property
+    def interval_seconds(self) -> int:
+        return self.__interval_seconds
+
+    @interval_seconds.setter
     def interval_seconds(self, line_edit: QLineEdit):
         interval_seconds: int = self.DEFAULT_INTERVAL_SECONDS
         if line_edit.text():
             interval_seconds = int(line_edit.text())
-        self.__dict__["__interval_seconds"] = interval_seconds
+        self.__interval_seconds = interval_seconds
         logging.debug(f"Set interval seconds to {interval_seconds}")
 
-    @SetterProperty
+    @property
+    def interval_timescale(self) -> InputTimescale:
+        return self.__interval_timescale
+
+    @interval_timescale.setter
     def interval_timescale(self, combo_box: QComboBox):
         interval_timescale = InputTimescale(combo_box.currentIndex())
-        self.__dict__["__interval_timescale"] = interval_timescale
+        self.__interval_timescale = interval_timescale
         logging.debug(f"Set interval timescale to {interval_timescale}")
 
     @property
@@ -198,39 +195,55 @@ class InputManager:
         return self.__hold_length > 0
 
     @property
-    def __hold_length(self):
+    def __hold_length(self) -> float:
         return self.__scale_seconds(
             self.__hold_length_timescale, self.__hold_length_seconds
         )
 
-    @SetterProperty
+    @property
+    def hold_length_seconds(self) -> int:
+        return self.__hold_length_seconds
+
+    @hold_length_seconds.setter
     def hold_length_seconds(self, line_edit: QLineEdit):
         hold_length_seconds: int = self.DEFAULT_HOLD_LENGTH_SECONDS
         if line_edit.text():
             hold_length_seconds = int(line_edit.text())
-        self.__dict__["__hold_length_seconds"] = hold_length_seconds
+        self.__hold_length_seconds = hold_length_seconds
         logging.debug(f"Set hold length seconds to {hold_length_seconds}")
 
-    @SetterProperty
+    @property
+    def hold_length_timescale(self) -> InputTimescale:
+        return self.__hold_length_timescale
+
+    @hold_length_timescale.setter
     def hold_length_timescale(self, combo_box: QComboBox):
         hold_length_timescale = InputTimescale(combo_box.currentIndex())
-        self.__dict__["__hold_length_timescale"] = hold_length_timescale
+        self.__hold_length_timescale = hold_length_timescale
         logging.debug(f"Set hold length timescale to {hold_length_timescale}")
 
-    @SetterProperty
+    @property
+    def clicks_per_event(self) -> int:
+        return self.__clicks_per_event
+
+    @clicks_per_event.setter
     def clicks_per_event(self, line_edit: QLineEdit):
         clicks_per_event: int = self.DEFAULT_CLICKS_PER_EVENT
         if line_edit.text():
             clicks_per_event = int(line_edit.text())
-        self.__dict__["__clicks_per_event"] = clicks_per_event
+        self.__clicks_per_event = clicks_per_event
         logging.debug(f"Set clicks per event to {clicks_per_event}")
 
-    @SetterProperty
+    @property
+    def event_count(self) -> int:
+        return self.__event_count
+
+    @event_count.setter
     def event_count(self, line_edit: QLineEdit):
         event_count: Optional[int] = self.DEFAULT_EVENT_COUNT
         if line_edit.text():
             event_count = int(line_edit.text())
-        self.__dict__["__event_count"] = event_count
+        self.__event_count = event_count
         logging.debug(f"Set event count to {event_count}")
 
     @property
@@ -269,10 +282,14 @@ class InputManager:
     def __is_using_location_y(self) -> bool:
         return self.__location[1] is not None
 
-    @SetterProperty
+    @property
+    def mouse_button(self) -> Button:
+        return self.__mouse_button
+
+    @mouse_button.setter
     def mouse_button(self, combo_box: QComboBox):
         mouse_button = Button(combo_box.currentIndex() + 1)
-        self.__dict__["__mouse_button"] = mouse_button
+        self.__mouse_button = mouse_button
         logging.debug(f"Set mouse button to {mouse_button}")
 
     @property
