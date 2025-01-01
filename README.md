@@ -50,8 +50,8 @@ Each executable/binary simply acts as a bundle for the source files and an inter
 The following are the available settings and what they do. If any input fields are left empty, the default value will be used.
 
 <div display="inline-block">
-  <img src="assets/simple_tab.png" width="312" height="293" alt="Clikr simple tab settings">
-  <img src="assets/advanced_tab.png" width="312" height="293" alt="Clikr advanced tab settings">
+  <img src="assets/simple_tab.png" width="312" height="277" alt="Clikr simple tab settings">
+  <img src="assets/advanced_tab.png" width="312" height="277" alt="Clikr advanced tab settings">
 </div>
 
 ### Interval
