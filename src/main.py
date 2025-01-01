@@ -12,7 +12,7 @@ DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
 def setup_logging():
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format=LOG_FORMAT,
         datefmt=DATETIME_FORMAT,
     )
