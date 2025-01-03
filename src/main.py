@@ -1,5 +1,6 @@
-import logging
+"""Entry point for launching Clikr."""
 
+import logging
 import sys
 
 from PyQt6.QtWidgets import QApplication
@@ -10,19 +11,17 @@ LOG_FORMAT: str = "%(asctime)s %(levelname)s %(message)s"
 DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
 
-def setup_logging():
-    logging.basicConfig(
-        level=logging.INFO,
-        format=LOG_FORMAT,
-        datefmt=DATETIME_FORMAT,
-    )
+def _setup_logging() -> None:
+    """Configures the logging with the provided formats."""
+    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=DATETIME_FORMAT)
 
 
-def main():
-    setup_logging()
+def main() -> None:
+    """Initializes logging and launches the PyQt window."""
+    _setup_logging()
 
-    app = QApplication(sys.argv)
-    window = Window()
+    app: QApplication = QApplication(sys.argv)
+    _window: Window = Window()
     sys.exit(app.exec())
 
 

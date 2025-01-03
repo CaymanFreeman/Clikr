@@ -1,96 +1,127 @@
+"""Provides input management and processing for the Clikr UI and click worker."""
+
 import logging
-from collections import namedtuple
 from enum import IntEnum
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
 
 from PyQt6.QtWidgets import QLineEdit, QComboBox, QKeySequenceEdit, QPushButton
-from pynput import mouse, keyboard
-from pynput.mouse import Controller as MouseController
-from pynput.mouse import Button
+from pynput.keyboard import (
+    Key,
+    Listener as KeyboardListener,
+    HotKey,
+    KeyCode,
+)
+from pynput.mouse import (
+    Button as MouseButton,
+    Controller as MouseController,
+    Listener as MouseListener,
+)
+
+from src.core.click_worker import WorkerInputs
 
 
 class InputTimescale(IntEnum):
-    Milliseconds = 0
-    Seconds = 1
-    Minutes = 2
-    Hours = 3
+    """Enum for the supported time scales of inputs."""
+
+    MILLISECONDS = 0
+    SECONDS = 1
+    MINUTES = 2
+    HOURS = 3
 
 
 class ChangeLocationListener:
+    """Handles mouse position capture for setting click locations."""
+
     def __init__(
         self,
         change_location_callback: Callable[[int, int], None],
         change_location_button: Callable[[], QPushButton],
-    ):
+    ) -> None:
         self.__change_location_callback: Callable[[int, int], None] = (
             change_location_callback
         )
         self.__change_location_button: Callable[[], QPushButton] = (
             change_location_button
         )
-        self.__change_location_listener: Optional[mouse.Listener] = None
-        self.__change_location_escape_listener: Optional[keyboard.Listener] = None
+        self.__change_location_listener: Optional[MouseListener] = None
+        self.__cancel_key_listener: Optional[KeyboardListener] = None
+        self.__cancel_key: Key = Key.esc
 
-    def start(self):
+    def start(self) -> None:
+        """Starts listening for a new location click or the cancellation key."""
         self.__change_location_button().setEnabled(False)
-        self.__change_location_listener = mouse.Listener(
-            on_click=self.__on_change_location
-        )
-        self.__change_location_escape_listener = keyboard.Listener(
-            on_press=self.__on_esc_change_location
-        )
-        self.__change_location_listener.start()
-        self.__change_location_escape_listener.start()
-        logging.debug("Started change location listeners")
 
-    def stop(self):
+        def change_location(x: int, y: int, _: MouseButton, pressed: bool) -> None:
+            """Stops listening and changes the location setting if the mouse clicks."""
+            if pressed:
+                self.__change_location_callback(x, y)
+                self.stop()
+
+        def cancel_change(key: Key | KeyCode | None) -> None:
+            """Stops listening if the cancel key is pressed."""
+            if key == self.__cancel_key:
+                self.stop()
+
+        self.__cancel_key_listener = KeyboardListener(on_press=cancel_change)
+        self.__cancel_key_listener.start()
+        logging.debug("Started cancellation key listener")
+
+        self.__change_location_listener = MouseListener(on_click=change_location)
+        self.__change_location_listener.start()
+        logging.debug("Started change location click listener")
+
+    def stop(self) -> None:
+        """Stops listening for a new location click and the cancellation key."""
         if self.__change_location_listener:
             self.__change_location_listener.stop()
             self.__change_location_listener = None
-        if self.__change_location_escape_listener:
-            self.__change_location_escape_listener.stop()
-            self.__change_location_escape_listener = None
+            logging.debug("Stopped change location click listener")
+
+        if self.__cancel_key_listener:
+            self.__cancel_key_listener.stop()
+            self.__cancel_key_listener = None
+            logging.debug("Stopped cancellation key listener")
+
         self.__change_location_button().setEnabled(True)
-        logging.debug("Stopped change location listeners")
-
-    def __on_change_location(self, x: int, y: int, button: Button, pressed: bool):
-        if pressed:
-            self.__change_location_callback(x, y)
-            self.stop()
-
-    def __on_esc_change_location(self, key: keyboard.Key):
-        if key == keyboard.Key.esc:
-            self.stop()
 
 
 class HotkeyListener:
-    def __init__(self, hotkey_callback: Callable[[], None], hotkey: Callable[[], str]):
-        self.__hotkey = hotkey
+    """Handles hotkey detection and execution."""
+
+    def __init__(
+        self, hotkey_callback: Callable[[], None], hotkey: Callable[[], Optional[str]]
+    ) -> None:
         self.__hotkey_callback = hotkey_callback
-        self.__hotkey_listener: Optional[keyboard.Listener] = None
+        self.__hotkey = hotkey
+        self.__hotkey_listener: Optional[KeyboardListener] = None
 
-    def reset(self):
-        self.__stop()
-        self.__start()
+    def reset(self) -> None:
+        """Restarts the hotkey listener to update to the current hotkey."""
+        self.stop()
+        self.start()
 
-    def __start(self):
+    def start(self) -> None:
+        """Starts listening for current hotkey."""
         hotkey = self.__hotkey()
-        if hotkey:
+        if hotkey is not None:
 
-            def for_canonical(f):
-                return lambda k: f(self.__hotkey_listener.canonical(k))
+            def for_canonical(
+                function: Callable[[Key | KeyCode | Any], None]
+            ) -> Callable[[Key | KeyCode | Any], None]:
+                return lambda key_event: function(
+                    self.__hotkey_listener.canonical(key_event)
+                )
 
-            pynput_hotkey = keyboard.HotKey(
-                keyboard.HotKey.parse(hotkey), self.__hotkey_callback
-            )
-            self.__hotkey_listener = keyboard.Listener(
+            pynput_hotkey = HotKey(HotKey.parse(hotkey), self.__hotkey_callback)
+            self.__hotkey_listener = KeyboardListener(
                 on_press=for_canonical(pynput_hotkey.press),
                 on_release=for_canonical(pynput_hotkey.release),
             )
             self.__hotkey_listener.start()
-            logging.debug(f"Started hotkey listener for {hotkey}")
+            logging.debug("Started hotkey listener for %s", hotkey)
 
-    def __stop(self):
+    def stop(self) -> None:
+        """Stops listening for current hotkey."""
         if self.__hotkey_listener:
             self.__hotkey_listener.stop()
             self.__hotkey_listener = None
@@ -98,45 +129,30 @@ class HotkeyListener:
 
 
 class InputManager:
+    """Handles input management and processing for Clikr."""
 
     DEFAULT_INTERVAL_SECONDS: int = 100
-    DEFAULT_INTERVAL_TIMESCALE: InputTimescale = InputTimescale.Milliseconds
+    DEFAULT_INTERVAL_TIMESCALE: InputTimescale = InputTimescale.MILLISECONDS
     DEFAULT_HOLD_LENGTH_SECONDS: int = 0
-    DEFAULT_HOLD_LENGTH_TIMESCALE: InputTimescale = InputTimescale.Milliseconds
+    DEFAULT_HOLD_LENGTH_TIMESCALE: InputTimescale = InputTimescale.MILLISECONDS
     DEFAULT_CLICKS_PER_EVENT: int = 1
     DEFAULT_EVENT_COUNT: Optional[int] = None
     DEFAULT_LOCATION: tuple[Optional[int], Optional[int]] = None, None
-    DEFAULT_MOUSE_BUTTON: Button = Button.left
+    DEFAULT_MOUSE_BUTTON: MouseButton = MouseButton.left
     DEFAULT_HOTKEY: Optional[str] = None
 
-    WorkerInputs = namedtuple(
-        "WorkerInputs",
-        [
-            "interval",
-            "hold_length",
-            "clicks_per_event",
-            "event_count",
-            "mouse_button",
-            "location",
-            "is_using_location_x",
-            "is_using_location_y",
-            "is_using_held_clicks",
-            "is_continuous",
-            "mouse_controller",
-        ],
-    )
-
     @classmethod
-    def __scale_seconds(cls, timescale: InputTimescale, seconds: int) -> float:
+    def _scale_seconds(cls, timescale: InputTimescale, unscaled_value: int) -> float:
+        """Returns the scaled value based on the timescale."""
         match timescale:
-            case InputTimescale.Milliseconds:
-                return 0.001 * seconds
-            case InputTimescale.Seconds:
-                return 1.0 * seconds
-            case InputTimescale.Minutes:
-                return 60.0 * seconds
-            case InputTimescale.Hours:
-                return 3600.0 * seconds
+            case InputTimescale.MILLISECONDS:
+                return 0.001 * unscaled_value
+            case InputTimescale.SECONDS:
+                return 1.0 * unscaled_value
+            case InputTimescale.MINUTES:
+                return 60.0 * unscaled_value
+            case InputTimescale.HOURS:
+                return 3600.0 * unscaled_value
 
     def __init__(
         self,
@@ -144,19 +160,19 @@ class InputManager:
         change_location_button: Callable[[], QPushButton],
         hotkey_callback: Callable[[], None],
     ):
-        self.__interval_seconds: int = self.DEFAULT_INTERVAL_SECONDS
+        self.__unscaled_interval: int = self.DEFAULT_INTERVAL_SECONDS
         self.__interval_timescale: InputTimescale = self.DEFAULT_INTERVAL_TIMESCALE
-        self.__hold_length_seconds: int = self.DEFAULT_HOLD_LENGTH_SECONDS
+        self.__unscaled_hold_length: int = self.DEFAULT_HOLD_LENGTH_SECONDS
         self.__hold_length_timescale: InputTimescale = (
             self.DEFAULT_HOLD_LENGTH_TIMESCALE
         )
         self.__clicks_per_event: int = self.DEFAULT_CLICKS_PER_EVENT
         self.__event_count: Optional[int] = self.DEFAULT_EVENT_COUNT
-        self.__location: Optional[tuple[int, int]] = self.DEFAULT_LOCATION
-        self.__mouse_button: Button = self.DEFAULT_MOUSE_BUTTON
+        self.__location: tuple[Optional[int], Optional[int]] = self.DEFAULT_LOCATION
+        self.__mouse_button: MouseButton = self.DEFAULT_MOUSE_BUTTON
         self.__hotkey: Optional[str] = self.DEFAULT_HOTKEY
 
-        self.__mouse_controller: MouseController = mouse.Controller()
+        self.__mouse_controller: MouseController = MouseController()
         self.__change_location_listener: ChangeLocationListener = (
             ChangeLocationListener(change_location_callback, change_location_button)
         )
@@ -165,175 +181,149 @@ class InputManager:
         )
 
     @property
-    def __interval(self) -> float:
-        return self.__scale_seconds(self.__interval_timescale, self.__interval_seconds)
+    def interval(self) -> float:
+        """Returns the current interval scaled to seconds."""
+        return self._scale_seconds(self.__interval_timescale, self.__unscaled_interval)
 
-    @property
-    def interval_seconds(self) -> int:
-        return self.__interval_seconds
-
-    @interval_seconds.setter
-    def interval_seconds(self, line_edit: QLineEdit):
+    def update_unscaled_interval(self, line_edit: QLineEdit) -> None:
+        """Sets the unscaled interval based on the provided input field."""
         interval_seconds: int = self.DEFAULT_INTERVAL_SECONDS
         if line_edit.text():
             interval_seconds = int(line_edit.text())
-        self.__interval_seconds = interval_seconds
-        logging.debug(f"Set interval seconds to {interval_seconds}")
+        self.__unscaled_interval = interval_seconds
+        logging.debug("Set unscaled interval to %f", interval_seconds)
 
-    @property
-    def interval_timescale(self) -> InputTimescale:
-        return self.__interval_timescale
-
-    @interval_timescale.setter
-    def interval_timescale(self, combo_box: QComboBox):
+    def update_interval_timescale(self, combo_box: QComboBox) -> None:
+        """Sets the interval timescale based on the provided input choice."""
         interval_timescale = InputTimescale(combo_box.currentIndex())
         self.__interval_timescale = interval_timescale
-        logging.debug(f"Set interval timescale to {interval_timescale}")
+        logging.debug("Set interval timescale to %s", interval_timescale.name)
 
     @property
-    def __is_using_held_clicks(self) -> bool:
-        return self.__hold_length > 0
-
-    @property
-    def __hold_length(self) -> float:
-        return self.__scale_seconds(
-            self.__hold_length_timescale, self.__hold_length_seconds
+    def hold_length(self) -> float:
+        """Returns the current hold length scaled to seconds."""
+        return self._scale_seconds(
+            self.__hold_length_timescale, self.__unscaled_hold_length
         )
 
     @property
-    def hold_length_seconds(self) -> int:
-        return self.__hold_length_seconds
+    def is_using_held_clicks(self) -> bool:
+        """Returns whether the current hold length constitutes held clicks."""
+        return self.hold_length > 0
 
-    @hold_length_seconds.setter
-    def hold_length_seconds(self, line_edit: QLineEdit):
+    def update_unscaled_hold_length(self, line_edit: QLineEdit) -> None:
+        """Sets the unscaled hold length based on the provided input field."""
         hold_length_seconds: int = self.DEFAULT_HOLD_LENGTH_SECONDS
         if line_edit.text():
             hold_length_seconds = int(line_edit.text())
-        self.__hold_length_seconds = hold_length_seconds
-        logging.debug(f"Set hold length seconds to {hold_length_seconds}")
+        self.__unscaled_hold_length = hold_length_seconds
+        logging.debug("Set unscaled hold length to %f", hold_length_seconds)
 
-    @property
-    def hold_length_timescale(self) -> InputTimescale:
-        return self.__hold_length_timescale
-
-    @hold_length_timescale.setter
-    def hold_length_timescale(self, combo_box: QComboBox):
+    def update_hold_length_timescale(self, combo_box: QComboBox) -> None:
+        """Sets the hold length timescale based on the provided input choice."""
         hold_length_timescale = InputTimescale(combo_box.currentIndex())
         self.__hold_length_timescale = hold_length_timescale
-        logging.debug(f"Set hold length timescale to {hold_length_timescale}")
+        logging.debug("Set hold length timescale to %s", hold_length_timescale.name)
 
-    @property
-    def clicks_per_event(self) -> int:
-        return self.__clicks_per_event
-
-    @clicks_per_event.setter
-    def clicks_per_event(self, line_edit: QLineEdit):
+    def update_clicks_per_event(self, line_edit: QLineEdit) -> None:
+        """Sets the number of clicks for each event based on the provided input field."""
         clicks_per_event: int = self.DEFAULT_CLICKS_PER_EVENT
         if line_edit.text():
             clicks_per_event = int(line_edit.text())
         self.__clicks_per_event = clicks_per_event
-        logging.debug(f"Set clicks per event to {clicks_per_event}")
+        logging.debug("Set clicks per event to %s", clicks_per_event)
 
-    @property
-    def event_count(self) -> int:
-        return self.__event_count
-
-    @event_count.setter
-    def event_count(self, line_edit: QLineEdit):
+    def update_event_count(self, line_edit: QLineEdit) -> None:
+        """Sets the number of events to perform based on the provided input field."""
         event_count: Optional[int] = self.DEFAULT_EVENT_COUNT
         if line_edit.text():
             event_count = int(line_edit.text())
         self.__event_count = event_count
-        logging.debug(f"Set event count to {event_count}")
+        logging.debug("Set event count to %s", event_count)
 
     @property
-    def __is_continuous(self) -> bool:
+    def is_continuous(self) -> bool:
+        """Returns whether the current inputs constitute clicking forever if not stopped."""
         return self.__event_count is None
 
     @property
-    def location_x(self) -> int:
+    def location_x(self) -> Optional[int]:
+        """Returns the X component of the current location."""
         return self.__location[0]
 
-    @location_x.setter
-    def location_x(self, line_edit: QLineEdit):
+    def update_location_x(self, line_edit: QLineEdit) -> None:
+        """Sets the X component of the current location based on the provided input field."""
+        _, y = self.__location
         if line_edit.text():
-            self.__location = int(line_edit.text()), self.__location[1]
+            self.__location = int(line_edit.text()), y
         else:
-            self.__location = None, self.__location[1]
-        logging.debug(f"Set X location to {self.__location[0]}")
+            self.__location = None, y
+        logging.debug("Set X location to %s", self.location_x)
 
     @property
-    def location_y(self) -> int:
+    def location_y(self) -> Optional[int]:
+        """Returns the Y component of the current location."""
         return self.__location[1]
 
-    @location_y.setter
-    def location_y(self, line_edit: QLineEdit):
+    def update_location_y(self, line_edit: QLineEdit) -> None:
+        """Sets the Y component of the current location based on the provided input field."""
+        x, _ = self.__location
         if line_edit.text():
-            self.__location = self.__location[0], int(line_edit.text())
+            self.__location = x, int(line_edit.text())
         else:
-            self.__location = self.__location[0], None
-        logging.debug(f"Set Y location to {self.__location[1]}")
+            self.__location = x, None
+        logging.debug("Set Y location to %s", self.location_y)
 
-    @property
-    def __is_using_location_x(self) -> bool:
-        return self.__location[0] is not None
-
-    @property
-    def __is_using_location_y(self) -> bool:
-        return self.__location[1] is not None
-
-    @property
-    def mouse_button(self) -> Button:
-        return self.__mouse_button
-
-    @mouse_button.setter
-    def mouse_button(self, combo_box: QComboBox):
-        mouse_button = Button(combo_box.currentIndex() + 1)
+    def update_mouse_button(self, combo_box: QComboBox) -> None:
+        """Sets the mouse button to click with based on the provided input choice."""
+        mouse_button = MouseButton(combo_box.currentIndex() + 1)
         self.__mouse_button = mouse_button
-        logging.debug(f"Set mouse button to {mouse_button}")
+        logging.debug("Set mouse button to %s", mouse_button.name)
 
-    @property
-    def hotkey(self) -> str:
-        return self.__hotkey
-
-    def hotkey_callable(self) -> str:
-        return self.hotkey
-
-    @hotkey.setter
-    def hotkey(self, key_sequence_edit: QKeySequenceEdit):
+    def update_hotkey(self, key_sequence_edit: QKeySequenceEdit) -> None:
+        """
+        Sets the current hotkey based on the provided input field.
+        Converts from a PyQt key sequence format to a pynput hotkey format.
+        """
         hotkey: Optional[str] = self.DEFAULT_HOTKEY
         key_sequence: str = key_sequence_edit.keySequence().toString().strip()
         if key_sequence:
-            keys: list[str] = key_sequence.split("+")
-            for index in range(len(keys)):
-                if len(keys[index]) > 1:
-                    keys[index] = f"<{keys[index]}>"
+            keys: list[str] = [
+                f"<{key}>" for key in key_sequence.split("+") if len(key) > 1
+            ]
             hotkey = "+".join(keys)
         self.__hotkey = hotkey
-        logging.debug(f"Set hotkey to {hotkey}")
+        logging.debug("Set hotkey to %s", hotkey)
         self.__hotkey_listener.reset()
+
+    def hotkey_callable(self) -> Optional[str]:
+        """Returns the current hotkey in pynput format as a non-property to act as a callable."""
+        return self.__hotkey
 
     @property
     def worker_inputs(self) -> WorkerInputs:
-        return self.WorkerInputs(
-            self.__interval,
-            self.__hold_length,
+        """Returns the current input configuration needed for a click worker."""
+        return WorkerInputs(
+            self.interval,
+            self.hold_length,
             self.__clicks_per_event,
             self.__event_count,
             self.__mouse_button,
             self.__location,
-            self.__is_using_location_x,
-            self.__is_using_location_y,
-            self.__is_using_held_clicks,
-            self.__is_continuous,
+            self.location_x is not None,
+            self.location_y is not None,
+            self.hold_length > 0,
+            self.__event_count is None,
             self.__mouse_controller,
         )
 
     @property
     def can_softlock(self) -> bool:
+        """Returns whether to show the softlock prevention pop-up."""
         return (
-            self.__is_using_location_x or self.__is_using_location_y
+            self.location_x is not None or self.location_y is not None
         ) and self.__hotkey is None
 
-    def change_location(self):
+    def listen_for_location(self) -> None:
+        """Starts the change location listener."""
         self.__change_location_listener.start()
