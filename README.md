@@ -57,7 +57,7 @@ The following are the available settings and what they do. If any input fields a
 ### Interval
 
 ##### Default: 100 Milliseconds
-The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. **Note:** Click interval accuracy begins to diminish with smaller intervals (~100ms to ~22ms depending on the system).
+The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. **Note:** Interval accuracy begins to diminish with smaller intervals, with slight inaccuracy at ~100ms and severe inaccuracy at ~20ms depending on the system.
 
 ### Mouse Button
 
