@@ -27,7 +27,7 @@
 
 Clikr is a simple auto-clicking application designed to cover most use cases. It is intended for tasks that require a bit more than a basic clicking loop without the need to delve into scripting. Clikr allows you to customize actions such as the interval between clicks, the number of clicks to perform, the duration to hold each click, and more. For a description of each available setting, refer to the [settings](#settings) section.
 
-If you are looking for an in-depth macro system for specific purposes, consider using tools like [AutoHotkey](https://www.autohotkey.com/) instead.
+If you are looking for an in-depth macro system for specific purposes, consider using a tool like [AutoHotkey](https://www.autohotkey.com/) instead.
 
 ## Download
 
