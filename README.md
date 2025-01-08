@@ -59,7 +59,7 @@ The following are the available settings and what they do. If any input fields a
 ##### Default: 100 Milliseconds
 The click interval determines the amount of time between clicks. Setting this to 0 will attempt to click as fast as possible, possibly breaking any programs involved in responding to the click process. 
 
-**Note:** Interval accuracy begins to diminish with smaller intervals, with slight inaccuracy (between 0% and 5% error) below ~95ms, mild inaccuracy (between 5% and 10% error) below ~17ms, and severe inaccuracy (10% error and above) below ~9ms depending on the system. The graph below demonstrates the measured percent error for each interval.
+**Note:** Interval accuracy begins to diminish with smaller intervals, with slight inaccuracy (between 0% and 5% error) below ~100ms, mild inaccuracy (between 5% and 10% error) below ~17ms, and severe inaccuracy (10% error and above) below ~9ms depending on the system. The graph below demonstrates the measured percent error for each interval.
 
 <div display="inline-block">
   <img src="assets/inaccuracy_graph.png" width="680" height="438" alt="Clikr simple tab settings">
