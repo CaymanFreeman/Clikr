@@ -41,10 +41,6 @@ You can find appropriate downloads for each release [here](https://github.com/Ca
 
 Clikr is compatible with both Windows and Linux. Since [pynput](https://pynput.readthedocs.io/en/latest/index.html) is used for input callbacks and controls, Wayland support will be provided under Xwayland with limited functionality as described [here](https://pynput.readthedocs.io/en/latest/limitations.html).
 
-## Executables & Binaries
-
-Each executable/binary simply acts as a bundle for the source files and an interpreter. Each time the file is executed, the source code is expanded to a temporary directory. You can read more about how PyInstaller creates these executables [here](https://pyinstaller.org/en/stable/operating-mode.html#how-the-one-file-program-works).
-
 ## Settings
 
 The following are the available settings and what they do. If any input fields are left empty, the default value will be used.
@@ -93,6 +89,10 @@ The click events determine how many times to cause a click event. For example, i
 
 ##### Default: 1
 The clicks per event determine how many times to click each time a click event occurs. For example, setting this to 2 will cause each event to be a double click, 3 to be a triple click, etc.
+
+## Executables & Binaries
+
+Each executable/binary simply acts as a bundle for the source files and an interpreter. Each time the file is executed, the source code is expanded to a temporary directory. You can read more about how PyInstaller creates these executables [here](https://pyinstaller.org/en/stable/operating-mode.html#how-the-one-file-program-works).
 
 ## Bundle Windows Executable
 
