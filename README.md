@@ -94,13 +94,7 @@ The click events determine how many times to cause a click event. For example, i
 ##### Default: 1
 The clicks per event determine how many times to click each time a click event occurs. For example, setting this to 2 will cause each event to be a double click, 3 to be a triple click, etc.
 
-## Bundle Executable or Binary
-
-### Prerequisites
-
-Both recipes assume you have [git](https://git-scm.com/downloads) and [python3](https://www.python.org/downloads) installed.
-
-## Windows
+## Bundle Windows Executable
 
 ### Clone Repository
 ```batch
@@ -133,7 +127,7 @@ pyinstaller --noconfirm --onefile --name "Clikr" --windowed --add-data="LICENSE.
 
 The executable will be located at `dist\Clikr.exe`.
 
-## Linux
+## Bundle Linux Binary
 
 The following packages may need to be installed: 
 ```
