@@ -17,7 +17,7 @@
 </h3>
 
 <p align="center">
-  <a href="https://github.com/CaymanFreeman/Clikr/blob/main/LICENSE.md"><img alt="MIT License" src="https://img.shields.io/github/license/CaymanFreeman/Clikr?style=flat&color=%23B20D35"></a>&nbsp;
+  <a href="https://github.com/CaymanFreeman/Clikr/blob/main/LICENSE.md"><img alt="GPLv‎‎‎‎‎‎‎3 License" src="https://img.shields.io/github/license/CaymanFreeman/Clikr?style=flat&color=%23a32d2a"></a>&nbsp;
   <a href="https://www.python.org/"><img alt="Built With Python" src="https://img.shields.io/badge/built_with-Python_3.12-%233f7cad?style=flat"></a>&nbsp;
   <a href="https://github.com/CaymanFreeman/Clikr/releases"><img alt="Release" src="https://img.shields.io/github/v/release/CaymanFreeman/Clikr?include_prereleases&display_name=release&style=flat&color=%239d69c3"></a>&nbsp;
   <a href="https://www.linkedin.com/in/caymanfreeman/"><img alt="linkedin" src="https://img.shields.io/badge/linkedin-Connect_with_me-%230072b1?style=flat"></a>
