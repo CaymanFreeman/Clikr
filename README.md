@@ -29,6 +29,10 @@ Clikr is a simple auto-clicking application designed to cover most use cases. It
 
 If you are looking for an in-depth macro system for specific purposes, consider using a tool like [AutoHotkey](https://www.autohotkey.com/) instead.
 
+## Attributions
+
+- Icon from [Flaticon](https://www.flaticon.com/free-icon/click_4713368)
+
 ## Download
 
 You can find appropriate downloads for each release [here](https://github.com/CaymanFreeman/Clikr/releases). There is also the option to run the main script, [main.py](https://github.com/CaymanFreeman/Clikr/blob/main/src/main.py), directly from source.
